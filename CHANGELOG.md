@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 * Rename :object key to :redirect_object in service object return hash ([#176](https://yale.githost.io/sdmp/rails/vesta/issues/176)).
 * Modularize service object class methods ([#140](https://yale.githost.io/sdmp/rails/vesta/issues/140)).
 
+## Changed
+* Extract Group#remove_members ([#280](https://yale.githost.io/sdmp/rails/vesta/isses/280))
+
 ### Fixed
 * Prevent non-admins from seeing the suite import form ([#576](https://yale.githost.io/sdmp/rails/vesta/issues/576)).
 

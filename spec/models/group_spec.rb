@@ -1,9 +1,11 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Group, type: :model do
   describe 'basic validations' do
     subject { FactoryGirl.build(:group) }
+
     it { is_expected.to validate_presence_of(:size) }
     it { is_expected.to allow_value(1).for(:size) }
     it { is_expected.not_to allow_value(0).for(:size) }
@@ -163,6 +165,7 @@ RSpec.describe Group, type: :model do
 
   describe '#pending_memberships' do
     let(:group) { FactoryGirl.create(:open_group) }
+
     it 'returns invitations but not accepted memberships' do
       user = FactoryGirl.create(:student, draw: group.draw, intent: 'on_campus')
       m = Membership.create(group: group, user: user, status: 'invited')
@@ -194,6 +197,22 @@ RSpec.describe Group, type: :model do
     it 'returns all accepted members except for the leader' do
       group = FactoryGirl.create(:full_group, size: 2)
       expect(group.removable_members.map(&:id)).not_to include(group.leader_id)
+    end
+  end
+
+  describe '#remove_members!' do
+    it 'removes members except leader' do
+      group = FactoryGirl.create(:full_group, size: 3)
+      ids = group.members.map(&:id)
+      expect { group.remove_members!(ids: ids) }.to \
+        change { group.memberships_count }.from(3).to(1)
+    end
+
+    it 'does not remove leader' do
+      group = FactoryGirl.create(:full_group, size: 2)
+      ids = [group.leader_id]
+      expect { group.remove_members!(ids: ids) }.not_to \
+        change { group.memberships_count }
     end
   end
 
@@ -250,6 +269,7 @@ RSpec.describe Group, type: :model do
 
   context 'on disbanding' do
     let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
+
     it 'notifies members' do
       group = FactoryGirl.create(:full_group)
       allow(StudentMailer).to receive(:disband_notification).and_return(msg)
@@ -261,6 +281,7 @@ RSpec.describe Group, type: :model do
 
   context 'on locking' do
     let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
+
     it 'notifies members' do
       group = FactoryGirl.create(:finalizing_group, size: 2)
       allow(StudentMailer).to receive(:group_locked).and_return(msg)
