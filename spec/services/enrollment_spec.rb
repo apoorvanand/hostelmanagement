@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'support/fake_profile_querier'
 
-RSpec.describe Enrollment do
+RSpec.describe Enrollment, type: :model do
   context 'validations' do
     subject { described_class.new(ids: '') }
 

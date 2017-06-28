@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe IntentReportFilter do
+RSpec.describe IntentReportFilter, type: :model do
   context 'validations' do
     it { is_expected.to validate_presence_of(:intents) }
   end

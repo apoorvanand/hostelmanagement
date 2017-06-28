@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe EmailExport do
+RSpec.describe EmailExport, type: :model do
   describe 'basic validations' do
     subject { described_class.new }
 
