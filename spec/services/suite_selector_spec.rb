@@ -60,7 +60,15 @@ RSpec.describe SuiteSelector do
         group = instance_spy('group', suite: nil)
         suite = mock_suite(id: 123)
         described_class.select(group: group, suite_id: suite.id.to_s)
-        expect(suite).to have_received(:update!).with(group: group)
+        expect(suite).to have_received(:update!)
+          .with(hash_including(group: group))
+      end
+      it 'updates the suite to belong to only the draw of the group' do
+        group = instance_spy('group', suite: nil)
+        suite = mock_suite(id: 123)
+        described_class.select(group: group, suite_id: suite.id.to_s)
+        expect(suite).to have_received(:update!)
+          .with(hash_including(draws: [group.draw]))
       end
       it 'sets a success message in the flash' do
         group = instance_spy('group', suite: nil)

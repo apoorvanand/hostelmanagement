@@ -31,7 +31,7 @@ class SuiteSelector
   #   and an action to render.
   def select
     return error(self) unless valid?
-    suite.update!(group: group)
+    assign_group!
     success
   rescue ActiveRecord::RecordInvalid => e
     error(e)
@@ -65,6 +65,12 @@ class SuiteSelector
     return unless suite
     return unless suite.group_id.present?
     errors.add(:suite, 'is assigned to a different group')
+  end
+
+  def assign_group!
+    attrs = { group: group }
+    attrs[:draws] = [group.draw] if group.draw
+    suite.update!(attrs)
   end
 
   def success
