@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.feature 'Building Creation' do
+RSpec.feature 'College creation' do
   before { log_in FactoryGirl.create(:admin) }
   it 'succeeds' do
     visit new_college_path

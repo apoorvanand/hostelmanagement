@@ -19,7 +19,11 @@ module Features
   include Formulaic::Dsl
   # Capybara Config
   include Capybara::DSL
-  Capybara.asset_host = 'http://0.0.0.0:3000'
+  # https://robots.thoughtbot.com/acceptance-tests-with-subdomains
+  # no subdomain by default so that we can just use the public schema
+  Capybara.app_host = 'http://lvh.me'
+  Capybara.always_include_port = true
+  Capybara.asset_host = 'http://lvh.me:3000'
   Capybara.javascript_driver = :webkit
 end
 
@@ -41,6 +45,7 @@ RSpec.configure do |config|
   config.before(:each) { DatabaseCleaner.strategy = :transaction }
   config.before(:each, js: true) { DatabaseCleaner.strategy = :truncation }
   config.before(:each) { DatabaseCleaner.start }
+  config.before(:each, type: :request) { host! 'lvh.me' }
   config.after(:each) { DatabaseCleaner.clean }
 end
 
