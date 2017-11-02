@@ -8,6 +8,7 @@ RSpec.describe Draw, type: :model do
     it { is_expected.to have_many(:students) }
     it { is_expected.to have_many(:groups) }
     it { is_expected.to have_many(:draw_suites) }
+    it { is_expected.to have_many(:clips) }
     it { is_expected.to have_many(:suites).through(:draw_suites) }
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:suite_selection_mode) }
