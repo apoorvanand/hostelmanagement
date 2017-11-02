@@ -1,0 +1,12 @@
+<h2 class="clip-name"><%= clip.name %></h2>
+<h3 class="clip-size">Size: <%= clip.size %></h3>
+<h3 class="clip-groups">Groups:</h3>
+<ul>
+  <% clip.clip_memberships.each do |m| %>
+    <li class="clip-group"><%= clipping_name(m.group) %>
+    <%= link_to 'Accept Invitation', clip_membership_path(m), method: :patch, class: 'button' if policy(m).accept? %>
+    <%= link_to 'Reject Invitation', clip_membership_path(m), method: :delete, class: 'button alert' if policy(m).reject? %>
+    <%= link_to 'Leave Clip', clip_membership_path(m), method: :delete, class: 'button alert' if policy(m).leave? %>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <p>Hi <%= @user.name %>,</p>
+    <p>Your group has been invited to join a housing selection clip with <%= @clip.leader.full_name %>'s group. Clips allow your group to choose suites at the same time as every other group in the clip.</p>
+    <p>Please go to <a href="<%= @clip_url %>"><%= @clip_url %></a> to accept or reject this invitation.</p>
+    <p>Sincerely,<br /><%= @college.dean %></p>
+  </body>
+</html>

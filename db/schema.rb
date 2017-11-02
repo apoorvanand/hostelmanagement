@@ -21,6 +21,21 @@ ActiveRecord::Schema.define(version: 20171226003422) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "clip_memberships", force: :cascade do |t|
+    t.bigint "clip_id"
+    t.bigint "group_id"
+    t.boolean "confirmed", default: false, null: false
+    t.index ["clip_id"], name: "index_clip_memberships_on_clip_id"
+    t.index ["group_id"], name: "index_clip_memberships_on_group_id"
+  end
+
+  create_table "clips", force: :cascade do |t|
+    t.bigint "draw_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["draw_id"], name: "index_clips_on_draw_id"
+  end
+
   create_table "colleges", force: :cascade do |t|
     t.string "name", null: false
     t.string "dean", null: false
@@ -158,7 +173,24 @@ ActiveRecord::Schema.define(version: 20171226003422) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "clip_memberships", "clips"
+  add_foreign_key "clip_memberships", "groups"
   add_foreign_key "groups", "lottery_assignments"
   add_foreign_key "lottery_assignments", "draws"
   add_foreign_key "users", "rooms"
+
+  create_view "draw_clip_groups",  sql_definition: <<-SQL
+      SELECT clips.draw_id,
+      clips.id AS clip_id,
+      NULL::bigint AS group_id
+     FROM clips
+  UNION
+   SELECT groups.draw_id,
+      NULL::bigint AS clip_id,
+      groups.id AS group_id
+     FROM (groups groups
+       LEFT JOIN clip_memberships ON ((groups.id = clip_memberships.group_id)))
+    WHERE (clip_memberships.confirmed IS NOT TRUE);
+  SQL
+
 end

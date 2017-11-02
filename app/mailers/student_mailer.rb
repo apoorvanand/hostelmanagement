@@ -104,6 +104,19 @@ class StudentMailer < ApplicationMailer
     mail(to: @user.email, subject: 'Reminder to lock housing group')
   end
 
+  # Send an invitation to join a clip that has been created
+  #
+  # @param invited [Group] the invited group
+  # @param clip [Clip] the clip the group has been invited to
+  # @param college [College] the college to pull settings from
+  def invited_to_clip(invited:, clip:, college: nil)
+    determine_college(college)
+    @user = invited.leader
+    @clip = clip
+    @clip_link = draw_clip_url(@clip.draw, @clip)
+    mail(to: @user.email, subject: 'Your group has been invited to a clip')
+  end
+
   private
 
   def determine_college(college)

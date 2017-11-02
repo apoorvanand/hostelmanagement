@@ -14,9 +14,12 @@ RSpec.describe Group, type: :model do
     it { is_expected.to belong_to(:leader) }
     it { is_expected.to validate_presence_of(:leader) }
     it { is_expected.to belong_to(:draw) }
+    it { is_expected.to have_one(:clip_membership) }
+    it { is_expected.to have_one(:clip).through(:clip_membership) }
     it { is_expected.to have_one(:suite) }
     it { is_expected.to belong_to(:lottery_assignment) }
     it { is_expected.to have_many(:memberships) }
+    it { is_expected.to have_many(:clip_memberships) }
     it { is_expected.to have_many(:full_memberships) }
     it { is_expected.to have_many(:members).through(:full_memberships) }
     it { is_expected.not_to allow_value(-1).for(:memberships_count) }
@@ -91,6 +94,12 @@ RSpec.describe Group, type: :model do
       group = FactoryGirl.create(:full_group, size: 2)
       group.status = 'open'
       expect(group.valid?).to be_falsey
+    end
+    it 'cannot change a lottery_number if the group is in a clip' do
+      clip = FactoryGirl.create(:clip)
+      group = clip.groups.reload.first
+      group.lottery_number = 2
+      expect(group.save).to be_falsey
     end
   end
 
@@ -236,6 +245,12 @@ RSpec.describe Group, type: :model do
       group.destroy
       expect(group.leader).not_to have_received(:restore_draw)
     end
+    it 'removes clip_memberships if they exist' do
+      group = FactoryGirl.create(:clip, groups_count: 3).groups.first
+      m = group.clip_membership
+      group.destroy!
+      expect { m.reload } .to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe '#locked_members' do
@@ -270,6 +285,44 @@ RSpec.describe Group, type: :model do
     it 'returns false if there are no locked members' do
       group = FactoryGirl.create(:open_group)
       expect(group).not_to be_unlockable
+    end
+  end
+
+  describe '#invited_to_clip?' do
+    it 'returns true if there is an open invite' do
+      clip = FactoryGirl.create(:clip)
+      group = clip.groups.first
+      group.clip_membership.update!(confirmed: false)
+      expect(group.invited_to_clip?(clip: clip)).to eq(true)
+    end
+    it 'returns false if there is an accepted invite' do
+      clip = FactoryGirl.create(:clip)
+      group = clip.groups.first
+      expect(group.invited_to_clip?(clip: clip)).to eq(false)
+    end
+    it 'returns false if there is no invite' do
+      group = FactoryGirl.create(:group)
+      clip = FactoryGirl.create(:clip)
+      expect(group.invited_to_clip?(clip: clip)).to eq(false)
+    end
+  end
+
+  describe 'clip association' do
+    it 'only joins on confirmed memberships' do
+      clip = FactoryGirl.create(:clip)
+      group = clip.groups.first
+      create_unconfirmed_membership(group: group)
+      expect(group.reload.clip).to eq(clip)
+    end
+  end
+
+  describe 'clip_memberships' do
+    it 'are cleared on draw change' do
+      clip = FactoryGirl.create(:clip, groups_count: 3)
+      group = clip.groups.first
+      create_unconfirmed_membership(group: group)
+      group.update!(draw_id: nil)
+      expect(group.reload.clip_memberships.empty?).to be_truthy
     end
   end
 
@@ -344,5 +397,11 @@ RSpec.describe Group, type: :model do
       group = lottery.group
       expect(group.lottery_number).to eq(lottery.number)
     end
+  end
+
+  def create_unconfirmed_membership(group:)
+    new_clip = FactoryGirl.create(:clip, draw: group.draw)
+    FactoryGirl.create(:clip_membership, clip: new_clip, group: group,
+                                         confirmed: false)
   end
 end

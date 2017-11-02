@@ -6,7 +6,9 @@ class LotteryAssignmentsController < ApplicationController
   prepend_before_action :set_draw, except: %(index)
   prepend_before_action :set_lottery_assignment, only: %i(update)
 
-  def index; end
+  def index
+    @groups = GroupsForLotteryQuery.call(draw: @draw)
+  end
 
   def create
     # don't like this but we need it for the js rendering & we pass it
