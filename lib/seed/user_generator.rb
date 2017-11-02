@@ -4,8 +4,8 @@
 class UserGenerator
   include Callable
 
-  def self.generate_admin(**overrides)
-    new(overrides: overrides.merge(role: 'admin')).generate
+  def self.generate_superuser(**overrides)
+    new(overrides: overrides.merge(role: 'superuser')).generate
   end
 
   def initialize(overrides: {})

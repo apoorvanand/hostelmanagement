@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170923235715) do
+ActiveRecord::Schema.define(version: 20171031162746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,7 +30,9 @@ ActiveRecord::Schema.define(version: 20170923235715) do
     t.datetime "updated_at", null: false
     t.string "floor_plan_url"
     t.text "student_info_text"
+    t.string "subdomain", null: false
     t.index ["name"], name: "index_colleges_on_name"
+    t.index ["subdomain"], name: "index_colleges_on_subdomain", unique: true
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

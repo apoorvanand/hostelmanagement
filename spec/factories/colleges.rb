@@ -5,6 +5,7 @@ FactoryGirl.define do
     sequence(:name) { |n| "College#{n}" }
     admin_email { "admin@#{name}.edu" }
     site_url { 'https://www.vesta.site' }
+    subdomain { name.downcase }
     dean { "Dean #{name} " }
   end
 end
