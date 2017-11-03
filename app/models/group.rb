@@ -15,6 +15,7 @@
 class Group < ApplicationRecord # rubocop:disable ClassLength
   belongs_to :leader, inverse_of: :led_group, class_name: 'User'
   belongs_to :draw
+  belongs_to :clip
   has_one :suite, dependent: :nullify
   has_many :memberships, dependent: :delete_all
   has_many :full_memberships, -> { where(status: 'accepted') },
