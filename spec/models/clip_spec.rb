@@ -4,15 +4,27 @@ require 'rails_helper'
 
 RSpec.describe Clip, type: :model do
   describe 'basic validations' do
-    it { is_expected.to validate_presence_of(:name) }
-    xit { is_expected.to validate_numericality_of(:lottery_number) }
     it { is_expected.to have_many(:groups) }
     it { is_expected.to belong_to(:draw) }
   end
 
   describe 'validations' do
     context 'on lottery number' do
-      xit "ensure all groups have the same lottery number" do
+      xit 'check if all groups have the same lottery number' do
+
+      end
+
+      xit 'raise an error if groups have different lottery numbers'
+    end
+  end
+
+  describe '#clip_cleanup' do
+    context 'is called when groups are deleted' do
+      xit 'and deletes the clip when it has no more groups' do
+
+      end
+
+      xit 'does nothing if there are more groups left' do
 
       end
     end

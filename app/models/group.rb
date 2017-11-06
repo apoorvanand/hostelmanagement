@@ -12,6 +12,7 @@
 #   cache)
 # @attr transfers [Integer] the number of transfer students in the group
 # @attr lottery_number [Integer] the lottery number assigned to the group
+# @attr clip [Clip] The clip that the group is in.
 class Group < ApplicationRecord # rubocop:disable ClassLength
   belongs_to :leader, inverse_of: :led_group, class_name: 'User'
   belongs_to :draw
@@ -44,6 +45,7 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
+  after_destroy :remove_any_clips, if: ->(g) { g.clip }
 
   attr_reader :remove_ids
 
@@ -142,6 +144,10 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     members.each do |m|
       StudentMailer.disband_notification(user: m).deliver_later
     end
+  end
+
+  def remove_any_clips
+    clip.shrink_clip
   end
 
   def send_locked_email

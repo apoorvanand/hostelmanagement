@@ -1,7 +1,5 @@
 FactoryGirl.define do
   factory :clip do
-    name "MyString"
-    association :draw, factory: :draw
-    #lottery_number 1
+    association :draw, factory: :draw_with_members
   end
 end
