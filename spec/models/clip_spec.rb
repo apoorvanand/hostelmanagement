@@ -6,6 +6,7 @@ RSpec.describe Clip, type: :model do
   describe 'basic validations' do
     it { is_expected.to have_many(:groups) }
     it { is_expected.to belong_to(:draw) }
+    xit { is_expected.to validate_presence_of(:draw) }
   end
 
   describe 'validations' do

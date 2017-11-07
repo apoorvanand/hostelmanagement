@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
-# Model to represent Housing Draws.
+# Model to represent Clipped groups
 #
-# @attr name [String] The name of the housing draw -- e.g. "Junior Draw 2016"
+# @attr draw [Draw] The draw that the clip is in.
+# @attr groups [Array<Group>] The groups included in the clip.
 class Clip < ApplicationRecord
   belongs_to :draw
   has_many :groups, dependent: :nullify
 
-  validate :validate_multiple_groups_in_clip
-  validate :validate_lottery_numbers
-  validate :validate_group_draws
+  validates :draw, presence: true
+  validate :enough_groups
+  validate :lottery_numbers_match
+  validate :group_draws_match
 
   # Generate the group name
   #
@@ -18,8 +20,10 @@ class Clip < ApplicationRecord
     "#{groups.first.name} and #{groups.count - 1} others"
   end
 
+  # Destroys the clip if it contains too few groups.
+  # It is called automatically after groups in clips are destroyed.
   def clip_cleanup!
-    destroy! if groups.to_a.keep_if(&:persisted?).size <= 1
+    destroy! if existing_groups.size <= 1
   end
 
   private
@@ -28,19 +32,23 @@ class Clip < ApplicationRecord
     groups.size
   end
 
-  def validate_lottery_numbers
+  def existing_groups
+    groups.to_a.keep_if(&:persisted?)
+  end
+
+  def enough_groups
+    return if groups.size > 1
+    errors.add :base, 'There must be more than one group per clip.'
+  end
+
+  def lottery_numbers_match
     lottery_number = groups.first.lottery_number
     return if groups.where(lottery_number: lottery_number).size < size
     errors.add :groups, 'do not have the same lottery numbers.'
   end
 
-  def validate_group_draws
+  def group_draws_match
     return if groups.where(draw: groups.first.draw).size < size
     errors.add :groups, 'are not all in the same draw.'
-  end
-
-  def validate_multiple_groups_in_clip
-    return if groups.size > 1
-    errors.add :base, 'There must be more than one group per clip.'
   end
 end
