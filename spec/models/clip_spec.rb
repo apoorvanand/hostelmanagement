@@ -10,8 +10,11 @@ RSpec.describe Clip, type: :model do
 
   describe 'validations' do
     context 'on lottery number' do
-      xit 'check if all groups have the same lottery number' do
-
+      it 'check if all groups have the same lottery number' do
+        clip = FactoryGirl.create(:clip)
+        clip.groups.first.update!(lottery_number: 1)
+        clip.groups.last.update!(lottery_number: 2)
+        expect(clip.valid?).to be_falsey
       end
 
       xit 'raise an error if groups have different lottery numbers'

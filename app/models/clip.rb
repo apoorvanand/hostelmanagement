@@ -30,7 +30,7 @@ class Clip < ApplicationRecord
   end
 
   def validate_multiple_groups_in_clip
-    return if groups.count > 1
+    return if groups.size > 1
     errors.add :base, 'There must be more than one group per clip.'
   end
 end
