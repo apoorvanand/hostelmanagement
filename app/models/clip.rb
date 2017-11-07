@@ -1,6 +1,11 @@
+# frozen_string_literal: true
+
+# Model to represent Housing Draws.
+#
+# @attr name [String] The name of the housing draw -- e.g. "Junior Draw 2016"
 class Clip < ApplicationRecord
   belongs_to :draw
-  has_many :groups
+  has_many :groups, dependent: :nullify
 
   validate :validate_multiple_groups_in_clip
   validate :validate_lottery_numbers
@@ -14,18 +19,23 @@ class Clip < ApplicationRecord
   end
 
   def clip_cleanup!
-    destroy! if groups.count <= 1
+    destroy! if groups.to_a.keep_if(&:persisted?).size <= 1
   end
 
   private
 
+  def size
+    groups.size
+  end
+
   def validate_lottery_numbers
-    return if groups.where.not(lottery_number: groups.first.lottery_number).empty?
+    lottery_number = groups.first.lottery_number
+    return if groups.where(lottery_number: lottery_number).size < size
     errors.add :groups, 'do not have the same lottery numbers.'
   end
 
   def validate_group_draws
-    return if groups.where.not(draw: groups.first.draw).empty?
+    return if groups.where(draw: groups.first.draw).size < size
     errors.add :groups, 'are not all in the same draw.'
   end
 

@@ -45,7 +45,7 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
-  after_destroy :remove_any_clips, if: ->(g) { g.clip }
+  after_destroy :remove_any_clips, if: ->(g) { g.clip_id.present? }
 
   attr_reader :remove_ids
 
@@ -147,7 +147,7 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   end
 
   def remove_any_clips
-    clip.shrink_clip
+    clip.clip_cleanup!
   end
 
   def send_locked_email
