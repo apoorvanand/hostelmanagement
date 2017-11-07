@@ -15,7 +15,7 @@ RSpec.describe Clip, type: :model do
         group1 = FactoryGirl.create(:group)
         group2 = FactoryGirl.create(:group)
         clip = FactoryGirl.create(:clip, groups: [group1, group2])
-        expect(clip.valid?).to be_falsey
+        expect(clip.persisted?).to be_falsey
       end
     end
     context 'on lottery number' do
@@ -24,13 +24,21 @@ RSpec.describe Clip, type: :model do
         draw.groups.first.update!(lottery_number: 1)
         draw.groups.last.update!(lottery_number: 2)
         clip = FactoryGirl.create(:clip, groups: draw.groups)
-        expect(clip.valid?).to be_falsey
+        expect(clip.persisted?).to be_falsey
       end
       it 'fail when groups with lottery numbers join those without' do
         draw = FactoryGirl.create(:oversubscribed_draw, groups_count: 2)
         draw.groups.first.update!(lottery_number: 1)
         clip = FactoryGirl.create(:clip, groups: draw.groups)
-        expect(clip.valid?).to be_falsey
+        expect(clip.persisted?).to be_falsey
+      end
+      it 'passes when groups have the same lottery numbers' do
+        draw = FactoryGirl.create(:oversubscribed_draw, groups_count: 2)
+        draw.groups.first.update!(lottery_number: 1)
+        draw.groups.last.update!(lottery_number: 1)
+        clip = FactoryGirl.create(:clip, groups: draw.groups)
+        #binding.pry
+        expect(clip.persisted?).to be_truthy
       end
     end
   end
