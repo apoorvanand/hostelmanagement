@@ -43,12 +43,12 @@ class Clip < ApplicationRecord
 
   def lottery_numbers_match
     lottery_number = groups.first.lottery_number
-    return if groups.where(lottery_number: lottery_number).size < size
+    return if groups.select(lottery_number: lottery_number).size < size
     errors.add :groups, 'do not have the same lottery numbers.'
   end
 
   def group_draws_match
-    return if groups.where(draw: groups.first.draw).size < size
+    return if groups.select(draw: groups.first.draw).size < size
     errors.add :groups, 'are not all in the same draw.'
   end
 end
