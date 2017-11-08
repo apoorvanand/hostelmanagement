@@ -93,6 +93,11 @@ RSpec.describe Group, type: :model do
       group.status = 'open'
       expect(group.valid?).to be_falsey
     end
+    it 'cannot change a lottery_number if the group is in a clip' do
+      clip = FactoryGirl.create(:clip_with_lottery_numbers)
+      group = clip.groups.first
+      expect { group.update!(lottery_number: 2)} .to raise_error(ActiveRecord::RecordInvalid)
+    end
   end
 
   it 'destroys dependent memberships on destruction' do

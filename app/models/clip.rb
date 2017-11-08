@@ -26,6 +26,10 @@ class Clip < ApplicationRecord
     destroy! if existing_groups.size <= 1
   end
 
+  def lottery_number
+    groups.map(&:lottery_number).uniq.map(&:to_i)
+  end
+
   private
 
   def existing_groups
