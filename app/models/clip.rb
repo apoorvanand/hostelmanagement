@@ -28,10 +28,6 @@ class Clip < ApplicationRecord
 
   private
 
-  def size
-    groups.size
-  end
-
   def existing_groups
     groups.to_a.keep_if(&:persisted?)
   end
