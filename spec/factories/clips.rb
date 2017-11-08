@@ -6,7 +6,7 @@ FactoryGirl.define do
       groups_count 2
     end
 
-    draw { create(:oversubscribed_draw, groups_count: groups_count) }
+    draw { create(:draw_with_groups, groups_count: groups_count) }
     groups { draw.groups }
 
     factory :clip_with_lottery_numbers do

@@ -27,7 +27,7 @@ class Clip < ApplicationRecord
   end
 
   def lottery_number
-    groups.map(&:lottery_number).uniq.map(&:to_i)
+    groups.first.lottery_number
   end
 
   private
@@ -47,7 +47,7 @@ class Clip < ApplicationRecord
   end
 
   def group_draws_match
-    return if groups.map(&:draw).uniq.size == 1
+    return if groups.map(&:draw_id).uniq == [draw_id]
     errors.add :groups, 'are not all in the same draw.'
   end
 end
