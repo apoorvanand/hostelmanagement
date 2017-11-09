@@ -12,7 +12,7 @@ FactoryGirl.define do
     factory :clip_with_lottery_numbers do
       after(:build) do |clip|
         clip.groups.each do |group|
-          group.update!(lottery_number: 1)
+          group.save!(lottery_number: 1)
         end
       end
     end

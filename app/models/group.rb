@@ -39,7 +39,7 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
            if: ->() { will_save_change_to_size? }
   validate :validate_members_count, if: ->(g) { g.size.present? }
   validate :validate_status, if: ->(g) { g.size.present? }
-  validate :lottery_number_matches_clip, if: ->(g) { g.clip_id.present? }
+  validate :clip_lottery_num, if: ->() { will_save_change_to_lottery_number? }
 
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!, if: ->() { saved_change_to_transfers }
@@ -225,8 +225,8 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     errors.add :status, 'can only be locked when all members have locked'
   end
 
-  def lottery_number_matches_clip
-    return if lottery_number == clip.lottery_number
+  def clip_lottery_num
+    return unless clip
     errors.add :lottery_number, 'cannot be updated without the rest of the clip'
   end
 

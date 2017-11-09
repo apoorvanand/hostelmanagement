@@ -96,8 +96,8 @@ RSpec.describe Group, type: :model do
     it 'cannot change a lottery_number if the group is in a clip' do
       clip = FactoryGirl.create(:clip_with_lottery_numbers)
       group = clip.groups.first
-      expect { group.update!(lottery_number: 2) } .to \
-        raise_error(ActiveRecord::RecordInvalid)
+      group.update(lottery_number: 2)
+      expect(group).not_to be_valid
     end
   end
 
