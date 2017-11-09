@@ -33,7 +33,7 @@ class Clip < ApplicationRecord
   private
 
   def existing_groups
-    groups.to_a.keep_if(&:persisted?)
+    groups.to_a.keep_if { |g| g.persisted? && g.draw_id == draw_id }
   end
 
   def enough_groups

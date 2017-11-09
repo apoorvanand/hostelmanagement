@@ -39,10 +39,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
            if: ->() { will_save_change_to_size? }
   validate :validate_members_count, if: ->(g) { g.size.present? }
   validate :validate_status, if: ->(g) { g.size.present? }
-  validate :clip_lottery_num, if: ->() { will_save_change_to_lottery_number? }
+  validate :changing_lottery_number, if: ->(g) { g.clip_id.present? }
 
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!, if: ->() { saved_change_to_transfers }
+  after_update :remove_from_clip, if: ->() { saved_change_to_draw_id }
   before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
@@ -225,8 +226,8 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     errors.add :status, 'can only be locked when all members have locked'
   end
 
-  def clip_lottery_num
-    return unless clip
+  def changing_lottery_number
+    return unless will_save_change_to_lottery_number?
     errors.add :lottery_number, 'cannot be updated without the rest of the clip'
   end
 
@@ -237,5 +238,15 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
       self.status = 'closed' unless finalizing? || lockable?
       self.status = 'locked' if lockable?
     end
+  end
+
+  def remove_from_clip
+    return unless clip
+    old_clip = clip
+    # Uses update_columns to skip callbacks and an infinite loop
+    # rubocop:disable Rails/SkipsModelValidations
+    update_columns(clip_id: nil)
+    # rubocop:enable Rails/SkipsModelValidations
+    old_clip.clip_cleanup!
   end
 end
