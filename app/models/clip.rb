@@ -23,7 +23,7 @@ class Clip < ApplicationRecord
   # Destroys the clip if it contains too few groups.
   # It is called automatically after groups in clips are destroyed.
   def clip_cleanup!
-    destroy! if existing_groups.size <= 1
+    destroy! if existing_groups.length <= 1
   end
 
   def lottery_number
@@ -37,12 +37,12 @@ class Clip < ApplicationRecord
   end
 
   def enough_groups
-    return if groups.size > 1
+    return if groups.length > 1
     errors.add :base, 'There must be more than one group per clip.'
   end
 
   def lottery_numbers_match
-    return if groups.map(&:lottery_number).uniq.size == 1
+    return if groups.map(&:lottery_number).uniq.length == 1
     errors.add :groups, 'do not have the same lottery numbers.'
   end
 
