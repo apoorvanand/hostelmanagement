@@ -42,12 +42,31 @@ class Clip < ApplicationRecord
     groups.first.lottery_number
   end
 
-  # Override for the lottery number assignment for duck typing with groups
+  # Update the lottery number of the groups inside the clip
   #
   # @param number [Integer] the lottery number to assign to the clip
-  # @return [Object] the object passed as the param
-  def lottery_number=(number)
-    groups.each { |group| group.lottery_number = number }
+  # @return [Boolean] true if the update was successful, false otherwise
+  # rubocop:disable SkipsModelValidations
+  def update_lottery(number:)
+    return false unless number.is_a?(Numeric) || number.is_a?(NilClass)
+    groups.update_all(lottery_number: number).positive?
+  end
+  # rubocop:enable SkipsModelValidations
+
+  def lottery_form_path_method
+    :assign_lottery_draw_clip_path
+  end
+
+  def draw_self_path_method
+    :draw_clip_path
+  end
+
+  def status
+    groups.first.status
+  end
+
+  def leader
+    groups.first.leader
   end
 
   # TODO: Abstract to the clips controller

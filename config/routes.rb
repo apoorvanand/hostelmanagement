@@ -86,6 +86,13 @@ Rails.application.routes.draw do
       collection do
         resource :suite_assignment, only: %i(new create destroy)
       end
+      resource :clip, only: %i(create destroy)
+    end
+
+    resources :clips, only: %i(index show) do
+      member do
+        patch 'assign_lottery'
+      end
     end
   end
 

@@ -49,15 +49,6 @@ RSpec.describe Clip, type: :model do
     end
   end
 
-  describe '#lottery_number=' do
-    it 'updates the lottery number of the groups' do
-      # Defaults to a lottery number of 1
-      clip = FactoryGirl.build(:clip_with_lottery_numbers, groups_count: 2)
-      clip.lottery_number = 2
-      expect(clip.groups.map(&:lottery_number)).to match_array([2, 2])
-    end
-  end
-
   describe '#name' do
     it 'displays the name' do
       clip = FactoryGirl.create(:clip, groups_count: 3)
@@ -78,6 +69,27 @@ RSpec.describe Clip, type: :model do
         clip = FactoryGirl.create(:clip)
         clip.clip_memberships.last.update!(confirmed: false)
         expect(clip.groups.reload.length).to eq(1)
+      end
+    end
+  end
+
+  describe '#update_lottery' do
+    context 'updates the lottery numerber of a group' do
+      it 'successfully' do
+        # This creates a clip with 2 groups of lottery number 1
+        clip = FactoryGirl.create(:clip_with_lottery_numbers, groups_count: 2)
+        clip.update_lottery(number: 2)
+        expect(clip.reload.groups.map(&:lottery_number)).to match_array([2, 2])
+      end
+      # Should I do `allow(clip).to receive(update_all).and_return(2/0)`
+      # for the next two? It would let me build the clips instead of persisting
+      it 'returns true if successful' do
+        clip = FactoryGirl.create(:clip, groups_count: 2)
+        expect(clip.update_lottery(number: 1)).to be_truthy
+      end
+      it 'returns false if bad input' do
+        clip = FactoryGirl.build(:clip, groups_count: 2)
+        expect(clip.update_lottery(number: 'text')).to be_falsey
       end
     end
   end

@@ -1,0 +1,6 @@
+$('#lottery-form-<%= @clip.id %>').html('<%= escape_javascript(render partial: 'draws/lottery_form', locals: { group: @clip }) %>');
+<% if @color_class %>
+  $('#lottery-form-<%= @clip.id %>').addClass('<%= @color_class %>', 750, 'swing', function() {
+    $('#lottery-form-<%= @clip.id %>').removeClass('<%= @color_class %>', 750, 'swing');
+  });
+<% end %>

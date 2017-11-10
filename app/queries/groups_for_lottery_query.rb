@@ -20,5 +20,6 @@ class GroupsForLotteryQuery
   # @return [Array<Group,Clip>] The groups and clips ready for lottery numbers.
   def call(draw:)
     @relation.where(draw: draw).map(&:to_obj)
+             .sort_by { |result| result.leader.last_name }
   end
 end

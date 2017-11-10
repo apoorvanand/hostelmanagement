@@ -109,6 +109,10 @@ class GroupPolicy < ApplicationPolicy # rubocop:disable ClassLength
     select_suite?
   end
 
+  def make_clip?
+    record.locked? && user_can_create_clip(user, record)
+  end
+
   class Scope < Scope # rubocop:disable Style/Documentation
     def resolve
       scope
@@ -133,6 +137,10 @@ class GroupPolicy < ApplicationPolicy # rubocop:disable ClassLength
   def user_can_assign_rooms?(user, group)
     user_has_uber_permission? ||
       (user.group == group && group.leader == user)
+  end
+
+  def user_can_create_clip(user, group)
+    user_can_assign_rooms?(user, group)
   end
 
   def room_assignment_eligible?(group)

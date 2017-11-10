@@ -118,8 +118,7 @@ class GroupsController < ApplicationController
              else
                group_params['lottery_number'].to_i
              end
-    @group.lottery_number = number
-    @color_class = @group.save ? 'success' : 'failure'
+    @color_class = @group.update_lottery(number: number) ? 'success' : 'failure'
   end
 
   def make_drawless

@@ -142,6 +142,22 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     members_count == size
   end
 
+  # Update the lottery number of the group
+  #
+  # @param number [Integer] the lottery number to assign
+  # @return [Boolean] true if the update was successful, false otherwise
+  def update_lottery(number:)
+    update(lottery_number: number)
+  end
+
+  def lottery_form_path_method
+    :assign_lottery_draw_group_path
+  end
+
+  def draw_self_path_method
+    :draw_group_path
+  end
+
   private
 
   def notify_members_of_disband

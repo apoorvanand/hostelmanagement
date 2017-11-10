@@ -310,6 +310,29 @@ RSpec.describe Group, type: :model do
     end
   end
 
+  describe '#update_lottery' do
+    context 'updates the lottery numerber of a group' do
+      it 'successfully' do
+        group = FactoryGirl.create(:group)
+        group.lottery_number = 1
+        group.update_lottery(number: 2)
+        expect(group.lottery_number).to eq(2)
+      end
+      # Should I do `allow(group).to receive(update).and_return(true/false)`
+      # for the next two? It would let me build the groups instead of persisting
+      it 'returns true if successful' do
+        group = FactoryGirl.create(:group)
+        group.lottery_number = 1
+        expect(group.update_lottery(number: 2)).to be_truthy
+      end
+      it 'returns false if unsuccessful' do
+        clip = FactoryGirl.create(:clip, groups_count: 2)
+        group = clip.groups.first
+        expect(group.update_lottery(number: 1)).to be_falsey
+      end
+    end
+  end
+
   describe 'clip association' do
     context 'is cleared' do
       it 'on clip destruction' do
