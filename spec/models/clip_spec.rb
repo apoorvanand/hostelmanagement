@@ -37,6 +37,10 @@ RSpec.describe Clip, type: :model do
         draw = FactoryGirl.create(:draw_with_groups, groups_count: 2)
         draw.groups.first.update!(lottery_number: 1)
         draw.groups.last.update!(lottery_number: 1)
+        # draw = instance_spy('draw', draw_id: 1, name: 'draw')
+        # draw = FactoryGirl.build(:draw)
+        # groups = build_groups(count: 2, draw_id: draw.id)
+        # result = Clip.new(draw: draw, groups: groups)
         result = FactoryGirl.build(:clip, draw: draw)
         expect(result).to be_valid
       end
