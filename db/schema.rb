@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171103143818) do
+ActiveRecord::Schema.define(version: 20171114180413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -160,4 +160,19 @@ ActiveRecord::Schema.define(version: 20171103143818) do
 
   add_foreign_key "groups", "clips"
   add_foreign_key "users", "rooms"
+
+  create_view "draw_clip_groups",  sql_definition: <<-SQL
+      SELECT groups.draw_id,
+      groups.clip_id,
+      groups.id AS group_id
+     FROM groups
+    WHERE (groups.clip_id IS NULL)
+  UNION
+   SELECT DISTINCT ON (groups.clip_id) groups.draw_id,
+      groups.clip_id,
+      NULL::bigint AS group_id
+     FROM groups
+    WHERE (groups.clip_id IS NOT NULL);
+  SQL
+
 end
