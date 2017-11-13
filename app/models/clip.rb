@@ -41,6 +41,7 @@ class Clip < ApplicationRecord
   end
 
   # Returns the lottery number associated with the clip
+  #
   # @return [Integer] the lottery number of the clip
   def lottery_number
     groups.first.lottery_number
