@@ -39,15 +39,15 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
            if: ->() { will_save_change_to_size? }
   validate :validate_members_count, if: ->(g) { g.size.present? }
   validate :validate_status, if: ->(g) { g.size.present? }
-  validate :changing_lottery_when_clipped
 
+  before_update ->() { throw(:abort) if changing_lottery_when_clipped }
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!, if: ->() { saved_change_to_transfers }
-  after_update :remove_from_clip, if: ->() { saved_change_to_draw_id }
+  after_update :remove_from_clip, if: ->() { changed_draw_when_clipped }
   before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
-  after_destroy :remove_any_clips, if: ->(g) { g.clip_id.present? }
+  after_destroy :remove_clip, if: ->(g) { g.clip_id.present? }
 
   attr_reader :remove_ids
 
@@ -148,7 +148,7 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     end
   end
 
-  def remove_any_clips
+  def remove_clip
     clip.clip_cleanup!
   end
 
@@ -227,9 +227,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   end
 
   def changing_lottery_when_clipped
-    return unless clip_id.present? && will_save_change_to_lottery_number?
-    errors.add :lottery_number, 'cannot be updated without the rest of the clip'
-    throw(:abort)
+    clip_id.present? && will_save_change_to_lottery_number?
+  end
+
+  def changed_draw_when_clipped
+    saved_change_to_draw_id && clip_id.present?
   end
 
   def assign_new_status

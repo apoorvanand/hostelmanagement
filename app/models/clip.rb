@@ -14,13 +14,7 @@ class Clip < ApplicationRecord
   validate :group_draws_match
   validate :lottery_numbers_match, on: :create
 
-  # Will I need a method like this to make sure the groups are saved when
-  # @group.save is called?
-  # def save
-  #   ActiveRecord::Base.transaction do
-  #     groups.each { |group| group.save }
-  #   end
-  # end
+  before_update ->() { throw(:abort) if will_save_change_to_draw_id }
 
   # Generate the clip's name
   #
@@ -33,11 +27,6 @@ class Clip < ApplicationRecord
   # automatically after groups in clips are destroyed.
   def clip_cleanup!
     destroy! if existing_groups.length <= 1
-  end
-
-  # Override for the draw_id assignment for duck typing with groups
-  def draw_id=(*)
-    errors.add(:clip, 'cannot change draws.')
   end
 
   # Returns the lottery number associated with the clip
@@ -55,7 +44,7 @@ class Clip < ApplicationRecord
   private
 
   def existing_groups
-    groups.to_a.keep_if { |g| g.persisted? && g.draw_id == @draw_id }
+    groups.to_a.keep_if { |g| g.persisted? && g.draw_id == draw_id }
   end
 
   def set_draw
@@ -69,7 +58,7 @@ class Clip < ApplicationRecord
 
   def lottery_numbers_match
     return if groups.map(&:lottery_number).uniq.length == 1
-    errors.add :groups, 'do not have the same lottery numbers.'
+    errors.add :groups, 'do not all have the same lottery number.'
   end
 
   def group_draws_match

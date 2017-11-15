@@ -20,7 +20,7 @@ FactoryGirl.define do
         after(:create) do |draw, e|
           e.groups_count.times do
             l = FactoryGirl.create(:student, draw: draw, intent: 'on_campus')
-            FactoryGirl.create(:finalizing_group, leader: l)
+            FactoryGirl.create(:locked_group, leader: l)
           end
         end
       end
