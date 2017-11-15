@@ -14,7 +14,7 @@ class Clip < ApplicationRecord
   validate :group_draws_match
   validate :lottery_numbers_match, on: :create
 
-  before_update ->() { throw(:abort) if will_save_change_to_draw_id }
+  before_update ->() { throw(:abort) if will_save_change_to_draw_id? }
 
   # Generate the clip's name
   #
