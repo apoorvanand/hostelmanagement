@@ -57,6 +57,29 @@ RSpec.describe Clip, type: :model do
     end
   end
 
+  describe '#lottery_number' do
+    it 'returns the lottery_number of the first group' do
+      # Defaults to a lottery number of 1
+      clip = FactoryGirl.build(:clip_with_lottery_numbers, groups_count: 2)
+      expect(clip.lottery_number).to eq(1)
+    end
+  end
+
+  describe '#lottery_number=' do
+    it 'updates the lottery number of the groups' do
+      # Defaults to a lottery number of 1
+      clip = FactoryGirl.build(:clip_with_lottery_numbers, groups_count: 2)
+      clip.lottery_number = 2
+      expect(clip.groups.map(&:lottery_number)).to match_array([2, 2])
+    end
+    it 'keeps the clip valid' do
+      # Defaults to a lottery number of 1
+      clip = FactoryGirl.build(:clip_with_lottery_numbers, groups_count: 2)
+      clip.lottery_number = 2
+      expect(clip).to be_valid
+    end
+  end
+
   describe '#name' do
     it 'displays the name' do
       clip = FactoryGirl.create(:clip, groups_count: 3)
