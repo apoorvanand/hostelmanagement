@@ -11,37 +11,39 @@ RSpec.describe Clip, type: :model do
   describe 'validations' do
     context 'on draw' do
       it 'fail when groups are not in the same draw' do
-        draw = FactoryGirl.create(:draw_with_groups, groups_count: 1)
-        group1 = draw.groups.first
-        group2 = FactoryGirl.build(:group)
-        result = FactoryGirl.build(:clip, groups: [group1, group2], draw: draw)
-        expect(result).not_to be_valid
+        groups = build_groups(count: 2, lottery_number: 1, draw_id: 1)
+        groups.concat(build_groups(count: 1, lottery_number: 1, draw_id: 2))
+        clip = described_class.new(draw_id: 1)
+        allow(clip).to receive(:groups).and_return(groups)
+        expect(clip).not_to be_valid
+      end
+      it 'pass when groups are all in the same draw' do
+        groups = build_groups(count: 2, lottery_number: 1, draw_id: 1)
+        clip = described_class.new(draw_id: 1)
+        allow(clip).to receive(:groups).and_return(groups)
+        expect(clip).to be_valid
       end
     end
     context 'on lottery number' do
       it 'fail when groups have different lottery numbers' do
-        draw = FactoryGirl.create(:draw_with_groups, groups_count: 2)
-        draw.groups.first.update!(lottery_number: 1)
-        draw.groups.last.update!(lottery_number: 2)
-        result = FactoryGirl.build(:clip, draw: draw)
-        expect(result).not_to be_valid
+        groups = build_groups(count: 2, lottery_number: 1, draw_id: 1)
+        groups.concat(build_groups(count: 1, lottery_number: 2, draw_id: 1))
+        clip = described_class.new(draw_id: 1)
+        allow(clip).to receive(:groups).and_return(groups)
+        expect(clip).not_to be_valid
       end
       it 'fail when groups with lottery numbers join those without' do
-        draw = FactoryGirl.create(:draw_with_groups, groups_count: 2)
-        draw.groups.first.update!(lottery_number: 1)
-        result = FactoryGirl.build(:clip, draw: draw)
-        expect(result).not_to be_valid
+        groups = build_groups(count: 2, lottery_number: 1, draw_id: 1)
+        groups.concat(build_groups(count: 1, lottery_number: 2, draw_id: nil))
+        clip = described_class.new(draw_id: 1)
+        allow(clip).to receive(:groups).and_return(groups)
+        expect(clip).not_to be_valid
       end
       it 'passes when groups have the same lottery numbers' do
-        draw = FactoryGirl.create(:draw_with_groups, groups_count: 2)
-        draw.groups.first.update!(lottery_number: 1)
-        draw.groups.last.update!(lottery_number: 1)
-        # draw = instance_spy('draw', draw_id: 1, name: 'draw')
-        # draw = FactoryGirl.build(:draw)
-        # groups = build_groups(count: 2, draw_id: draw.id)
-        # result = Clip.new(draw: draw, groups: groups)
-        result = FactoryGirl.build(:clip, draw: draw)
-        expect(result).to be_valid
+        groups = build_groups(count: 2, lottery_number: 1, draw_id: 1)
+        clip = described_class.new(draw_id: 1)
+        allow(clip).to receive(:groups).and_return(groups)
+        expect(clip).to be_valid
       end
     end
     context 'groups' do
@@ -54,37 +56,9 @@ RSpec.describe Clip, type: :model do
     end
   end
 
-  describe '#clip_cleanup' do
-    context 'is called when groups are deleted' do
-      it 'and deletes the clip if there are not enough groups left' do
-        clip = FactoryGirl.create(:clip, groups_count: 2)
-        clip.groups.first.destroy!
-        expect(clip.persisted?).to be_falsey
-      end
-
-      it 'does nothing if there are more groups left' do
-        clip = FactoryGirl.create(:clip, groups_count: 3)
-        clip.groups.first.destroy!
-        expect(clip.persisted?).to be_truthy
-      end
-    end
-    context 'is called if a draw in a group is changed' do
-      it 'and deletes the clip if there are not enough groups left' do
-        clip = FactoryGirl.create(:clip, groups_count: 2)
-        clip.groups.first.update!(draw_id: nil)
-        expect(clip.persisted?).to be_falsey
-      end
-      it 'does nothing if there are more groups left' do
-        clip = FactoryGirl.create(:clip, groups_count: 3)
-        clip.groups.first.update!(draw_id: nil)
-        expect(clip.persisted?).to be_truthy
-      end
-    end
-  end
-
   describe '#name' do
     it 'displays the name' do
-      clip = FactoryGirl.build_stubbed(:clip, groups_count: 3)
+      clip = FactoryGirl.create(:clip, groups_count: 3)
       allow(clip.groups.first).to receive(:name).and_return('Test')
       expected = 'Test and 2 others'
       expect(clip.name).to eq(expected)
@@ -99,10 +73,10 @@ RSpec.describe Clip, type: :model do
   end
 
   def build_groups(count:, **overrides)
-    groups = Array.new(count) do |i|
+    group_params = Array.new(count) do |i|
       { name: "group#{i}", lottery_number: i + 1, draw_id: i + 1 }
         .merge(**overrides)
     end
-    groups.map { |p| instance_spy('group', **p) }
+    group_params.map { |p| instance_spy('group', **p) }
   end
 end

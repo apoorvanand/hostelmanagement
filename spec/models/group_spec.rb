@@ -280,6 +280,34 @@ RSpec.describe Group, type: :model do
     end
   end
 
+  describe '#clip_cleanup' do
+    context 'is called when groups are deleted' do
+      it 'and deletes the clip if there are not enough groups left' do
+        clip = FactoryGirl.create(:clip, groups_count: 2)
+        clip.groups.first.destroy!
+        expect(clip.persisted?).to be_falsey
+      end
+
+      it 'does nothing if there are more groups left' do
+        clip = FactoryGirl.create(:clip, groups_count: 3)
+        clip.groups.first.destroy!
+        expect(clip.persisted?).to be_truthy
+      end
+    end
+    context 'is called if a draw in a group is changed' do
+      it 'and deletes the clip if there are not enough groups left' do
+        clip = FactoryGirl.create(:clip, groups_count: 2)
+        clip.groups.first.update!(draw_id: nil)
+        expect(clip.persisted?).to be_falsey
+      end
+      it 'does nothing if there are more groups left' do
+        clip = FactoryGirl.create(:clip, groups_count: 3)
+        clip.groups.first.update!(draw_id: nil)
+        expect(clip.persisted?).to be_truthy
+      end
+    end
+  end
+
   context 'on disbanding' do
     let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
 
