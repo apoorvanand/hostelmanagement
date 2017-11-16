@@ -50,6 +50,7 @@ RSpec.describe Clip, type: :model do
       it 'clear clip assignments on clip destruction' do
         draw = FactoryGirl.create(:draw_with_groups, groups_count: 2)
         group = draw.groups.first
+        # The clip factory currently assigns all groups in the draw to the clip.
         clip = FactoryGirl.create(:clip, draw: draw)
         expect { clip.destroy }.to change { group.reload.clip }.to(nil)
       end
