@@ -97,10 +97,10 @@ RSpec.describe Clip, type: :model do
       end
     end
   end
+
   def build_groups(count:, **overrides)
     Array.new(count) do |i|
-      instance_spy('group', name: "group#{i}", lottery_number: 1,
-                            draw_id: 1).merge(**overrides)
-    end
+      { name: "group#{i}", lottery_number: i + 1, draw_id: i + 1}.merge(**overrides)
+    end.map { |p| instance_spy('group', **p) }
   end
 end
