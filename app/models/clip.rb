@@ -25,6 +25,8 @@ class Clip < ApplicationRecord
 
   # Destroys the clip if it contains too few groups. It is called
   # automatically after groups in clips are destroyed.
+  #
+  # @return [Clip] the clip destroyed or nil if no change
   def clip_cleanup!
     destroy! if existing_groups.length <= 1
   end
@@ -37,6 +39,9 @@ class Clip < ApplicationRecord
   end
 
   # Override for the lottery number assignment for duck typing with groups
+  #
+  # @param number [Integer] the lottery number to assign to the clip
+  # @return [Integer] the lottery number of the clip
   def lottery_number=(number)
     groups.each { |group| group.lottery_number = number }
   end
