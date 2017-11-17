@@ -308,6 +308,24 @@ RSpec.describe Group, type: :model do
     end
   end
 
+  describe 'groups' do
+    context 'clear clip assignments' do
+      it 'on clip destruction' do
+        draw = FactoryGirl.create(:draw_with_groups, groups_count: 2)
+        group = draw.groups.first
+        # The clip factory currently assigns all groups in the draw to the clip.
+        clip = FactoryGirl.create(:clip, draw: draw)
+        expect { clip.destroy }.to change { group.reload.clip }.to(nil)
+      end
+      it 'on draw change' do
+        clip = FactoryGirl.create(:clip, groups_count: 3)
+        group = clip.groups.first
+        group.update!(draw_id: nil)
+        expect(group.clip_id).to eq(nil)
+      end
+    end
+  end
+
   context 'on disbanding' do
     let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
 

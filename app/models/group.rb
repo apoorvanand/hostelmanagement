@@ -12,7 +12,7 @@
 #   cache)
 # @attr transfers [Integer] the number of transfer students in the group
 # @attr lottery_number [Integer] the lottery number assigned to the group
-# @attr clip [Clip] The clip that the group is in.
+# @attr clip [Clip] The clip that the group is in, if any.
 class Group < ApplicationRecord # rubocop:disable ClassLength
   belongs_to :leader, inverse_of: :led_group, class_name: 'User'
   belongs_to :draw
@@ -40,10 +40,10 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   validate :validate_members_count, if: ->(g) { g.size.present? }
   validate :validate_status, if: ->(g) { g.size.present? }
 
-  before_update ->() { throw(:abort) if changing_lottery_when_clipped }
+  before_update ->() { throw(:abort) if changing_lottery_when_clipped? }
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!, if: ->() { saved_change_to_transfers }
-  after_update :remove_from_clip, if: ->() { changed_draw_when_clipped }
+  after_update :remove_from_clip, if: ->() { changed_draw_when_clipped? }
   before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
@@ -226,11 +226,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     errors.add :status, 'can only be locked when all members have locked'
   end
 
-  def changing_lottery_when_clipped
+  def changing_lottery_when_clipped?
     clip_id.present? && will_save_change_to_lottery_number?
   end
 
-  def changed_draw_when_clipped
+  def changed_draw_when_clipped?
     saved_change_to_draw_id && clip_id.present?
   end
 

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-# Model to represent Clipped groups
+# Model to represent clipped groups.  When two or more groups want to select
+# rooms at the same time a clip should be created.  This allows for all groups
+# in the clip to be assigned the same lottery number and therefore allow them
+# all to select suites at the same time.
 #
 # @attr draw [Draw] The draw that the clip is in.
 # @attr groups [Array<Group>] The groups included in the clip.
@@ -24,7 +27,7 @@ class Clip < ApplicationRecord
   end
 
   # Destroys the clip if it contains too few groups. It is called
-  # automatically after groups in clips are destroyed.
+  # automatically after groups in clips are destroyed or change their draw.
   #
   # @return [Clip] the clip destroyed or nil if no change
   def clip_cleanup!
@@ -41,7 +44,7 @@ class Clip < ApplicationRecord
   # Override for the lottery number assignment for duck typing with groups
   #
   # @param number [Integer] the lottery number to assign to the clip
-  # @return [Integer] the lottery number of the clip
+  # @return [Object] the object passed as the param
   def lottery_number=(number)
     groups.each { |group| group.lottery_number = number }
   end

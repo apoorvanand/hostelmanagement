@@ -32,27 +32,11 @@ RSpec.describe Clip, type: :model do
         allow(clip).to receive(:groups).and_return(groups)
         expect(clip).not_to be_valid
       end
-      it 'fail when groups with lottery numbers join those without' do
-        groups = build_groups(count: 2, lottery_number: 1, draw_id: 1)
-        groups.concat(build_groups(count: 1, lottery_number: 2, draw_id: nil))
-        clip = described_class.new(draw_id: 1)
-        allow(clip).to receive(:groups).and_return(groups)
-        expect(clip).not_to be_valid
-      end
       it 'passes when groups have the same lottery numbers' do
         groups = build_groups(count: 2, lottery_number: 1, draw_id: 1)
         clip = described_class.new(draw_id: 1)
         allow(clip).to receive(:groups).and_return(groups)
         expect(clip).to be_valid
-      end
-    end
-    context 'groups' do
-      it 'clear clip assignments on clip destruction' do
-        draw = FactoryGirl.create(:draw_with_groups, groups_count: 2)
-        group = draw.groups.first
-        # The clip factory currently assigns all groups in the draw to the clip.
-        clip = FactoryGirl.create(:clip, draw: draw)
-        expect { clip.destroy }.to change { group.reload.clip }.to(nil)
       end
     end
   end
@@ -71,12 +55,6 @@ RSpec.describe Clip, type: :model do
       clip = FactoryGirl.build(:clip_with_lottery_numbers, groups_count: 2)
       clip.lottery_number = 2
       expect(clip.groups.map(&:lottery_number)).to match_array([2, 2])
-    end
-    it 'keeps the clip valid' do
-      # Defaults to a lottery number of 1
-      clip = FactoryGirl.build(:clip_with_lottery_numbers, groups_count: 2)
-      clip.lottery_number = 2
-      expect(clip).to be_valid
     end
   end
 
