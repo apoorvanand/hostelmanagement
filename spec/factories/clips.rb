@@ -6,12 +6,8 @@ FactoryGirl.define do
       groups_count 2
     end
 
-    draw
-
-    after(:build) do |clip, e|
-      clip.groups = create_list(:group_from_draw, e.groups_count,
-                                draw: clip.draw)
-    end
+    groups { build_list(:group_from_draw, groups_count, draw: create(:draw)) }
+    draw { groups.first.draw }
 
     factory :clip_with_lottery_numbers do
       after(:build) do |clip|
