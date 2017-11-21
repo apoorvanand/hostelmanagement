@@ -51,6 +51,10 @@ GEM
       execjs (~> 2.0)
     bcrypt (3.1.11)
     bindex (0.5.0)
+    bootstrap (4.0.0.beta2.1)
+      autoprefixer-rails (>= 6.0.3)
+      popper_js (>= 1.12.3, < 2)
+      sass (>= 3.5.2)
     builder (3.2.3)
     bullet (5.5.1)
       activesupport (>= 3.0.0)
@@ -112,10 +116,6 @@ GEM
       activesupport
       capybara
       i18n
-    foundation-rails (6.3.0.0)
-      railties (>= 3.1.0)
-      sass (>= 3.3.0, < 3.5)
-      sprockets-es6 (>= 0.9.0)
     globalid (0.4.0)
       activesupport (>= 4.2.0)
     hashdiff (0.3.4)
@@ -155,6 +155,7 @@ GEM
     parser (2.4.0.0)
       ast (~> 2.2)
     pg (0.20.0)
+    popper_js (1.12.5)
     powerpack (0.1.1)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -250,8 +251,12 @@ GEM
     rubycas-client (2.3.9)
       activesupport
     safe_yaml (1.0.4)
-    sass (3.4.24)
-    sass-rails (5.0.6)
+    sass (3.5.3)
+      sass-listen (~> 4.0.0)
+    sass-listen (4.0.0)
+      rb-fsevent (~> 0.9, >= 0.9.4)
+      rb-inotify (~> 0.9, >= 0.9.7)
+    sass-rails (5.0.7)
       railties (>= 4.0.0, < 6)
       sass (~> 3.1)
       sprockets (>= 2.8, < 4.0)
@@ -326,6 +331,7 @@ PLATFORMS
 DEPENDENCIES
   autoprefixer-rails (~> 7.1.1)
   awesome_print
+  bootstrap (~> 4.0.0.beta2.1)
   bullet (~> 5.5.1)
   bundler-audit (>= 0.5.0)
   capybara-webkit (~> 1.14.0)
@@ -340,7 +346,6 @@ DEPENDENCIES
   ffaker (~> 2.5.0)
   flutie
   formulaic (~> 0.4.0)
-  foundation-rails (~> 6.3.0.0)
   high_voltage
   honeybadger (~> 3.1.0)
   jquery-rails (~> 4.3.1)
@@ -363,7 +368,7 @@ DEPENDENCIES
   rspec-rails (~> 3.6.0)
   rubocop (~> 0.49.0)
   rubocop-rspec (~> 1.15.0)
-  sass-rails (~> 5.0)
+  sass-rails (~> 5.0.7)
   shoulda-matchers
   simple_form (~> 3.5.0)
   simplecov (~> 0.13)
@@ -384,4 +389,4 @@ RUBY VERSION
    ruby 2.4.1p111
 
 BUNDLED WITH
-   1.15.3
+   1.16.0

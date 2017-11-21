@@ -17,7 +17,7 @@ gem "pundit", "~> 1.1.0"
 gem "rack-canonical-host"
 gem "rails", "~> 5.1.0"
 gem "recipient_interceptor"
-gem "sass-rails", "~> 5.0"
+gem "sass-rails", "~> 5.0.7"
 gem "simple_form", "~> 3.5.0"
 gem "skylight", "~> 1.3.1"
 gem "sprockets", ">= 3.0.0"
@@ -31,7 +31,8 @@ gem "react-rails", "~> 2.2.1"
 gem 'ffaker', '~> 2.5.0'
 
 # Front-End Styling
-gem 'foundation-rails', '~> 6.3.0.0'
+# gem 'foundation-rails', '~> 6.3.0.0'
+gem 'bootstrap', '~> 4.0.0.beta2.1'
 
 group :development do
   gem "listen"
