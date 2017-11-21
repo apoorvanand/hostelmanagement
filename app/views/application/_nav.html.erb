@@ -1,32 +1,31 @@
-<div class="top-bar">
-  <div class="row">
-    <div class="top-bar-title">
-      <span data-responsive-toggle="responsive-menu" data-hide-for="medium">
-        <button class="menu-icon dark" type="button" data-toggle></button>
-      </span>
-      <strong><%= link_to 'Vesta', root_path %></strong>
-    </div>
-    <div id="responsive-menu">
-      <div class="top-bar-left">
-        <% if current_user %>
-          <% if current_user.admin? %>
-            <%= render 'nav_admin' %>
-          <% elsif current_user.rep? %>
-            <%= render 'nav_rep' %>
-          <% else %>
-            <%= render 'nav_student' %>
-          <% end %>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">
+    <strong><%= link_to 'Vesta', root_path %></strong>
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <% if current_user %>
+        <% if current_user.admin? %>
+          <%= render 'nav_admin' %>
+        <% elsif current_user.rep? %>
+          <%= render 'nav_rep' %>
+        <% else %>
+          <%= render 'nav_student' %>
         <% end %>
-      </div>
-      <div class="top-bar-right">
-        <ul class="menu">
-          <% if current_user %>
-            <li><%= link_to 'Logout', destroy_user_session_path, method: :delete %></li>
-          <% else %>
-            <li><%= link_to 'Login', new_user_session_path %></li>
-          <% end %>
-        </ul>
-      </div>
-    </div>
+      <% end %>
+    </ul>
+    <ul class="navbar-nav ">
+      <li class="nav-item">
+        <% if current_user %>
+          <a class="nav-link" href="#"><%= link_to 'Logout', destroy_user_session_path, method: :delete %></a>
+        <% else %>
+          <a class="nav-link"><%= link_to 'Login', new_user_session_path %></a>
+        <% end %>
+      </li>
+    </ul>
   </div>
-</div>
+</nav>
