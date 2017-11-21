@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Model to represent clipped groups.  When two or more groups want to select
-# rooms at the same time a clip should be created.  This allows for all groups
+# suites at the same time a clip should be created.  This allows for all groups
 # in the clip to be assigned the same lottery number and therefore allow them
 # all to select suites at the same time.
 #
