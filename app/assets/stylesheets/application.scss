@@ -1,5 +1,6 @@
 @charset "utf-8";
 
+/*
 @import "normalize-rails";
 @import "yale_ui_type";
 @import "foundation_and_overrides";
@@ -34,3 +35,6 @@ footer {
   margin-top: 1em;
   line-height: 1.5;
 }
+*/
+
+@import "bootstrap";
