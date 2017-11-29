@@ -16,15 +16,6 @@ FactoryGirl.define do
         create_list(:student, e.students_count, draw: draw)
       end
 
-      factory :draw_with_groups do
-        after(:create) do |draw, e|
-          e.groups_count.times do
-            l = FactoryGirl.create(:student, draw: draw, intent: 'on_campus')
-            FactoryGirl.create(:locked_group, leader: l)
-          end
-        end
-      end
-
       factory :oversubscribed_draw do
         after(:create) do |draw, e|
           e.groups_count.times do

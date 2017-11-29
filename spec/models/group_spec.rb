@@ -308,8 +308,8 @@ RSpec.describe Group, type: :model do
     end
   end
 
-  describe 'groups' do
-    context 'clear clip assignments' do
+  describe 'clip association' do
+    context 'is cleared' do
       it 'on clip destruction' do
         clip = FactoryGirl.create(:clip, groups_count: 2)
         group = clip.groups.first
