@@ -53,18 +53,26 @@ class Clip < ApplicationRecord
   end
   # rubocop:enable SkipsModelValidations
 
+  # Return the path to #assign_lottery. Used in /views/draw/_lottery_form.erb
+  # @return [Symbol] :assign_lottery_draw_clip_path
   def lottery_form_path_method
     :assign_lottery_draw_clip_path
   end
 
+  # Return the path to #show. Used in /views/draw/_lottery_form.erb
+  # @return [Symbol] :draw_clip_path
   def draw_self_path_method
     :draw_clip_path
   end
 
+  # Return the status of the clip
+  # @return [String] status of the first group of the clip
   def status
     groups.first.status
   end
 
+  # Return the first leader of the group
+  # @return [User] leader of the first group of the clip
   def leader
     groups.first.leader
   end

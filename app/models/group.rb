@@ -150,10 +150,14 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     update(lottery_number: number)
   end
 
+  # Return the path to #assign_lottery. Used in /views/draw/_lottery_form.erb
+  # @return [Symbol] :assign_lottery_draw_group_path
   def lottery_form_path_method
     :assign_lottery_draw_group_path
   end
 
+  # Return the path to #show. Used in /views/draw/_lottery_form.erb
+  # @return [Symbol] :draw_group_path
   def draw_self_path_method
     :draw_group_path
   end
