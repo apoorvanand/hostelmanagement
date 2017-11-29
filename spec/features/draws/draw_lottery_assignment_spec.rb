@@ -12,22 +12,37 @@ RSpec.feature 'Draw lottery assignment', js: true do
     it 'can be performed' do
       visit draw_path(draw)
       click_on 'Assign lottery numbers'
-      assign_lottery_number(group, 1)
+      assign_lottery_number_to_group(group, 1)
       reload
-      expect(lottery_number_saved?(page, group, 1)).to be_truthy
+      expect(lottery_number_saved_for_group?(page, group, 1)).to be_truthy
     end
 
     it 'can be removed' do
       group.update!(lottery_number: 2)
       visit lottery_draw_path(draw)
-      assign_lottery_number(group, '')
+      assign_lottery_number_to_group(group, '')
       expect(group.reload.lottery_number).to be_nil
     end
 
-    def assign_lottery_number(group, number)
+    it 'can assign numbers to clips' do
+      clip = create_clip
+      visit lottery_draw_path(draw)
+      assign_lottery_number_to_clip(clip, 1)
+      reload
+      expect(lottery_number_saved_for_clip?(page, clip, 1)).to be_truthy
+    end
+
+    def assign_lottery_number_to_group(group, number)
       within("\#lottery-form-#{group.id}") do
         fill_in 'group_lottery_number', with: number.to_s
         find(:css, '#group_lottery_number').send_keys(:tab)
+      end
+    end
+
+    def assign_lottery_number_to_clip(clip, number)
+      within("\#lottery-form-#{clip.id}") do
+        fill_in 'clip_lottery_number', with: number.to_s
+        find(:css, '#clip_lottery_number').send_keys(:tab)
       end
     end
 
@@ -35,10 +50,21 @@ RSpec.feature 'Draw lottery assignment', js: true do
       page.evaluate_script('window.location.reload()')
     end
 
-    def lottery_number_saved?(_page, group, number)
+    def lottery_number_saved_for_group?(_page, group, number)
       within("\#lottery-form-#{group.id}") do
         assert_selector(:css, "#group_lottery_number[value='#{number}']")
       end
+    end
+
+    def lottery_number_saved_for_clip?(_page, clip, number)
+      within("\#lottery-form-#{clip.id}") do
+        assert_selector(:css, "#clip_lottery_number[value='#{number}']")
+      end
+    end
+
+    def create_clip
+      draw.groups.destroy_all
+      FactoryGirl.create(:clip, draw: draw)
     end
   end
 
