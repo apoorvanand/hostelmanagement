@@ -32,6 +32,7 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   has_many :full_memberships, -> { where(status: 'accepted') },
            class_name: 'Membership', inverse_of: :group
   has_many :members, through: :full_memberships, source: :user
+  has_many :favorites, dependent: :destroy
 
   enum status: %w(open closed finalizing locked)
 
@@ -50,6 +51,9 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   validate :validate_status, if: ->(g) { g.size.present? }
   validate :validate_lottery_assignment,
            if: -> { will_save_change_to_lottery_assignment_id? }
+
+  before_save :remove_favorites,
+              if: ->() { will_save_change_to_size? }
 
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!,
@@ -188,6 +192,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     members.each do |m|
       StudentMailer.group_locked(user: m).deliver_later
     end
+  end
+
+  def remove_favorites
+    favorites.where(group_id: id).delete_all
+    favorites.delete
   end
 
   # override default attribute getter to include transfers

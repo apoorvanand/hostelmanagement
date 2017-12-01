@@ -19,6 +19,7 @@ class Suite < ApplicationRecord
   has_many :rooms, dependent: :nullify
   has_many :draw_suites, dependent: :delete_all
   has_many :draws, through: :draw_suites
+  has_many :favorites, dependent: :destroy
 
   validates :building, presence: true
   validates :number, presence: true, uniqueness: { scope: :building }

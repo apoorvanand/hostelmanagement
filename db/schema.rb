@@ -88,6 +88,15 @@ ActiveRecord::Schema.define(version: 20180216182524) do
     t.boolean "allow_clipping", default: false, null: false
   end
 
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "suite_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_favorites_on_group_id"
+    t.index ["suite_id"], name: "index_favorites_on_suite_id"
+  end
+
   create_table "groups", force: :cascade do |t|
     t.integer "size", default: 1, null: false
     t.integer "status", default: 0, null: false

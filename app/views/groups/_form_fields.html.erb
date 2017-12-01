@@ -1,5 +1,5 @@
 <div class="form-inputs">
-  <%= f.input :size, collection: @suite_sizes %>
+  <%= f.input :size, collection: @suite_sizes %> Note that changing group size will result in the deletion of this group's Favorite Suites. 
   <% if policy(@group).change_leader? %>
     <%= f.association :leader, label_method: :full_name, collection: @leader_students %>
   <% end %>

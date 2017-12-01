@@ -18,6 +18,7 @@ RSpec.describe Group, type: :model do
     it { is_expected.to have_one(:clip).through(:clip_membership) }
     it { is_expected.to have_one(:suite) }
     it { is_expected.to belong_to(:lottery_assignment) }
+    it { is_expected.to have_many(:favorites) }
     it { is_expected.to have_many(:memberships) }
     it { is_expected.to have_many(:clip_memberships) }
     it { is_expected.to have_many(:full_memberships) }
@@ -169,6 +170,36 @@ RSpec.describe Group, type: :model do
     group.leader.update!(room_id: suite.rooms.first.id)
     expect { group.destroy! }.to \
       change { group.leader.reload.room_id }.from(suite.rooms.first.id).to(nil)
+  end
+
+  describe 'removes favorites when group size changes' do
+    it do
+      group = expandable_group_with_favorites(size: 1)
+      group.update!(size: 2)
+      expect(group.favorites).to eq([])
+    end
+
+    def expandable_group_with_favorites(size: 1)
+      FactoryGirl.create(:full_group, size: size).tap do |g|
+        suite = FactoryGirl.create(:suite_with_rooms, rooms_count: size)
+        g.draw.suites << suite
+        g.draw.suites << FactoryGirl.create(:suite_with_rooms,
+                                            rooms_count: size + 1)
+        FactoryGirl.create(:favorite, group: g, suite: suite)
+      end
+    end
+  end
+
+  describe 'destroys dependent' do
+    let(:group) { FactoryGirl.create(:full_group, size: 2) }
+    let(:suite) { FactoryGirl.create(:suite_with_rooms, rooms_count: 2) }
+
+    it 'favorite on destruction' do
+      group.draw.suites << suite
+      f = FactoryGirl.create(:favorite, suite: suite, group: group).id
+      group.destroy
+      expect { Favorite.find(f) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe 'leader is included as a member' do

@@ -10,6 +10,7 @@ RSpec.describe Suite, type: :model do
     it { is_expected.to have_many(:rooms) }
     it { is_expected.to have_many(:draw_suites) }
     it { is_expected.to have_many(:draws).through(:draw_suites) }
+    it { is_expected.to have_many(:favorites) }
 
     describe 'number uniqueness' do
       it 'allows duplicates that belong to separate buildings' do
@@ -234,6 +235,18 @@ RSpec.describe Suite, type: :model do
       suite = group.draw.suites.first
       expect { suite.update(group: group) }.to \
         change { lottery.reload.selected }.from(false).to(true)
+    end
+  end
+
+  describe 'destroys dependent' do
+    let(:group) { FactoryGirl.create(:full_group, size: 2) }
+    let(:suite) { FactoryGirl.create(:suite_with_rooms, rooms_count: 2) }
+
+    it 'favorite on destruction' do
+      group.draw.suites << suite
+      f = FactoryGirl.create(:favorite, suite: suite, group: group).id
+      suite.destroy
+      expect { Favorite.find(f) }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
 end
