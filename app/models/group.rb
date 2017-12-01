@@ -55,6 +55,9 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   before_save :remove_favorites,
               if: ->() { will_save_change_to_size? }
 
+  before_save :remove_favorites,
+              if: ->() { will_save_change_to_size? }
+
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!,
              if: ->() { saved_change_to_transfers || saved_change_to_size }

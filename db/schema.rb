@@ -10,6 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+
 ActiveRecord::Schema.define(version: 20180216182524) do
 
   # These are extensions that must be enabled in order to support this database
@@ -86,6 +87,15 @@ ActiveRecord::Schema.define(version: 20180216182524) do
     t.date "locking_deadline"
     t.integer "suite_selection_mode", default: 0, null: false
     t.boolean "allow_clipping", default: false, null: false
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "group_id", null: false
+    t.bigint "suite_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_favorites_on_group_id"
+    t.index ["suite_id"], name: "index_favorites_on_suite_id"
   end
 
   create_table "favorites", force: :cascade do |t|
@@ -185,11 +195,16 @@ ActiveRecord::Schema.define(version: 20180216182524) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+<<<<<<< HEAD
   add_foreign_key "clip_memberships", "clips"
   add_foreign_key "clip_memberships", "groups"
   add_foreign_key "groups", "lottery_assignments"
   add_foreign_key "lottery_assignments", "clips"
   add_foreign_key "lottery_assignments", "draws"
+=======
+  add_foreign_key "favorites", "groups"
+  add_foreign_key "favorites", "suites"
+>>>>>>> ba264cd... Resolves #675
   add_foreign_key "users", "rooms"
 
   create_view "lottery_base_views",  sql_definition: <<-SQL
