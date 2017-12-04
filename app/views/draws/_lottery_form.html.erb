@@ -1,4 +1,4 @@
-<td class="group-name"><%= link_to group.leader.full_name, send(group.draw_self_path_method, @draw, group) %></td>
+<td class="group-name"><%= link_to group.name, send(group.draw_self_path_method, @draw, group) %></td>
 <td>
   <%= simple_form_for group, url: send(group.lottery_form_path_method, group.draw, group), method: :patch, remote: :true do |f| %>
     <%= f.input :lottery_number, as: :integer, input_html: { class: 'lottery_field autosubmitme' } %>
