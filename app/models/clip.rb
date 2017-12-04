@@ -65,11 +65,13 @@ class Clip < ApplicationRecord
     :draw_clip_path
   end
 
-  # Return the status of the clip
-  # @return [String] status of the first group of the clip
-  def status
-    groups.first.status
+  # Return the first leader of the group
+  # @return [User] leader of the first group of the clip
+  def leader
+    groups.first.leader
   end
+
+  private
 
   # Return the first leader of the group
   # @return [User] leader of the first group of the clip
