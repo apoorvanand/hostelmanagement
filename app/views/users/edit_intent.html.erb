@@ -1,7 +1,6 @@
 <% provide(:title, "#{@user.full_name} - Declare Housing Intent") %>
 <h1><%= @user.full_name %> - Declare Housing Intent</h1>
-<%= simple_form_for @user, url: update_intent_user_path(@user) do |f| %>
-  <%= f.input :intent, collection: User.intents.keys %>
-  <%= f.submit 'Submit Intent' %>
-<% end %>
+
+<%= react_component("intent/IntentSelection", user: @user, draw: @user.draw, is_editing: true) %>
+
 <%= link_to 'Cancel', user_path(@user) %>

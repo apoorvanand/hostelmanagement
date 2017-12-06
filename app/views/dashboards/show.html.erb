@@ -19,7 +19,7 @@
         <h4>Your draw: <%= link_to @draw.name, draw_path(@draw) %></h4>
       </div>
       <div class="card-section">
-        <p>You are living <%= current_user.intent.humanize.downcase %>.</p>
+        <%= react_component("intent/IntentSelection", user: current_user, draw: @draw) %>
         <% if @intent_deadline.present? %>
           <p>Deadline to submit intent: <%= @intent_deadline.strftime('%B %e') %></p>
         <% end %>

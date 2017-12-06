@@ -124,4 +124,15 @@ Rails.application.routes.draw do
       get 'export'
     end
   end
+
+  # API Routes
+  namespace :api do
+    namespace :v1 do
+      resources :users do
+        member do
+          patch 'intent', to: 'users#update_intent', as: 'update_intent'
+        end
+      end
+    end
+  end
 end
