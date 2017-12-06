@@ -9,7 +9,9 @@
 # @attr groups [Array<Group>] The groups included in the clip.
 class Clip < ApplicationRecord
   belongs_to :draw
-  has_many :groups, dependent: :nullify
+  has_one :clip_memberships
+  has_many :groups, through: :clip_memberships, dependent: :nullify
+
 
   before_validation :set_draw
 

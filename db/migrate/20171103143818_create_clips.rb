@@ -1,10 +1,14 @@
 class CreateClips < ActiveRecord::Migration[5.1]
   def change
     create_table :clips do |t|
-      t.string :name
       t.belongs_to :draw, index: true, null: false
       t.timestamps
     end
-    add_reference :groups, :clip, foreign_key: true, null: true
+    create_table :clip_memberships do |t|
+      t.belongs_to :clip, index: true, foreign_key: true, null: true
+      t.belongs_to :group, index: true, foreign_key: true, null: true
+      t.boolean "confirmed", default: false, null: false
+    end
+    add_reference :groups, :clip_membership, foreign_key: true, null: true
   end
 end

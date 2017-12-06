@@ -21,8 +21,15 @@ ActiveRecord::Schema.define(version: 20171114180413) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "clip_memberships", force: :cascade do |t|
+    t.bigint "clip_id"
+    t.bigint "group_id"
+    t.boolean "confirmed", default: false, null: false
+    t.index ["clip_id"], name: "index_clip_memberships_on_clip_id"
+    t.index ["group_id"], name: "index_clip_memberships_on_group_id"
+  end
+
   create_table "clips", force: :cascade do |t|
-    t.string "name"
     t.bigint "draw_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -89,8 +96,8 @@ ActiveRecord::Schema.define(version: 20171114180413) do
     t.integer "memberships_count", default: 0, null: false
     t.integer "transfers", default: 0, null: false
     t.integer "lottery_number"
-    t.bigint "clip_id"
-    t.index ["clip_id"], name: "index_groups_on_clip_id"
+    t.bigint "clip_membership_id"
+    t.index ["clip_membership_id"], name: "index_groups_on_clip_membership_id"
     t.index ["draw_id"], name: "index_groups_on_draw_id"
     t.index ["leader_id"], name: "index_groups_on_leader_id"
   end
@@ -158,21 +165,26 @@ ActiveRecord::Schema.define(version: 20171114180413) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  add_foreign_key "groups", "clips"
+  add_foreign_key "clip_memberships", "clips"
+  add_foreign_key "clip_memberships", "groups"
+  add_foreign_key "groups", "clip_memberships"
   add_foreign_key "users", "rooms"
 
   create_view "draw_clip_groups",  sql_definition: <<-SQL
-      SELECT groups.draw_id,
-      groups.clip_id,
-      groups.id AS group_id
-     FROM groups
-    WHERE (groups.clip_id IS NULL)
-  UNION
-   SELECT DISTINCT ON (groups.clip_id) groups.draw_id,
-      groups.clip_id,
+      SELECT clips.draw_id,
+      clips.id AS clip_id,
       NULL::bigint AS group_id
-     FROM groups
-    WHERE (groups.clip_id IS NOT NULL);
+     FROM clips
+  UNION
+   SELECT groups.draw_id,
+      NULL::bigint AS clip_id,
+      groups.id AS group_id
+     FROM (groups groups
+       LEFT JOIN ( SELECT clip_memberships_1.group_id,
+              clip_memberships_1.confirmed
+             FROM clip_memberships clip_memberships_1
+            WHERE clip_memberships_1.confirmed) clip_memberships ON TRUE)
+    WHERE ((groups.clip_membership_id IS NULL) OR clip_memberships.confirmed);
   SQL
 
 end
