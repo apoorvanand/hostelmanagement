@@ -11,7 +11,7 @@ class ClipMembership < ApplicationRecord
   validates :group, presence: { uniqueness: { scope: :clip } }
   validates :clip, presence: true
   validates :confirmed, inclusion: { in: [true, false] }
-  validate :matching_draw, if: ->(m) { m.user.present? && m.group.present? }
+  validate :matching_draw, if: ->(m) { m.clip.present? && m.group.present? }
 
   after_create :send_invitations
 
