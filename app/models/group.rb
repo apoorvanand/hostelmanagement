@@ -16,7 +16,7 @@
 class Group < ApplicationRecord # rubocop:disable ClassLength
   belongs_to :leader, inverse_of: :led_group, class_name: 'User'
   belongs_to :draw
-  has_one :clip_membership, dependent: :delete
+  has_one :clip_membership, dependent: :destroy
   has_one :clip, through: :clip_membership
   has_one :suite, dependent: :nullify
   has_many :memberships, dependent: :delete_all
@@ -44,11 +44,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   before_update ->() { throw(:abort) if changing_lottery_when_clipped? }
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!, if: ->() { saved_change_to_transfers }
-  after_update :remove_clip, if: ->() { changed_draw_when_clipped? }
+  after_update :remove_clip_membership, if: ->() { changed_draw_when_clipped? }
   before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
-  after_destroy :remove_clip, if: ->(g) { g.clip_membership&.confirmed }
+  after_destroy :remove_clip_membership, if: ->(g) { g.clip_membership }
 
   attr_reader :remove_ids
 
@@ -149,8 +149,8 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     end
   end
 
-  def remove_clip
-    clip_memberships.destroy_all
+  def remove_clip_membership
+    clip_membership.destroy
   end
 
   def send_locked_email

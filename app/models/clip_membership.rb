@@ -18,12 +18,13 @@ class ClipMembership < ApplicationRecord
   after_save :send_joined_email,
              if: ->() { saved_change_to_confirmed && confirmed }
   after_destroy :send_left_email, if: ->() { confirmed }
+  after_destroy :run_clip_cleanup
 
   private
 
   def send_invitations
-    return if confirmed #creators of the clip will start confirmed
-    #StudentMailer.invited_to_clip(invited: group, clip: clip,
+    return if confirmed # creators of the clip will start confirmed
+    # StudentMailer.invited_to_clip(invited: group, clip: clip,
     #                              college: College.first).deliver_later
   end
 
@@ -33,6 +34,10 @@ class ClipMembership < ApplicationRecord
 
   def send_left_email
     # Need to send email when you leave a clip
+  end
+
+  def run_clip_cleanup
+    clip.clip_cleanup!
   end
 
   def matching_draw

@@ -10,15 +10,14 @@
 class Clip < ApplicationRecord
   belongs_to :draw
   has_many :clip_memberships, dependent: :delete_all
-  has_many :groups, through: :clip_memberships, dependent: :nullify
-
-  before_validation :set_draw
+  has_many :groups, through: :clip_memberships
 
   validate :enough_groups
   validate :group_draws_match
   validate :lottery_numbers_match, on: :create
 
   before_update ->() { throw(:abort) if will_save_change_to_draw_id? }
+  after_destroy :notify_groups_of_disband
 
   # Generate the clip's name
   #
@@ -53,11 +52,7 @@ class Clip < ApplicationRecord
   private
 
   def existing_groups
-    groups.to_a.keep_if { |g| g.persisted? && g.draw_id == draw_id }
-  end
-
-  def set_draw
-    @draw_id = groups.first.draw_id
+    clip_memberships.to_a.keep_if(&:persisted?)
   end
 
   def enough_groups
@@ -73,5 +68,11 @@ class Clip < ApplicationRecord
   def group_draws_match
     return if groups.map(&:draw_id).uniq == [draw_id]
     errors.add :groups, 'are not all in the same draw.'
+  end
+
+  def notify_groups_of_disband
+    groups.each do |g|
+      # StudentMailer.clip_disband_notification(group: g).deliver_later
+    end
   end
 end

@@ -14,7 +14,8 @@ RSpec.describe Group, type: :model do
     it { is_expected.to belong_to(:leader) }
     it { is_expected.to validate_presence_of(:leader) }
     it { is_expected.to belong_to(:draw) }
-    it { is_expected.to belong_to(:clip) }
+    it { is_expected.to have_one(:clip_membership) }
+    it { is_expected.to have_one(:clip).through(:clip_membership) }
     it { is_expected.to have_one(:suite) }
     it { is_expected.to have_many(:memberships) }
     it { is_expected.to have_many(:full_memberships) }
@@ -313,13 +314,31 @@ RSpec.describe Group, type: :model do
       it 'on clip destruction' do
         clip = FactoryGirl.create(:clip, groups_count: 2)
         group = clip.groups.first
-        expect { clip.destroy }.to change { group.reload.clip }.to(nil)
+        clip.destroy
+        expect(group.clip).to eq(nil)
       end
       it 'on draw change' do
         clip = FactoryGirl.create(:clip, groups_count: 3)
         group = clip.groups.first
         group.update!(draw_id: nil)
-        expect(group.clip_id).to eq(nil)
+        expect(group.clip).to eq(nil)
+      end
+    end
+  end
+
+  describe 'clip_membership' do
+    context 'is cleared' do
+      it 'on clip destruction' do
+        clip = FactoryGirl.create(:clip, groups_count: 2)
+        group = clip.groups.first
+        clip.destroy
+        expect(group.reload.clip_membership).to eq(nil)
+      end
+      it 'on draw change' do
+        clip = FactoryGirl.create(:clip, groups_count: 3)
+        group = clip.groups.first
+        group.update!(draw_id: nil)
+        expect(group.reload.clip_membership).to eq(nil)
       end
     end
   end
