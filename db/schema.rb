@@ -96,8 +96,6 @@ ActiveRecord::Schema.define(version: 20171114180413) do
     t.integer "memberships_count", default: 0, null: false
     t.integer "transfers", default: 0, null: false
     t.integer "lottery_number"
-    t.bigint "clip_membership_id"
-    t.index ["clip_membership_id"], name: "index_groups_on_clip_membership_id"
     t.index ["draw_id"], name: "index_groups_on_draw_id"
     t.index ["leader_id"], name: "index_groups_on_leader_id"
   end
@@ -167,7 +165,6 @@ ActiveRecord::Schema.define(version: 20171114180413) do
 
   add_foreign_key "clip_memberships", "clips"
   add_foreign_key "clip_memberships", "groups"
-  add_foreign_key "groups", "clip_memberships"
   add_foreign_key "users", "rooms"
 
   create_view "draw_clip_groups",  sql_definition: <<-SQL
@@ -180,11 +177,8 @@ ActiveRecord::Schema.define(version: 20171114180413) do
       NULL::bigint AS clip_id,
       groups.id AS group_id
      FROM (groups groups
-       LEFT JOIN ( SELECT clip_memberships_1.group_id,
-              clip_memberships_1.confirmed
-             FROM clip_memberships clip_memberships_1
-            WHERE clip_memberships_1.confirmed) clip_memberships ON TRUE)
-    WHERE ((groups.clip_membership_id IS NULL) OR clip_memberships.confirmed);
+       LEFT JOIN clip_memberships ON ((groups.id = clip_memberships.group_id)))
+    WHERE (clip_memberships.confirmed IS NOT TRUE);
   SQL
 
 end

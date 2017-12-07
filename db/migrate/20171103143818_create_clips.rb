@@ -9,6 +9,5 @@ class CreateClips < ActiveRecord::Migration[5.1]
       t.belongs_to :group, index: true, foreign_key: true, null: true
       t.boolean "confirmed", default: false, null: false
     end
-    add_reference :groups, :clip_membership, foreign_key: true, null: true
   end
 end

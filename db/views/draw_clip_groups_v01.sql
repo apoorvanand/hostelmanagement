@@ -17,20 +17,10 @@ UNION
   FROM
     groups AS groups
 
-  NATURAL LEFT OUTER JOIN
+  LEFT JOIN clip_memberships
 
-  (
-    SELECT
-      clip_memberships.group_id AS group_id,
-      clip_memberships.confirmed AS confirmed
-    FROM
-      clip_memberships
-    WHERE
-      clip_memberships.confirmed
-  ) AS clip_memberships
+  ON groups.id = clip_memberships.group_id
 
   WHERE
-    groups.clip_membership_id IS NULL
-  OR 
-    clip_memberships.confirmed
+    clip_memberships.confirmed IS NOT TRUE
 )

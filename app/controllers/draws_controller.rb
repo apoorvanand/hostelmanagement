@@ -93,7 +93,7 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
   end
 
   def lottery
-    @groups = @draw.groups.includes(:leader).order('users.last_name')
+    @groups = GroupsForLotteryQuery.call(draw: @draw)
   end
 
   def oversubscription; end
