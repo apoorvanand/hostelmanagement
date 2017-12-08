@@ -96,7 +96,7 @@ RSpec.describe Group, type: :model do
     end
     it 'cannot change a lottery_number if the group is in a clip' do
       clip = FactoryGirl.create(:clip_with_lottery_numbers)
-      group = clip.groups.first
+      group = clip.groups.reload.first
       group.lottery_number = 2
       expect(group.save).to be_falsey
     end
@@ -286,7 +286,8 @@ RSpec.describe Group, type: :model do
       it 'and deletes the clip if there are not enough groups left' do
         clip = FactoryGirl.create(:clip, groups_count: 2)
         clip.groups.first.destroy!
-        expect(clip.persisted?).to be_falsey
+        clip.groups.reload
+        expect(clip.valid?).to be_falsey
       end
 
       it 'does nothing if there are more groups left' do
@@ -299,7 +300,7 @@ RSpec.describe Group, type: :model do
       it 'and deletes the clip if there are not enough groups left' do
         clip = FactoryGirl.create(:clip, groups_count: 2)
         clip.groups.first.update!(draw_id: nil)
-        expect(clip.persisted?).to be_falsey
+        expect(clip.valid?).to be_falsey
       end
       it 'does nothing if there are more groups left' do
         clip = FactoryGirl.create(:clip, groups_count: 3)
@@ -332,7 +333,7 @@ RSpec.describe Group, type: :model do
       it 'ignores unconfirmed memberships' do
         # Creates two memberships with a confirmed value of true
         group = FactoryGirl.create(:clip).groups.first
-        group.clip_membership.update!(confirmed: false)
+        group.reload.clip_membership.update!(confirmed: false)
         expect(group.clip).to eq(nil)
       end
     end
@@ -344,13 +345,13 @@ RSpec.describe Group, type: :model do
         clip = FactoryGirl.create(:clip, groups_count: 2)
         group = clip.groups.first
         clip.destroy
-        expect(group.reload.clip_membership).to eq(nil)
+        expect(group.clip_membership).to eq(nil)
       end
       it 'on draw change' do
         clip = FactoryGirl.create(:clip, groups_count: 3)
         group = clip.groups.first
         group.update!(draw_id: nil)
-        expect(group.reload.clip_membership).to eq(nil)
+        expect(group.clip_membership).to eq(nil)
       end
     end
   end
