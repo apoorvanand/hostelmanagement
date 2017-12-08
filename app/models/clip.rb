@@ -10,7 +10,8 @@
 class Clip < ApplicationRecord
   belongs_to :draw
   has_many :clip_memberships, dependent: :delete_all
-  has_many :groups, through: :clip_memberships
+  has_many :groups, -> { where(clip_memberships: { confirmed: true }) },
+           through: :clip_memberships
 
   validate :enough_groups
   validate :group_draws_match

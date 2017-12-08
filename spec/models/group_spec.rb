@@ -324,6 +324,18 @@ RSpec.describe Group, type: :model do
         expect(group.clip).to eq(nil)
       end
     end
+    context 'only joins on confirmed memberships' do
+      it 'successfully' do
+        group = FactoryGirl.create(:clip).groups.first
+        expect(group.clip).to eq(nil)
+      end
+      it 'ignores unconfirmed memberships' do
+        # Creates two memberships with a confirmed value of true
+        group = FactoryGirl.create(:clip).groups.first
+        group.clip_membership.update!(confirmed: false)
+        expect(group.clip).to eq(nil)
+      end
+    end
   end
 
   describe 'clip_membership' do

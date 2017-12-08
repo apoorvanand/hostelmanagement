@@ -67,9 +67,17 @@ RSpec.describe Clip, type: :model do
     end
   end
 
-  describe 'method wrappers' do
-    context 'allow for duck typing on all needed group methods' do
-      xit 'works for #[insert_method_here]' do
+  describe 'groups association' do
+    context 'only joins on confirmed memberships' do
+      it 'successfully' do
+        clip = FactoryGirl.create(:clip)
+        expect(clip.groups.length).to eq(2)
+      end
+      it 'ignores unconfirmed memberships' do
+        # Creates two memberships with a confirmed value of true
+        clip = FactoryGirl.create(:clip)
+        clip.clip_memberships.last.update!(confirmed: false)
+        expect(clip.groups.reload.length).to eq(1)
       end
     end
   end
