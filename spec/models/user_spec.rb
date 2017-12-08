@@ -14,6 +14,7 @@ RSpec.describe User, type: :model do
     it { is_expected.to belong_to(:draw) }
     it { is_expected.to have_one(:membership) }
     it { is_expected.to have_many(:memberships) }
+    it { is_expected.to have_many(:likes) }
     it { is_expected.to have_one(:group).through(:membership) }
     it { is_expected.to belong_to(:room) }
   end
@@ -52,8 +53,8 @@ RSpec.describe User, type: :model do
     expect { Membership.find(m) }.to \
       raise_error(ActiveRecord::RecordNotFound)
   end
-  # rubocop:enable RSpec/ExampleLength
 
+  # rubocop:enable RSpec/ExampleLength
   describe '.cas_auth?' do
     it 'returns true if the CAS_BASE_URL env variable is set' do
       allow(User).to receive(:env?).with('CAS_BASE_URL').and_return(true)

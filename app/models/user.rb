@@ -41,6 +41,7 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :membership
   has_one :group, through: :membership
   has_many :memberships, dependent: :destroy
+  has_many :likes
 
   belongs_to :room
 

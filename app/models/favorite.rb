@@ -4,6 +4,7 @@
 class Favorite < ApplicationRecord
   belongs_to :group
   belongs_to :suite
+  has_many :likes
 
   validates :group, presence: true
   validates :suite, presence: true

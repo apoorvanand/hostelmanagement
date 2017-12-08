@@ -10,6 +10,7 @@ RSpec.describe Favorite, type: :model do
     it { is_expected.to validate_presence_of(:suite) }
     it { is_expected.to belong_to(:group) }
     it { is_expected.to belong_to(:suite) }
+    it { is_expected.to have_many(:likes) }
   end
 
   describe 'group draw and suite draw must match' do

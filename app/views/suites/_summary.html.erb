@@ -26,6 +26,7 @@
               <td data-role="suite-draws">
                 <%= render partial: 'suites/draw_link', collection: suite.draws, spacer_template: 'shared/comma' %>
               </td>
+              #### Mark as favorite
               <td class="actions" data-role="suite-actions">
                 <%= link_to 'View', suite_path(suite), class: 'button' %>
                 <% if policy(suite).edit? %>
