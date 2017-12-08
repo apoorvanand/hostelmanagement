@@ -65,50 +65,40 @@ RSpec.describe ClipMembership, type: :model do
   describe 'email callbacks' do
     let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
 
-    # rubocop:disable RSpec/ExampleLength
-    xit 'emails leader on invitation acceptance' do
-      g = FactoryGirl.create(:open_group)
-      m = Membership.create(user: FactoryGirl.create(:student, draw: g.draw),
-                            group: g, status: 'invited')
-      allow(StudentMailer).to receive(:joined_group).and_return(msg)
-      m.update(status: 'accepted')
-      expect(StudentMailer).to have_received(:joined_group)
+    xit 'emails invitations are sent' do
+      # Need to make invitation method in studentmailer
     end
-    # rubocop:enable RSpec/ExampleLength
-    xit 'emails leader when someone leaves' do
-      group = FactoryGirl.create(:full_group)
-      m = group.memberships.last
-      allow(StudentMailer).to receive(:left_group).and_return(msg)
-      m.destroy
-      expect(StudentMailer).to have_received(:left_group)
+    xit 'emails groups on invitation acceptance' do
+      # Need to make email templates and acceptance method in studentmailer
+    end
+    xit 'emails groups when someone leaves' do
+      # Need to make email templates and leaving method in studentmailer
     end
   end
 
   describe 'pending membership destruction' do
     context 'on the user creating their own group' do
-      xit do
-        inv_group = FactoryGirl.create(:open_group, size: 2)
-        u = FactoryGirl.create(:user, draw: inv_group.draw)
-        invite = Membership.create(group: inv_group, user: u, status: 'invited')
-        FactoryGirl.create(:group, leader: u)
+      it do
+        inv_clip = FactoryGirl.create(:clip)
+        g, g2 = FactoryGirl.create_pair(:group_from_draw, draw: inv_clip.draw)
+        invite = create_membership(clip: inv_clip, group: g)
+        FactoryGirl.create(:clip, draw: g.draw, groups: [g, g2])
         expect { invite.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
     context 'on the user accepting another membership' do
-      xit do # rubocop:disable RSpec/ExampleLength
-        inv_group = FactoryGirl.create(:open_group, size: 2)
-        req_group = create_group_in_draw(inv_group.draw)
-        u = FactoryGirl.create(:user, draw: inv_group.draw)
-        inv = Membership.create(group: inv_group, user: u, status: 'invited')
-        req = Membership.create(group: req_group, user: u, status: 'requested')
-        inv.update(status: 'accepted')
+      it do # rubocop:disable RSpec/ExampleLength
+        group = FactoryGirl.create(:group)
+        clip1, clip2 = FactoryGirl.create_pair(:clip, draw: group.draw)
+        inv = create_membership(clip: clip1, group: group, confirmed: false)
+        req = create_membership(clip: clip2, group: group, confirmed: false)
+        inv.update(confirmed: true)
         expect { req.reload }.to raise_error(ActiveRecord::RecordNotFound)
-      end
-
-      def create_group_in_draw(draw)
-        l = FactoryGirl.create(:user, draw: draw)
-        FactoryGirl.create(:open_group, size: 2, leader: l)
-      end
+      end # rubocop:enable RSpec/ExampleLength
+    end
+    def create_membership(clip:, group:, confirmed: true)
+      FactoryGirl.create(:clip_membership, clip: clip, group: group,
+                                           confirmed: confirmed)
     end
   end
 end

@@ -18,6 +18,9 @@ class ClipMembership < ApplicationRecord
   after_create :send_invitations
   after_save :send_joined_email,
              if: ->() { saved_change_to_confirmed && confirmed }
+  after_save :destroy_pending,
+             if: ->() { saved_change_to_confirmed && confirmed }
+
   after_destroy :send_left_email, if: ->() { confirmed }
   after_destroy :run_clip_cleanup
 
@@ -54,5 +57,9 @@ class ClipMembership < ApplicationRecord
   def freeze_clip_and_group
     return unless will_save_change_to_clip_id? || will_save_change_to_group_id?
     throw(:abort)
+  end
+
+  def destroy_pending
+    group.clip_memberships.where.not(id: id).destroy_all
   end
 end
