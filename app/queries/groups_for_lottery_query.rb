@@ -9,8 +9,9 @@ class GroupsForLotteryQuery
 
   # Initialize an DrawlessSuitesQuery
   def initialize
-    @relation = DrawClipGroup
-    # .includes([group: :memberships],[clip: [groups: :memberships]]) is broken
+    @relation = DrawClipGroup.includes([group: :memberships],
+                                       [clip: [clip_memberships:
+                                       [group: :memberships]]])
   end
 
   # Execute the groups for lottery query.
