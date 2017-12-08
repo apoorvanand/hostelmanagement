@@ -45,11 +45,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   before_update ->() { throw(:abort) if changing_lottery_when_clipped? }
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!, if: ->() { saved_change_to_transfers }
-  after_update :remove_clip_membership, if: ->() { changed_draw_when_clipped? }
+  after_update :remove_clip_memberships, if: ->() { changed_draw_when_clipped? }
   before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
-  after_destroy :remove_clip_membership, if: ->(g) { g.clip_membership }
+  after_destroy :remove_clip_memberships, if: ->(g) { g.clip_memberships }
 
   attr_reader :remove_ids
 
@@ -150,8 +150,8 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     end
   end
 
-  def remove_clip_membership
-    clip_membership.destroy
+  def remove_clip_memberships
+    clip_memberships.each(&:destroy)
   end
 
   def send_locked_email
@@ -229,11 +229,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   end
 
   def changing_lottery_when_clipped?
-    clip_membership&.confirmed && will_save_change_to_lottery_number?
+    clip && will_save_change_to_lottery_number?
   end
 
   def changed_draw_when_clipped?
-    saved_change_to_draw_id && clip_membership&.confirmed
+    saved_change_to_draw_id && clip_memberships
   end
 
   def assign_new_status
