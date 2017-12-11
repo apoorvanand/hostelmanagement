@@ -17,6 +17,7 @@ class Clip < ApplicationRecord
   validate :group_draws_match
   validate :lottery_numbers_match, on: :create
 
+  after_create :send_invitations
   before_update ->() { throw(:abort) if will_save_change_to_draw_id? }
   after_destroy :notify_groups_of_disband
 
@@ -71,9 +72,19 @@ class Clip < ApplicationRecord
     errors.add :groups, 'are not all in the same draw.'
   end
 
+  def send_invitations
+    groups.each do |g|
+      # should the creators of the clip start confirmed?
+      return if clip_membership.confirmed
+      StudentMailer.invited_to_clip(invited: g, clip: self,
+                                    college: College.first).deliver_later
+    end
+  end
+
   def notify_groups_of_disband
     groups.each do |g|
-      # StudentMailer.clip_disband_notification(group: g).deliver_later
+      StudentMailer.clip_disband_notice(group: g, clip: self,
+                                        college: College.first).deliver_later
     end
   end
 end

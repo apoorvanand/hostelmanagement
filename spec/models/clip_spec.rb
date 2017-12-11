@@ -82,6 +82,29 @@ RSpec.describe Clip, type: :model do
     end
   end
 
+  context 'on creation' do
+    let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
+
+    it 'notifies groups' do
+      allow(StudentMailer).to receive(:invited_to_clip).and_return(msg)
+      clip = FactoryGirl.create(:clip)
+      expect(StudentMailer).to \
+        have_received(:invited_to_clip).exactly(clip.clip_memberships.count)
+    end
+  end
+
+  context 'on disband' do
+    let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
+
+    it 'notifies groups' do
+      clip = FactoryGirl.create(:clip)
+      allow(StudentMailer).to receive(:clip_disband_notice).and_return(msg)
+      clip.destroy
+      expect(StudentMailer).to \
+        have_received(:disband_notification).exactly(clip.clip_memberships.count)
+    end
+  end
+
   def build_groups(count:, **overrides)
     group_params = Array.new(count) do |i|
       { name: "group#{i}", lottery_number: i + 1, draw_id: i + 1 }

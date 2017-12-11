@@ -15,7 +15,6 @@ class ClipMembership < ApplicationRecord
 
   before_update :freeze_clip_and_group
 
-  after_create :send_invitations
   after_save :send_joined_email,
              if: ->() { saved_change_to_confirmed && confirmed }
   after_save :destroy_pending,
@@ -26,18 +25,14 @@ class ClipMembership < ApplicationRecord
 
   private
 
-  def send_invitations
-    return if confirmed # creators of the clip will start confirmed
-    # StudentMailer.invited_to_clip(invited: group, clip: clip,
-    #                              college: College.first).deliver_later
-  end
-
   def send_joined_email
-    # Need to send email when you join a clip
+    StudentMailer.joined_clip(joined: group, clip: clip,
+                              college: College.first).deliver_later
   end
 
   def send_left_email
-    # Need to send email when you leave a clip
+    StudentMailer.left_clip(joined: group, clip: clip,
+                            college: College.first).deliver_later
   end
 
   def run_clip_cleanup

@@ -65,9 +65,6 @@ RSpec.describe ClipMembership, type: :model do
   describe 'email callbacks' do
     let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
 
-    xit 'emails invitations are sent' do
-      # Need to make invitation method in studentmailer
-    end
     xit 'emails groups on invitation acceptance' do
       # Need to make email templates and acceptance method in studentmailer
     end
