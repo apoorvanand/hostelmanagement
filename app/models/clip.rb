@@ -63,6 +63,7 @@ class Clip < ApplicationRecord
                               college: College.first).deliver_later
     end
   end
+
   private
 
   def existing_groups
