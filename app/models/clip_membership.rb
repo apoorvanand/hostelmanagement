@@ -26,22 +26,20 @@ class ClipMembership < ApplicationRecord
 
   private
 
-  def send_joined_email
-    StudentMailer.joined_clip(joined: group, clip: clip,
-                              college: College.first).deliver_later
-  end
-
-  def send_left_email
-    StudentMailer.left_clip(joined: group, clip: clip,
-                            college: College.first).deliver_later
-  end
-
   def send_invitation
     # TODO: Make the creator of the clip start confirmed if they will be
     # in the clip
     return if confirmed
     StudentMailer.invited_to_clip(invited: group, clip: clip,
                                   college: College.first).deliver_later
+  end
+
+  def send_joined_email
+    clip.send_joined_email(group)
+  end
+
+  def send_left_email
+    clip.send_left_email(group)
   end
 
   def run_clip_cleanup

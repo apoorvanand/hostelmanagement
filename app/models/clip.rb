@@ -50,6 +50,19 @@ class Clip < ApplicationRecord
     groups.each { |group| group.lottery_number = number }
   end
 
+  def send_joined_email(joining_group)
+    groups.each do |g|
+      StudentMailer.joined_clip(joining_group: joining_group, group: g,
+                                college: College.first).deliver_later
+    end
+  end
+
+  def send_left_email(leaving_group)
+    groups.each do |g|
+      StudentMailer.left_clip(leaving_group: leaving_group, group: g,
+                              college: College.first).deliver_later
+    end
+  end
   private
 
   def existing_groups
@@ -73,7 +86,7 @@ class Clip < ApplicationRecord
 
   def notify_groups_of_disband
     groups.each do |g|
-      StudentMailer.clip_disband_notice(group: g, clip: self,
+      StudentMailer.clip_disband_notice(group: g,
                                         college: College.first).deliver_later
     end
   end

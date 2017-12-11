@@ -104,13 +104,34 @@ class StudentMailer < ApplicationMailer
     mail(to: @user.email, subject: 'Reminder to lock housing group')
   end
 
-  def joined_clip(joined:, clip:, college: nil); end
+  def invited_to_clip(invited:, clip:, college: nil)
+    determine_college(college)
+    @user = invited.leader
+    @clip = clip
+    mail(to: @user.email, subject: 'Your group has been invited to a clip')
+  end
 
-  def left_clip(joined:, clip:, college: nil); end
+  def joined_clip(joining_group:, group:, college: nil)
+    determine_college(college)
+    @user = group.leader
+    @joining_leader = joining_group.leader
+    mail(to: @user.email,
+         subject: "#{@joining_leader.full_name}'s group has joined your clip")
+  end
 
-  def invited_to_clip(invited:, clip:, college: nil); end
+  def left_clip(leaving_group:, group:, college: nil)
+    determine_college(college)
+    @user = group.leader
+    @leaving_leader = leaving_group.leader
+    mail(to: @user.email,
+         subject: "#{@leaving_leader.full_name}'s group has left your clip")
+  end
 
-  def clip_disband_notice(group:, clip:, college: nil); end
+  def clip_disband_notice(group:, college: nil)
+    determine_college(college)
+    @user = group.leader
+    mail(to: @user.email, subject: 'Your clip has been disbanded')
+  end
 
   private
 
