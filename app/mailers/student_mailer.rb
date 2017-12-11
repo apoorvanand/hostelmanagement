@@ -104,6 +104,14 @@ class StudentMailer < ApplicationMailer
     mail(to: @user.email, subject: 'Reminder to lock housing group')
   end
 
+  def joined_clip(joined:, clip:, college: nil); end
+
+  def left_clip(joined:, clip:, college: nil); end
+
+  def invited_to_clip(invited:, clip:, college: nil); end
+
+  def clip_disband_notice(group:, clip:, college: nil); end
+
   private
 
   def determine_college(college)

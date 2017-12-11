@@ -53,11 +53,17 @@ RSpec.describe ClipMembership, type: :model do
     end
   end
 
-  describe 'cannot change accepted status' do
-    xit do
-      group = FactoryGirl.create(:full_group)
-      membership = group.memberships.last
-      membership.status = 'requested'
+  describe 'cannot change associations' do
+    it 'cannot change clip' do
+      clip = FactoryGirl.create(:clip)
+      membership = clip.clip_memberships.last
+      membership.clip_id = nil
+      expect(membership.save).to be_falsey
+    end
+    it 'cannot change group' do
+      clip = FactoryGirl.create(:clip)
+      membership = clip.clip_memberships.last
+      membership.group_id = nil
       expect(membership.save).to be_falsey
     end
   end
@@ -65,11 +71,30 @@ RSpec.describe ClipMembership, type: :model do
   describe 'email callbacks' do
     let(:msg) { instance_spy(ActionMailer::MessageDelivery, deliver_later: 1) }
 
-    xit 'emails groups on invitation acceptance' do
-      # Need to make email templates and acceptance method in studentmailer
+    it 'emails invitation on creation' do
+      allow(StudentMailer).to receive(:invited_to_clip).and_return(msg)
+      clip = FactoryGirl.create(:clip)
+      group = FactoryGirl.create(:group_from_draw, draw: clip.draw)
+      FactoryGirl.create(:clip_membership, clip: clip, group: group)
+      expect(StudentMailer).to have_received(:invited_to_clip)
     end
-    xit 'emails groups when someone leaves' do
-      # Need to make email templates and leaving method in studentmailer
+
+    # rubocop:disable RSpec/ExampleLength
+    it 'emails groups on invitation acceptance' do
+      clip = FactoryGirl.create(:clip)
+      group = FactoryGirl.create(:group_from_draw, draw: clip.draw)
+      m = FactoryGirl.create(:clip_membership, clip: clip, group: group)
+      allow(StudentMailer).to receive(:joined_clip).and_return(msg)
+      m.update(confirmed: true)
+      expect(StudentMailer).to have_received(:joined_clip)
+    end # rubocop:enable RSpec/ExampleLength
+
+    it 'emails groups when someone leaves' do
+      clip = FactoryGirl.create(:clip, groups_count: 3)
+      m = clip.clip_memberships.last
+      allow(StudentMailer).to receive(:left_clip).and_return(msg)
+      m.destroy
+      expect(StudentMailer).to have_received(:left_clip)
     end
   end
 
