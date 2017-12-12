@@ -27,17 +27,21 @@ class ClipMembership < ApplicationRecord
   private
 
   def send_invitation
-    # TODO: Make the creator of the clip start confirmed if they will be
-    # in the clip
+    # TODO: In the clips_controller make the creator of the clip start
+    # confirmed if they will be in the clip
     return if confirmed
     StudentMailer.invited_to_clip(invited: group, clip: clip,
                                   college: College.first).deliver_later
   end
 
+  # TODO: Abstract this to a service object that you call during
+  # a clips_controller#confirm_clip_membership controller action
   def send_joined_email
     clip.send_joined_email(group)
   end
 
+  # TODO: Abstract this to a service object that you call during
+  # a clips_controller#leave_clip action
   def send_left_email
     clip.send_left_email(group)
   end
