@@ -29,6 +29,7 @@ class ClipMembership < ApplicationRecord
   def send_invitation
     # TODO: In the clips_controller make the creator of the clip start
     # confirmed if they will be in the clip
+    # Should all clip_memberships start confirmed if an admin creates the clip?
     return if confirmed
     StudentMailer.invited_to_clip(invited: group, clip: clip,
                                   college: College.first).deliver_later
