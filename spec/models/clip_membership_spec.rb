@@ -86,7 +86,7 @@ RSpec.describe ClipMembership, type: :model do
       m = FactoryGirl.create(:clip_membership, clip: clip, group: group)
       allow(StudentMailer).to receive(:joined_clip).and_return(msg)
       m.update(confirmed: true)
-      expect(StudentMailer).to have_received(:joined_clip)
+      expect(StudentMailer).to have_received(:joined_clip).twice
     end # rubocop:enable RSpec/ExampleLength
 
     it 'emails groups when someone leaves' do
@@ -94,7 +94,7 @@ RSpec.describe ClipMembership, type: :model do
       m = clip.clip_memberships.last
       allow(StudentMailer).to receive(:left_clip).and_return(msg)
       m.destroy
-      expect(StudentMailer).to have_received(:left_clip)
+      expect(StudentMailer).to have_received(:left_clip).twice
     end
   end
 

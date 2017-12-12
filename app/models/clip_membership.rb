@@ -16,9 +16,9 @@ class ClipMembership < ApplicationRecord
   before_update :freeze_clip_and_group
 
   after_create :send_invitation
-  after_save :send_joined_email,
-             if: ->() { saved_change_to_confirmed && confirmed }
   after_save :destroy_pending,
+             if: ->() { saved_change_to_confirmed && confirmed }
+  after_save :send_joined_email,
              if: ->() { saved_change_to_confirmed && confirmed }
 
   after_destroy :send_left_email, if: ->() { confirmed }

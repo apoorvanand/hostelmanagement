@@ -51,14 +51,15 @@ class Clip < ApplicationRecord
   end
 
   def send_joined_email(joining_group)
-    groups.each do |g|
+    groups_to_notify = existing_groups - [joining_group]
+    groups_to_notify.each do |g|
       StudentMailer.joined_clip(joining_group: joining_group, group: g,
                                 college: College.first).deliver_later
     end
   end
 
   def send_left_email(leaving_group)
-    groups.each do |g|
+    existing_groups.each do |g|
       StudentMailer.left_clip(leaving_group: leaving_group, group: g,
                               college: College.first).deliver_later
     end
@@ -67,7 +68,9 @@ class Clip < ApplicationRecord
   private
 
   def existing_groups
-    groups.to_a.keep_if(&:persisted?)
+    # includes(:clip_membership) is needed because otherwise groups will
+    # still include groups with deleted memberships for some reason
+    groups.includes(:clip_membership).to_a.keep_if(&:persisted?)
   end
 
   def enough_groups
