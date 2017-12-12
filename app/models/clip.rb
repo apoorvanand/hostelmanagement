@@ -67,7 +67,7 @@ class Clip < ApplicationRecord
   private
 
   def existing_groups
-    clip_memberships.to_a.keep_if(&:persisted?)
+    groups.to_a.keep_if(&:persisted?)
   end
 
   def enough_groups
