@@ -311,7 +311,7 @@ RSpec.describe Group, type: :model do
   end
 
   describe '#update_lottery' do
-    context 'updates the lottery numerber of a group' do
+    context 'updates the lottery number of a group' do
       it 'successfully' do
         group = FactoryGirl.create(:group)
         group.lottery_number = 1
@@ -374,7 +374,7 @@ RSpec.describe Group, type: :model do
         clip = FactoryGirl.create(:clip, groups_count: 3)
         group = clip.groups.first
         group.update!(draw_id: nil)
-        expect(group.clip_membership).to eq(nil)
+        expect(group.reload.clip_membership).to eq(nil)
       end
     end
   end

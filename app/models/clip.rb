@@ -71,14 +71,6 @@ class Clip < ApplicationRecord
     groups.first.leader
   end
 
-  private
-
-  # Return the first leader of the group
-  # @return [User] leader of the first group of the clip
-  def leader
-    groups.first.leader
-  end
-
   # TODO: Abstract to the clips controller
   def send_joined_email(joining_group)
     groups_to_notify = existing_groups - [joining_group]
