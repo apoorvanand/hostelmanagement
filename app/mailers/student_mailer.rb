@@ -104,6 +104,11 @@ class StudentMailer < ApplicationMailer
     mail(to: @user.email, subject: 'Reminder to lock housing group')
   end
 
+  # Send an invitation to join a clip that has been created
+  #
+  # @param invited [Group] the invited group
+  # @param clip [Clip] the clip the group has been invited to
+  # @param college [College] the college to pull settings from
   def invited_to_clip(invited:, clip:, college: nil)
     determine_college(college)
     @user = invited.leader
@@ -111,6 +116,11 @@ class StudentMailer < ApplicationMailer
     mail(to: @user.email, subject: 'Your group has been invited to a clip')
   end
 
+  # Send a notification to a group leader that a group has joined their clip
+  #
+  # @param joining_group [Group] the group that has joined the clip
+  # @param group [Group] the group of the leader to be notified
+  # @param college [College] the college to pull settings from
   def joined_clip(joining_group:, group:, college: nil)
     determine_college(college)
     @user = group.leader
@@ -119,6 +129,11 @@ class StudentMailer < ApplicationMailer
          subject: "#{@joining_leader.full_name}'s group has joined your clip")
   end
 
+  # Send a notification to a group leader that a group has left their clip
+  #
+  # @param leaving_group [Group] the group that has left the clip
+  # @param group [Group] the group of the leader to be notified
+  # @param college [College] the college to pull settings from
   def left_clip(leaving_group:, group:, college: nil)
     determine_college(college)
     @user = group.leader
@@ -127,6 +142,10 @@ class StudentMailer < ApplicationMailer
          subject: "#{@leaving_leader.full_name}'s group has left your clip")
   end
 
+  # Send a notification to a group leader that their clip has been disbanded
+  #
+  # @param group [Group] the group of the leader to be notified
+  # @param college [College] the college to pull settings from
   def clip_disband_notice(group:, college: nil)
     determine_college(college)
     @user = group.leader
