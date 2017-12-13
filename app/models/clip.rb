@@ -50,6 +50,7 @@ class Clip < ApplicationRecord
     groups.each { |group| group.lottery_number = number }
   end
 
+  # TODO: Abstract to the clips controller
   def send_joined_email(joining_group)
     groups_to_notify = existing_groups - [joining_group]
     groups_to_notify.each do |g|
@@ -58,6 +59,7 @@ class Clip < ApplicationRecord
     end
   end
 
+  # TODO: Abstract to the clips controller
   def send_left_email(leaving_group)
     existing_groups.each do |g|
       StudentMailer.left_clip(leaving_group: leaving_group, group: g,
