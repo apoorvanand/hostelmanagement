@@ -327,7 +327,7 @@ RSpec.describe Group, type: :model do
       end
       it 'returns false if unsuccessful' do
         clip = FactoryGirl.create(:clip, groups_count: 2)
-        group = clip.groups.first
+        group = clip.groups.first.reload
         expect(group.update_lottery(number: 1)).to be_falsey
       end
     end
