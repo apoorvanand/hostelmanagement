@@ -7,11 +7,11 @@ class GroupsForLotteryQuery
     delegate :call, to: :new
   end
 
-  # Initialize an DrawlessSuitesQuery
+  # Initialize a GroupsForLotteryQuery
   def initialize
-    @relation = DrawClipGroup.includes([group: :memberships],
-                                       [clip: [clip_memberships:
-                                       [group: :memberships]]])
+    @relation = DrawClipGroup.includes(
+      [group: :leader], [clip: [clip_memberships: [group: :leader]]]
+    )
   end
 
   # Execute the groups for lottery query.

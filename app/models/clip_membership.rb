@@ -57,7 +57,7 @@ class ClipMembership < ApplicationRecord
   end
 
   def group_not_in_clip
-    return unless group.clip && group.clip != clip
+    return unless group.clip
     errors.add :base, "#{group.name} already belongs to another clip"
   end
 

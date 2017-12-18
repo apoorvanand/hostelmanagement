@@ -229,11 +229,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   end
 
   def changing_lottery_when_clipped?
-    clip && will_save_change_to_lottery_number?
+    clip.present? && will_save_change_to_lottery_number?
   end
 
   def changed_draw_when_clipped?
-    saved_change_to_draw_id && clip_memberships
+    saved_change_to_draw_id && clip_memberships.present?
   end
 
   def assign_new_status
