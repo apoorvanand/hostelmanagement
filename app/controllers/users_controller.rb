@@ -81,9 +81,10 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :role, :email,
-                                 :intent, :gender, :username, :class_year,
-                                 :college)
+    params.require(:user)
+          .permit(:first_name, :last_name, :role, :email, :intent, :gender,
+                  :username, :class_year)
+          .tap { |p| p[:college_id] = current_college.id }
   end
 
   def querier

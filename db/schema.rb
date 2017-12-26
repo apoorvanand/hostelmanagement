@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171031162746) do
+ActiveRecord::Schema.define(version: 20171226042711) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -140,9 +140,10 @@ ActiveRecord::Schema.define(version: 20171031162746) do
     t.integer "intent", default: 0, null: false
     t.string "username"
     t.integer "class_year"
-    t.string "college"
     t.integer "old_draw_id"
     t.integer "room_id"
+    t.bigint "college_id"
+    t.index ["college_id"], name: "index_users_on_college_id"
     t.index ["draw_id"], name: "index_users_on_draw_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -150,5 +151,6 @@ ActiveRecord::Schema.define(version: 20171031162746) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "users", "colleges"
   add_foreign_key "users", "rooms"
 end

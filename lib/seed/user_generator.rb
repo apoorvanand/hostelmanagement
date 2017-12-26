@@ -5,7 +5,7 @@ class UserGenerator
   include Callable
 
   def self.generate_superuser(**overrides)
-    new(overrides: overrides.merge(role: 'superuser')).generate
+    new(overrides: overrides.merge(role: 'superuser', college: nil)).generate
   end
 
   def initialize(overrides: {})
@@ -33,14 +33,10 @@ class UserGenerator
                   intent: User.intents.keys.sample,
                   password: 'passw0rd',
                   class_year: random_class_year,
-                  college: random_college_str }.merge(overrides)
+                  college: College.order('RANDOM()').first }.merge(overrides)
   end
 
   def random_class_year
     Time.zone.today.year + (1..3).to_a.sample
-  end
-
-  def random_college_str
-    ('A'..'Z').to_a.sample(2).join
   end
 end

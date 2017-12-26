@@ -26,7 +26,7 @@ class UserDashboard < Administrate::BaseDashboard
     intent: Field::String.with_options(searchable: false),
     username: Field::String,
     class_year: Field::Number,
-    college: Field::String,
+    college: Field::BelongsTo,
     old_draw_id: Field::Number,
     reset_password_sent_at: Field::DateTime,
     remember_created_at: Field::DateTime,
@@ -47,6 +47,7 @@ class UserDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i(
     first_name
     last_name
+    college
     role
     draw
     group

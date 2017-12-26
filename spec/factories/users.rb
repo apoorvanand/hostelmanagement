@@ -11,6 +11,10 @@ FactoryGirl.define do
     class_year { Time.zone.today.year }
     username { first_name.downcase if env? 'CAS_BASE_URL' }
 
+    trait :with_college do
+      college { College.first || FactoryGirl.create(:college) }
+    end
+
     factory :student_in_draw do
       after(:build) do |user|
         user.draw = FactoryGirl.build(:draw)

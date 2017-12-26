@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe UserCreator do
   describe '#create!' do
     context 'success' do
+      before { create(:college) }
       it 'creates a user' do
         params = instance_spy('ActionController::Parameters',
                               to_h: valid_params)
@@ -91,7 +92,7 @@ RSpec.describe UserCreator do
   def valid_params
     {
       first_name: 'John', last_name: 'Smith', role: 'admin',
-      email: 'john@smith.com', username: 'foo'
+      email: 'john@smith.com', username: 'foo', college_id: College.first.id
     }
   end
 end

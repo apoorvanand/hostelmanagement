@@ -211,4 +211,18 @@ RSpec.describe User, type: :model do
       expect(user.admin?).to be(false)
     end
   end
+
+  describe '#college' do
+    let(:user) { described_class.new }
+
+    it 'returns an associated object if present' do
+      college = create(:college)
+      user.college = college
+      expect(user.college).to eq(college)
+    end
+
+    it 'returns a null college if none associated' do
+      expect(user.college).not_to be_persisted
+    end
+  end
 end

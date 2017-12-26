@@ -67,7 +67,7 @@ class CollegeDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how colleges are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(college)
-  #   "College ##{college.id}"
-  # end
+  def display_resource(college)
+    college.name
+  end
 end

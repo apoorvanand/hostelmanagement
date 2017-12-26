@@ -15,8 +15,8 @@
 # @attr intent [Integer] an enum for the user's housing intent, on_campus,
 #   off_campus, or undeclared (required)
 # @attr class_year [Integer] the graduating class year of the student (optional)
-# @attr college [String] a string describing the residential college to which
-#   the user belongs (optional)
+# @attr college [College] the college that a user is associated with (optional
+#   but necessary for most authorization)
 class User < ApplicationRecord
   # Determine whether or not CAS authentication is being used, must be at the
   # top of the class to be used in the Devise loading conditional below.
@@ -36,6 +36,7 @@ class User < ApplicationRecord
            :validatable
   end
 
+  belongs_to :college
   belongs_to :draw
   has_one :led_group, inverse_of: :leader, dependent: :destroy,
                       class_name: 'Group', foreign_key: :leader_id
@@ -128,6 +129,13 @@ class User < ApplicationRecord
   # @return [Boolean] True for admins and superusers
   def admin?
     role == 'admin' || role == 'superuser'
+  end
+
+  # Return the associated college or a null object
+  #
+  # @return [College] the associated college or a null object
+  def college
+    super || College.new(name: 'None')
   end
 
   private
