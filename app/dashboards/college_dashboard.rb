@@ -13,6 +13,7 @@ class CollegeDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     name: Field::String,
+    subdomain: Field::String,
     dean: Field::String,
     admin_email: Field::String,
     site_url: Field::String,
@@ -29,6 +30,7 @@ class CollegeDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i(
     name
+    subdomain
     dean
     admin_email
     site_url
@@ -39,6 +41,7 @@ class CollegeDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i(
     id
     name
+    subdomain
     dean
     admin_email
     site_url
@@ -53,6 +56,7 @@ class CollegeDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i(
     name
+    subdomain
     dean
     admin_email
     site_url
