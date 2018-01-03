@@ -24,6 +24,8 @@ class UsersController < ApplicationController
     result = UserBuilder.build(id_attr: build_user_params['username'],
                                querier: querier, college: current_college)
     @user = result[:user]
+    @roles = User.roles.keys
+    @roles = @roles - %w(superuser) unless current_user.superuser?
     handle_action(**result)
   rescue Rack::Timeout::RequestTimeoutException => exception
     Honeybadger.notify(exception)
@@ -84,7 +86,12 @@ class UsersController < ApplicationController
     params.require(:user)
           .permit(:first_name, :last_name, :role, :email, :intent, :gender,
                   :username, :class_year)
-          .tap { |p| p[:college_id] = current_college.id }
+          .tap { |p| process_params(p) }
+  end
+
+  def process_params(p)
+    p[:college_id] = current_college.id
+    p[:role] = 'student' if p[:role] == 'superuser' && !current_user.superuser?
   end
 
   def querier

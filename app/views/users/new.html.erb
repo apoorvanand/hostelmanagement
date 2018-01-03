@@ -13,7 +13,7 @@
   <%= profile_field(form: f, user: @user, field: :class_year) %>
   <%= f.input :college_id, disabled: true, as: :string,
                            input_html: { value: @current_college.name } %>
-  <%= f.input :role, collection: User.roles.keys %>
+  <%= f.input :role, collection: @roles %>
   <%= f.submit %>
 <% end %>
 <%= link_to 'Cancel', users_path %>
