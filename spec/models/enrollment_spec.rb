@@ -17,6 +17,12 @@ RSpec.describe Enrollment do
         result = described_class.enroll(ids: ids, querier: FakeProfileQuerier)
         expect(result[:users]).to eq([User.first])
       end
+      it 'correctly assigns the user to a passed college' do
+        college = create(:college)
+        result = described_class.enroll(ids: 'id1', college: college,
+                                        querier: FakeProfileQuerier)
+        expect(result[:users].first.college).to eq(college)
+      end
       it 'notes the success of the valid user' do
         ids = %w(id1 badqueryid).join(', ')
         result = described_class.enroll(ids: ids, querier: FakeProfileQuerier)

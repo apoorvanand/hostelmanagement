@@ -16,10 +16,12 @@ class Enrollment
   # @param ids [String] the admin-entered string of multiple user IDs to import
   # @param querier [#query] the profile querier service object, see UserBuilder
   #   for more details
-  def initialize(ids: '', querier: nil)
+  # @param college [College] the college to assign the users to
+  def initialize(ids: '', querier: nil, college: nil)
     @ids = ids
     @ids_array = process_ids_str(ids)
     @querier = querier
+    @college = college
     @successes = []
     @failures = []
     @failed_query_ids = []
@@ -55,7 +57,7 @@ class Enrollment
 
   private
 
-  attr_reader :querier
+  attr_reader :querier, :college
   attr_writer :successes
   attr_accessor :failures, :failed_query_ids
 
@@ -68,8 +70,8 @@ class Enrollment
     "\n"
   end
 
-  def process_id(id)
-    ub = UserBuilder.new(id_attr: id, querier: querier)
+  def process_id(id) # rubocop:disable AbcSize
+    ub = UserBuilder.new(id_attr: id, querier: querier, college: college)
     user = ub.build[:user]
     return if ub.exists?
     return failed_query_ids << id if user.first_name.nil?

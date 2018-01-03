@@ -26,6 +26,21 @@ RSpec.feature 'User enrollment' do
   end
   # rubocop:enable RSpec/AnyInstance
 
+  context 'college assignment' do
+    let(:college) { create(:college) }
+
+    it 'happens automatically' do
+      using_college(college) do
+        visit new_enrollment_path
+        submit_list_of_ids
+      end
+      # We normally wouldn't assert against the database in a feature spec but
+      # it's the easiest way to test the controller pass-through of the
+      # current_college to the service object.
+      expect(User.last.college).to eq(college)
+    end
+  end
+
   def submit_list_of_ids
     list_of_ids = %w(id1 iD2 id3 ID3 invalidid).join(', ')
     fill_in 'enrollment_ids', with: list_of_ids

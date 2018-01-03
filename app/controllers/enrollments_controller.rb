@@ -23,7 +23,7 @@ class EnrollmentsController < ApplicationController
 
   def enrollment_params
     params.require(:enrollment).permit(:ids).to_h.transform_keys(&:to_sym)
-          .merge(querier: querier)
+          .merge(querier: querier, college: current_college)
   end
 
   def querier

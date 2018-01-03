@@ -14,9 +14,11 @@ class UserBuilder
   #   This must take the id_attr as an initializer parameter (assigned to :id),
   #   and implement a method :query that returns a hash of user attributes and
   #   values.
-  def initialize(id_attr:, querier: nil)
+  # @param college [College] the college to assign the user to
+  def initialize(id_attr:, querier: nil, college: nil)
     @id_attr = id_attr
     @querier = querier&.new(id: id_attr)
+    @college = college
     @user = User.new
     @id_symbol = User.cas_auth? ? :username : :email
   end
@@ -31,6 +33,7 @@ class UserBuilder
     return invalid_error if id_attr.empty?
     return duplicate_error if exists?
     assign_login
+    assign_college
     assign_profile_attrs
     success
   end
@@ -50,7 +53,7 @@ class UserBuilder
   private
 
   attr_accessor :user
-  attr_reader :id_attr, :id_symbol, :querier
+  attr_reader :id_attr, :id_symbol, :querier, :college
 
   def result_hash
     { redirect_object: nil, user: user }
@@ -74,6 +77,10 @@ class UserBuilder
   def assign_login
     assign_method = "#{id_symbol}=".to_sym
     user.send(assign_method, id_attr)
+  end
+
+  def assign_college
+    user.college_id = college&.id
   end
 
   def assign_profile_attrs

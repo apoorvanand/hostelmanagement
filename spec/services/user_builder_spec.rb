@@ -18,6 +18,11 @@ RSpec.describe UserBuilder do
         result = described_class.new(id_attr: 'foo', querier: querier).build
         expect(result[:user][:first_name]).to eq('John')
       end
+      it 'assigns the user to the relevant college if passed' do
+        college = instance_spy('college', id: 1)
+        result = described_class.new(id_attr: 'foo', college: college).build
+        expect(result[:user][:college_id]).to eq(college.id)
+      end
       it 'returns a success flash' do
         result = described_class.build(id_attr: 'foo')
         expect(result[:msg]).to have_key(:success)
