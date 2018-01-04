@@ -21,9 +21,11 @@ class UsersController < ApplicationController
 
   def new
     redirect_to(build_user_path) && return unless params['user']
+    # PASS COLLEGE IN HERE
     result = UserBuilder.build(id_attr: build_user_params['username'],
                                querier: querier)
     @user = result[:user]
+    # ALSO SEND COLLEGE NAME THROUGH FOR FORM --> UNEDITABLE FIELD
     handle_action(**result)
   rescue Rack::Timeout::RequestTimeoutException => exception
     Honeybadger.notify(exception)

@@ -17,7 +17,7 @@ class Enrollment
   # @param querier [#query] the profile querier service object, see UserBuilder
   #   for more details
   # @param college [College] the college to assign the users to
-  def initialize(ids: '', querier: nil, college: nil)
+  def initialize(ids: '', querier: nil, college:)
     @ids = ids
     @ids_array = process_ids_str(ids)
     @querier = querier
