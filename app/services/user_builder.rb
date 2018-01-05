@@ -14,7 +14,7 @@ class UserBuilder
   #   This must take the id_attr as an initializer parameter (assigned to :id),
   #   and implement a method :query that returns a hash of user attributes and
   #   values.
-  # @param college [College] the college to assign the user to
+  # @param college [College] the college to assign the user to (required)
   def initialize(id_attr:, querier: nil, college:)
     @id_attr = id_attr
     @querier = querier&.new(id: id_attr)

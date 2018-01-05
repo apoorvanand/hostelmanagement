@@ -5,15 +5,19 @@ require 'support/fake_profile_querier'
 require 'rack-timeout'
 
 RSpec.feature 'User enrollment' do
+  let(:college) { create(:college) }
+
   before do
-    log_in(FactoryGirl.create(:admin))
+    using_college(college) { log_in(FactoryGirl.create(:admin)) }
     allow(ENV).to receive(:[]).and_return(nil)
     allow(ENV).to receive(:[]).with('QUERIER').and_return('FakeProfileQuerier')
   end
 
   it 'can be performed using a list of IDs' do
-    visit new_enrollment_path
-    submit_list_of_ids
+    using_college(college) do
+      visit new_enrollment_path
+      submit_list_of_ids
+    end
     expect(page_has_enrollment_results(page)).to be_truthy
   end
 
@@ -21,13 +25,14 @@ RSpec.feature 'User enrollment' do
   it 'handles IDR timeout' do
     allow_any_instance_of(FakeProfileQuerier).to receive(:query)
       .and_raise(Rack::Timeout::RequestTimeoutException.new({}))
-    visit new_enrollment_path
-    expect { submit_list_of_ids }.not_to raise_error
+    using_college(college) do
+      visit new_enrollment_path
+      expect { submit_list_of_ids }.not_to raise_error
+    end
   end
   # rubocop:enable RSpec/AnyInstance
 
   context 'college assignment' do
-    let(:college) { create(:college) }
 
     it 'happens automatically' do
       using_college(college) do

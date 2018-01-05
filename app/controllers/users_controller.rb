@@ -19,13 +19,12 @@ class UsersController < ApplicationController
     @user = User.new
   end
 
-  def new
+  def new # rubocop:disable AbcSize
     redirect_to(build_user_path) && return unless params['user']
-    # PASS COLLEGE IN HERE
     result = UserBuilder.build(id_attr: build_user_params['username'],
-                               querier: querier)
+                               querier: querier, college: current_college)
     @user = result[:user]
-    # ALSO SEND COLLEGE NAME THROUGH FOR FORM --> UNEDITABLE FIELD
+    @college_name = current_college.name
     handle_action(**result)
   rescue Rack::Timeout::RequestTimeoutException => exception
     Honeybadger.notify(exception)

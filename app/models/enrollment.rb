@@ -16,7 +16,7 @@ class Enrollment
   # @param ids [String] the admin-entered string of multiple user IDs to import
   # @param querier [#query] the profile querier service object, see UserBuilder
   #   for more details
-  # @param college [College] the college to assign the users to
+  # @param college [College] the college to assign the users to (required)
   def initialize(ids: '', querier: nil, college:)
     @ids = ids
     @ids_array = process_ids_str(ids)

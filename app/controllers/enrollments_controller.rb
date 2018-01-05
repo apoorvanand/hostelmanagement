@@ -3,7 +3,7 @@
 # Controller for user enrollments (bulk-adding)
 class EnrollmentsController < ApplicationController
   def new
-    @enrollment = Enrollment.new
+    @enrollment = Enrollment.new(college: current_college)
   end
 
   def create
@@ -35,7 +35,7 @@ class EnrollmentsController < ApplicationController
 
   def handle_idr_timeout
     flash[:error] = 'There was a problem with that request, please try again.'
-    @enrollment = Enrollment.new
+    @enrollment = Enrollment.new(college: current_college)
     render action: 'new'
   end
 end
