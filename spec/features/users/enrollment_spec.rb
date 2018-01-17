@@ -21,7 +21,7 @@ RSpec.feature 'User enrollment' do
     expect(page_has_enrollment_results(page)).to be_truthy
   end
 
-  # rubocop:disable RSpec/AnyInstance
+  # rubocop:disable RSpec/ExampleLength, RSpec/AnyInstance
   it 'handles IDR timeout' do
     allow_any_instance_of(FakeProfileQuerier).to receive(:query)
       .and_raise(Rack::Timeout::RequestTimeoutException.new({}))
@@ -30,10 +30,9 @@ RSpec.feature 'User enrollment' do
       expect { submit_list_of_ids }.not_to raise_error
     end
   end
-  # rubocop:enable RSpec/AnyInstance
+  # rubocop:enable RSpec/ExampleLength, RSpec/AnyInstance
 
   context 'college assignment' do
-
     it 'happens automatically' do
       using_college(college) do
         visit new_enrollment_path

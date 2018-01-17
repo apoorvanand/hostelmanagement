@@ -41,19 +41,19 @@ RSpec.describe UserBuilder do
         before { allow(User).to receive(:cas_auth?).and_return(true) }
         it 'sets the username to the username' do
           result = described_class.build(id_attr: 'foo',
-                                        college: instance_spy('college'))
+                                         college: instance_spy('college'))
           expect(result[:user].username).to eq('foo')
         end
         it 'does not set the email' do
           result = described_class.build(id_attr: 'foo',
-                                        college: instance_spy('college'))
+                                         college: instance_spy('college'))
           expect(result[:user].email).to be_empty
         end
       end
       context 'without CAS' do # rubocop:disable RSpec/NestedGroups
         it 'sets the email to the username' do
           result = described_class.build(id_attr: 'foo',
-                                        college: instance_spy('college'))
+                                         college: instance_spy('college'))
           expect(result[:user].email).to eq('foo')
         end
       end
@@ -65,21 +65,21 @@ RSpec.describe UserBuilder do
           user_spy = instance_spy('ActiveRecord::Relation', count: 1)
           allow(User).to receive(:where).with(email: 'foo').and_return(user_spy)
           result = described_class.build(id_attr: 'foo',
-                                        college: instance_spy('college'))
+                                         college: instance_spy('college'))
           expect(result[:user].attributes).to eq(User.new.attributes)
         end
         it 'returns an error flash' do
           user_spy = instance_spy('ActiveRecord::Relation', count: 1)
           allow(User).to receive(:where).with(email: 'foo').and_return(user_spy)
           result = described_class.build(id_attr: 'foo',
-                                        college: instance_spy('college'))
+                                         college: instance_spy('college'))
           expect(result[:msg]).to have_key(:error)
         end
         it 'returns action: build' do
           user_spy = instance_spy('ActiveRecord::Relation', count: 1)
           allow(User).to receive(:where).with(email: 'foo').and_return(user_spy)
           result = described_class.build(id_attr: 'foo',
-                                        college: instance_spy('college'))
+                                         college: instance_spy('college'))
           expect(result[:action]).to eq('build')
         end
       end

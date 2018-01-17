@@ -2,15 +2,17 @@
 <h1>Add User</h1>
 <%= simple_form_for @user do |f| %>
   <%= profile_field(form: f, user: @user, field: :email) %>
-  <% unless @user&.username&.empty? %>
+  <% if @user&.username.present? %>
     <%= f.input :username, disabled: true %>
     <%= f.input :username, as: :hidden %>
+  <% else %>
+    <%= profile_field(form: f, user: @user, field: :username) %>
   <% end %>
   <%= profile_field(form: f, user: @user, field: :first_name) %>
   <%= profile_field(form: f, user: @user, field: :last_name) %>
   <%= profile_field(form: f, user: @user, field: :class_year) %>
   <%= f.input :college_id, disabled: true, as: :string,
-                           input_html: { value: @college_name } %>
+                           input_html: { value: @current_college.name } %>
   <%= f.input :role, collection: User.roles.keys %>
   <%= f.submit %>
 <% end %>
