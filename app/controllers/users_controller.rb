@@ -24,8 +24,7 @@ class UsersController < ApplicationController
     result = UserBuilder.build(id_attr: build_user_params['username'],
                                querier: querier, college: current_college)
     @user = result[:user]
-    @roles = User.roles.keys
-    @roles = @roles - %w(superuser) unless current_user.superuser?
+    @roles = valid_roles
     handle_action(**result)
   rescue Rack::Timeout::RequestTimeoutException => exception
     Honeybadger.notify(exception)
@@ -105,5 +104,11 @@ class UsersController < ApplicationController
     flash[:error] = 'There was a problem with that request, please try again.'
     @user = User.new
     render action: 'build'
+  end
+
+  def valid_roles
+    roles = User.roles.keys
+    return roles if current_user.superuser?
+    roles - %w(superuser)
   end
 end

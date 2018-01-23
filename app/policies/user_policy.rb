@@ -6,13 +6,25 @@ class UserPolicy < ApplicationPolicy
     true
   end
 
+  def edit?
+    update?
+  end
+
+  def update?
+    super && !record.superuser?
+  end
+
+  def destroy?
+    update?
+  end
+
   def edit_intent?
     update_intent?
   end
 
   def update_intent?
-    user.admin? || user.rep? ||
-      (user == record && !user.group && draw_intent_state)
+    (user_has_power(user) || can_update_self(user, record)) &&
+      !record.superuser?
   end
 
   def build?
@@ -30,6 +42,14 @@ class UserPolicy < ApplicationPolicy
   end
 
   private
+
+  def user_has_power(user)
+    user.admin? || user.rep?
+  end
+
+  def can_update_self(user, record)
+    user == record && !user.group && draw_intent_state
+  end
 
   def draw_intent_state
     return false unless user.draw

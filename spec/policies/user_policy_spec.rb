@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/NestedGroups
+
 require 'rails_helper'
 
 RSpec.describe UserPolicy do
@@ -160,28 +162,37 @@ RSpec.describe UserPolicy do
   context 'admin' do
     let(:user) { FactoryGirl.build_stubbed(:user, role: 'admin') }
 
-    permissions :show?, :destroy?, :update?, :edit?,
-                :edit_intent?, :update_intent? do
-      it { is_expected.to permit(user, other_user) }
-    end
-    permissions :index?, :build?, :create?, :new? do
-      it { is_expected.to permit(user, User) }
-    end
-    permissions :draw_info? do
-      context 'other user is admin' do
-        before { allow(other_user).to receive(:admin?).and_return(true) }
-        it { is_expected.not_to permit(user, other_user) }
-      end
-      context 'other user is not in draw' do
-        before { allow(other_user).to receive(:draw_id).and_return(nil) }
-        it { is_expected.not_to permit(user, other_user) }
-      end
-      context 'non-admin in draw' do
-        before do
-          allow(other_user).to receive(:admin?).and_return(false)
-          allow(other_user).to receive(:draw_id).and_return(1)
-        end
+    context 'with non-superuser' do
+      permissions :show?, :destroy?, :update?, :edit?,
+                  :edit_intent?, :update_intent? do
         it { is_expected.to permit(user, other_user) }
+      end
+      permissions :index?, :build?, :create?, :new? do
+        it { is_expected.to permit(user, User) }
+      end
+      permissions :draw_info? do
+        context 'other user is admin' do
+          before { allow(other_user).to receive(:admin?).and_return(true) }
+          it { is_expected.not_to permit(user, other_user) }
+        end
+        context 'other user is not in draw' do
+          before { allow(other_user).to receive(:draw_id).and_return(nil) }
+          it { is_expected.not_to permit(user, other_user) }
+        end
+        context 'non-admin in draw' do
+          before do
+            allow(other_user).to receive(:admin?).and_return(false)
+            allow(other_user).to receive(:draw_id).and_return(1)
+          end
+          it { is_expected.to permit(user, other_user) }
+        end
+      end
+    end
+
+    context 'with superuser' do
+      before { allow(other_user).to receive(:superuser?).and_return(true) }
+      permissions :destroy?, :update?, :edit?, :edit_intent?, :update_intent? do
+        it { is_expected.not_to permit(user, other_user) }
       end
     end
   end
