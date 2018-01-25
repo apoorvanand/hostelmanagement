@@ -3,6 +3,21 @@
 require 'rails_helper'
 
 RSpec.describe College do
+  describe '.current' do
+    it 'returns the current tenant' do
+      college = create(:college, subdomain: 'foo')
+      Apartment::Tenant.switch!('foo')
+      expect(described_class.current).to eq(college)
+    end
+
+    it 'returns a null college if in the public schema' do
+      Apartment::Tenant.reset
+      college = instance_spy('college')
+      allow(described_class).to receive(:new).and_return(college)
+      expect(described_class.current).to eq(college)
+    end
+  end
+
   describe 'associations' do
     it { is_expected.to have_many(:users) }
   end

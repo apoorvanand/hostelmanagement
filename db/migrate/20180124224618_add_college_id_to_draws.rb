@@ -1,11 +1,11 @@
 class AddCollegeIdToDraws < ActiveRecord::Migration[5.1]
   def change
-    add_reference :draws, :college, foreign_key: true
+    add_reference :draws, :college
 
     reversible do |dir|
       # add the right foreign key to the existing tables
       dir.up do
-        subdomain = execute('SHOW search_path;').first['search_path'].split(',').first
+        subdomain = execute('SHOW search_path;').first['search_path']
         return if subdomain == 'public' # I don't like this
         Rails.logger.info "subdomain = '#{subdomain}"
         execute('SET search_path TO public;')

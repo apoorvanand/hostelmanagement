@@ -24,6 +24,17 @@ class College < ApplicationRecord
   before_validation :set_subdomain
   after_create :create_schema!
 
+  # Returns the current Apartment tenant. Returns a null object (blank college)
+  # if tenant does not exist (shouldn't be possible unless we're in the public
+  # schema.
+  #
+  # @return [College] the current college or a null college
+  def self.current
+    find_by!(subdomain: Apartment::Tenant.current)
+  rescue ActiveRecord::RecordNotFound
+    new
+  end
+
   def create_schema!
     Apartment::Tenant.create(subdomain)
   end

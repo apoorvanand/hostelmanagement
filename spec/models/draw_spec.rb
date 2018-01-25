@@ -22,6 +22,12 @@ RSpec.describe Draw, type: :model do
   end
 
   describe 'callbacks' do
+    it 'automatically sets the college id to the current tenant' do
+      college = create(:college, subdomain: 'foo')
+      Apartment::Tenant.switch!('foo')
+      draw = described_class.create!(name: 'draw')
+      expect(draw.college_id).to eq(college.id)
+    end
     it 'nullifies the draw_id field on users in the draw after destroy' do
       draw = FactoryGirl.create(:draw_with_members)
       students = draw.students

@@ -65,10 +65,13 @@ class ApplicationController < ActionController::Base
     #   'Vesta to function correctly'
   end
 
+  # Find and return the current college / tenant. Should redirect to the root
+  # URL which should be some kind of tenant index eventually.
+  #
+  # @return [College] the current college
   def current_college
-    subdomain = Apartment::Tenant.current
-    @current_college ||= College.find_by!(subdomain: subdomain)
+    @current_college ||= College.current
   rescue ActiveRecord::RecordNotFound
-    # handle missing college
+    redirect_to root_url(host: request.domain)
   end
 end

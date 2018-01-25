@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171226042711) do
+ActiveRecord::Schema.define(version: 20180124224618) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -71,6 +71,8 @@ ActiveRecord::Schema.define(version: 20171226042711) do
     t.integer "email_type"
     t.date "locking_deadline"
     t.integer "suite_selection_mode", default: 0, null: false
+    t.bigint "college_id"
+    t.index ["college_id"], name: "index_draws_on_college_id"
   end
 
   create_table "groups", force: :cascade do |t|

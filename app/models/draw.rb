@@ -33,6 +33,7 @@ class Draw < ApplicationRecord # rubocop:disable ClassLength
   validate :cannot_lock_intent_if_undeclared,
            if: ->() { intent_locked_changed? }
 
+  before_validation :set_college_id
   after_destroy :remove_old_draw_ids
 
   enum status: %w(draft pre_lottery lottery suite_selection results)
@@ -238,6 +239,10 @@ class Draw < ApplicationRecord # rubocop:disable ClassLength
 
   def ungrouped_count
     ungrouped_students.count
+  end
+
+  def set_college_id
+    self.college_id = College.current.id
   end
 
   # rubocop:disable Rails/SkipsModelValidations

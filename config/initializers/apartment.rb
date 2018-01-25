@@ -85,7 +85,7 @@ Apartment.configure do |config|
   # search_path, e.g when using a PostgreSQL extension like hstore. Any schemas
   # added here will be available along with your selected Tenant.
   #
-  config.persistent_schemas = %w{ public }
+  # config.persistent_schemas = %w{ hstore }
 
   # <== PostgreSQL only options
   #

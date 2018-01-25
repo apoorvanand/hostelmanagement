@@ -10,10 +10,7 @@ FactoryGirl.define do
     intent { 'on_campus' }
     class_year { Time.zone.today.year }
     username { first_name.downcase if env? 'CAS_BASE_URL' }
-
-    trait :with_college do
-      college { College.first || FactoryGirl.create(:college) }
-    end
+    college { College.current }
 
     factory :student_in_draw do
       after(:build) do |user|

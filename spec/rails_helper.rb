@@ -42,11 +42,28 @@ RSpec.configure do |config|
     ENV['MAILER_FROM'] = 'foo@example.com'
     DatabaseCleaner.clean_with(:deletion)
   end
-  config.before(:each) { DatabaseCleaner.strategy = :transaction }
+
+  # setup for Apartment
+  # see: https://github.com/influitive/apartment/wiki/Testing-Your-Application
+  config.before(:suite) do
+    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.strategy = :transaction
+    Apartment::Tenant.drop('college') rescue nil
+    FactoryGirl.create(:college, subdomain: 'college')
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+    Apartment::Tenant.switch!('college')
+  end
+
   config.before(:each, js: true) { DatabaseCleaner.strategy = :truncation }
-  config.before(:each) { DatabaseCleaner.start }
   config.before(:each, type: :request) { host! 'lvh.me' }
-  config.after(:each) { DatabaseCleaner.clean }
+
+  config.after(:each) do
+    Apartment::Tenant.reset
+    DatabaseCleaner.clean
+  end
 end
 
 ActiveRecord::Migration.maintain_test_schema!
