@@ -5,8 +5,8 @@ class UsersController < ApplicationController
   prepend_before_action :set_user, except: %i(index new build create)
 
   def index
-    @users = User.includes(:draw).all.order(:class_year, :last_name)
-                 .group_by(&:role)
+    @users = current_college.users.includes(:draw).group_by(&:role)
+                            .order(:class_year, :last_name)
     if @users['student']
       @users['student'] = @users['student'].group_by(&:class_year)
     end

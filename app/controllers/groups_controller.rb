@@ -161,7 +161,8 @@ class GroupsController < ApplicationController
   def set_form_data
     @group ||= Group.new(draw: @draw)
     @group.members.delete_all unless @group.persisted?
-    @students = UngroupedStudentsQuery.new(@draw.students.on_campus).call
+    student_base = current_college.students.in_draw(@draw).on_campus
+    @students = UngroupedStudentsQuery.new(student_base).call
     @leader_students = @group.members.empty? ? @students : @group.members
     @suite_sizes = @draw.open_suite_sizes
   end

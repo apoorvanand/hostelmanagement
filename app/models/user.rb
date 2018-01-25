@@ -61,6 +61,8 @@ class User < ApplicationRecord
 
   before_save :downcase_username, if: :cas_auth?
 
+  scope :in_draw, ->(draw) { where(draw_id: draw.id) }
+
   # Returns the user's preferred name
   #
   # @return [String] Preferred name

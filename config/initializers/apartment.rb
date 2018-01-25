@@ -9,6 +9,7 @@
 # require 'apartment/elevators/domain'
 require 'apartment/elevators/subdomain'
 # require 'apartment/elevators/first_subdomain'
+require 'rescued_apartment_middleware'
 
 #
 # Apartment Configuration
@@ -84,7 +85,7 @@ Apartment.configure do |config|
   # search_path, e.g when using a PostgreSQL extension like hstore. Any schemas
   # added here will be available along with your selected Tenant.
   #
-  # config.persistent_schemas = %w{ hstore }
+  config.persistent_schemas = %w{ public }
 
   # <== PostgreSQL only options
   #
@@ -107,4 +108,5 @@ end
 
 # Rails.application.config.middleware.use Apartment::Elevators::Domain
 Rails.application.config.middleware.use Apartment::Elevators::Subdomain
+Apartment::Elevators::Subdomain.prepend(RescuedApartmentMiddleware)
 # Rails.application.config.middleware.use Apartment::Elevators::FirstSubdomain

@@ -19,8 +19,10 @@
 # @attr locking_deadline [Datetime] Deadline to lock groups. Not strictly
 #   enforced, just used for display purposes and sending emails.
 class Draw < ApplicationRecord # rubocop:disable ClassLength
+  belongs_to :college
   has_many :groups
-  has_many :students, class_name: 'User', dependent: :nullify
+  has_many :students, ->(d) { where(college_id: d.college_id) },
+           class_name: 'User', dependent: :nullify
   has_many :draw_suites, dependent: :delete_all
   has_many :suites, through: :draw_suites
 

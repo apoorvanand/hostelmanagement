@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe Draw, type: :model do
   describe 'basic validations' do
     it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to belong_to(:college) }
     it { is_expected.to have_many(:students) }
     it { is_expected.to have_many(:groups) }
     it { is_expected.to have_many(:draw_suites) }

@@ -11,7 +11,10 @@
 # @attr floor_plan_url [String] the url to access floor plans
 # @attr student_info_text [Text] a paragraph of text viewable on the student
 #   dashboard
+# @attr users [Array<User>] all of the users in the college
 class College < ApplicationRecord
+  has_many :users
+
   validates :name, presence: true
   validates :admin_email, presence: true
   validates :dean, presence: :true
