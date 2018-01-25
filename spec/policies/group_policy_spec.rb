@@ -241,7 +241,7 @@ RSpec.describe GroupPolicy do
         suite = instance_spy('suite', present?: true)
         allow(group).to receive(:suite).and_return(suite)
         allow(user).to receive(:group).and_return(group)
-        allow(user).to receive(:room_id).and_return(nil)
+        allow(user).to receive(:room).and_return(nil)
       end
       it { is_expected.to permit(user, group) }
       it { is_expected.not_to permit(user, other_group) }
@@ -382,15 +382,16 @@ RSpec.describe GroupPolicy do
       before do
         suite = instance_spy('suite', present?: true)
         allow(group).to receive(:suite).and_return(suite)
-        leader = instance_spy('user', room_id: nil)
+        leader = instance_spy('user', room: nil)
         allow(group).to receive(:leader).and_return(leader)
       end
       it { is_expected.to permit(user, group) }
     end
     permissions :edit_room_assignment? do
       before do
-        leader = instance_spy('user', room_id: 123)
-        allow(group).to receive(:leader).and_return(leader)
+        room = instance_spy('room', present?: true)
+        member = instance_spy('user', room: room)
+        allow(group).to receive(:members).and_return([member, member])
       end
       it { is_expected.not_to permit(user, group) }
     end
@@ -487,15 +488,16 @@ RSpec.describe GroupPolicy do
       before do
         suite = instance_spy('suite', present?: true)
         allow(group).to receive(:suite).and_return(suite)
-        leader = instance_spy('user', room_id: nil)
+        leader = instance_spy('user', room: nil)
         allow(group).to receive(:leader).and_return(leader)
       end
       it { is_expected.to permit(user, group) }
     end
     permissions :edit_room_assignment? do
       before do
-        leader = instance_spy('user', room_id: 123)
-        allow(group).to receive(:leader).and_return(leader)
+        room = instance_spy('room', present?: true)
+        member = instance_spy('user', room: room)
+        allow(group).to receive(:members).and_return([member, member])
       end
       it { is_expected.to permit(user, group) }
     end

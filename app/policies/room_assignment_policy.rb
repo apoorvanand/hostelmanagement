@@ -17,4 +17,8 @@ class RoomAssignmentPolicy < ApplicationPolicy
   def edit?
     GroupPolicy.new(user, record.group).edit_room_assignment?
   end
+
+  def update?
+    edit?
+  end
 end

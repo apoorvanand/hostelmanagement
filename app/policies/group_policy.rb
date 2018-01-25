@@ -136,6 +136,6 @@ class GroupPolicy < ApplicationPolicy
   end
 
   def rooms_assigned?(group)
-    group.leader.room_id.present?
+    group.members.reduce(true) { |has_room, m| has_room && m.room.present? }
   end
 end

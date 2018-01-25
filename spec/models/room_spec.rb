@@ -29,14 +29,10 @@ RSpec.describe Room, type: :model do
     end
   end
 
-  it 'nullify student room_id on deletion' do
-    room = FactoryGirl.create(:room)
-    user = FactoryGirl.create(:user)
-    # rubocop:disable Rails/SkipsModelValidations
-    user.update_columns(room_id: room.id)
-    # rubocop:enable Rails/SkipsModelValidations
+  it 'destroy the room assignment on destruction' do
+    room = create(:room_assignment).room
     expect { room.destroy }.to \
-      change { user.reload.room_id }.from(room.id).to(nil)
+      change { RoomAssignment.count }.by(-1)
   end
 
   describe '#type' do
