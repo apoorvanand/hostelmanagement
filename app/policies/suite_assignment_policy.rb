@@ -6,9 +6,8 @@ class SuiteAssignmentPolicy < ApplicationPolicy
     return can_bulk_assign? unless single_assignment?
     return can_drawless_assign? unless draw.present?
     return false unless draw.suite_selection?
-    return student_can_select_suite? if draw.student_selection?
-    # implicit admin single selection
-    user_has_uber_permission?
+    draw.next_group?(record.groups.first) &&
+      (student_can_select_suite? || user_has_uber_permission?)
   end
 
   def create?
@@ -45,7 +44,6 @@ class SuiteAssignmentPolicy < ApplicationPolicy
 
   def student_can_select_suite?
     return false unless draw == user.draw
-    group = record.groups.first
-    user.leader_of?(group) && draw.next_group?(group)
+    draw.student_selection? && user.leader_of?(record.groups.first)
   end
 end

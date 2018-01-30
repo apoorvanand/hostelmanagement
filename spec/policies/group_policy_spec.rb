@@ -252,7 +252,7 @@ RSpec.describe GroupPolicy do
       it { is_expected.not_to permit(user, group) }
     end
 
-    permissions :select_suite?, :assign_suite? do
+    permissions :select_suite? do
       context 'next group, group leader' do
         before do
           draw = instance_spy('Draw', student_selection?: true)
@@ -287,6 +287,42 @@ RSpec.describe GroupPolicy do
         it { is_expected.not_to permit(user, group) }
       end
     end
+
+    permissions :admin_suite_assignment_during_student_selection? do
+      before do
+        allow(group).to receive(:draw).and_return(build_stubbed('draw'))
+      end
+
+      context 'not in student selection mode' do
+        before do
+          allow(group.draw).to receive(:student_selection?).and_return(false)
+        end
+
+        it { is_expected.not_to permit(user, group) }
+      end
+
+      context 'in student selection mode' do
+        before do
+          allow(group.draw).to receive(:student_selection?).and_return(true)
+        end
+
+        context 'but the group is not next' do
+          before do
+            allow(group.draw).to receive(:next_group?).and_return(false)
+          end
+
+          it { is_expected.not_to permit(user, group) }
+        end
+
+        context 'and the group is next' do
+          before do
+            allow(group.draw).to receive(:next_group?).and_return(true)
+          end
+
+          it { is_expected.not_to permit(user, group) }
+        end
+      end
+    end
   end
 
   context 'housing rep' do
@@ -304,7 +340,7 @@ RSpec.describe GroupPolicy do
     end
     permissions :show?, :edit?, :update?, :destroy?, :accept_request?,
                 :advanced_edit?, :view_pending_members?, :reject_pending?,
-                :change_leader?, :select_suite?, :assign_suite? do
+                :change_leader?, :select_suite? do
       it { is_expected.to permit(user, group) }
     end
     permissions :make_drawless? do
@@ -394,6 +430,38 @@ RSpec.describe GroupPolicy do
       end
       it { is_expected.not_to permit(user, group) }
     end
+
+    permissions :admin_suite_assignment_during_student_selection? do
+      context 'not in student selection mode' do
+        before do
+          allow(group.draw).to receive(:student_selection?).and_return(false)
+        end
+
+        it { is_expected.not_to permit(user, group) }
+      end
+
+      context 'in student selection mode' do
+        before do
+          allow(group.draw).to receive(:student_selection?).and_return(true)
+        end
+
+        context 'but the group is not next' do
+          before do
+            allow(group.draw).to receive(:next_group?).and_return(false)
+          end
+
+          it { is_expected.not_to permit(user, group) }
+        end
+
+        context 'and the group is next' do
+          before do
+            allow(group.draw).to receive(:next_group?).and_return(true)
+          end
+
+          it { is_expected.to permit(user, group) }
+        end
+      end
+    end
   end
 
   context 'admin' do
@@ -411,8 +479,7 @@ RSpec.describe GroupPolicy do
     end
     permissions :show?, :edit?, :update?, :destroy?, :accept_request?,
                 :advanced_edit?, :view_pending_members?, :reject_pending?,
-                :change_leader?, :make_drawless?, :select_suite?,
-                :assign_suite? do
+                :change_leader?, :make_drawless?, :select_suite? do
       it { is_expected.to permit(user, group) }
     end
     permissions :send_invites?, :invite? do
@@ -498,6 +565,38 @@ RSpec.describe GroupPolicy do
         allow(group).to receive(:leader).and_return(leader)
       end
       it { is_expected.to permit(user, group) }
+    end
+
+    permissions :admin_suite_assignment_during_student_selection? do
+      context 'not in student selection mode' do
+        before do
+          allow(group.draw).to receive(:student_selection?).and_return(false)
+        end
+
+        it { is_expected.not_to permit(user, group) }
+      end
+
+      context 'in student selection mode' do
+        before do
+          allow(group.draw).to receive(:student_selection?).and_return(true)
+        end
+
+        context 'but the group is not next' do
+          before do
+            allow(group.draw).to receive(:next_group?).and_return(false)
+          end
+
+          it { is_expected.not_to permit(user, group) }
+        end
+
+        context 'and the group is next' do
+          before do
+            allow(group.draw).to receive(:next_group?).and_return(true)
+          end
+
+          it { is_expected.to permit(user, group) }
+        end
+      end
     end
   end
 end

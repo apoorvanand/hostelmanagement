@@ -160,7 +160,7 @@ RSpec.describe SuiteAssignmentPolicy do
           SuiteAssignment.new(groups: [group], draw: draw)
         end
 
-        it { is_expected.not_to permit(user, assignment) }
+        it { is_expected.to permit(user, assignment) }
       end
 
       context 'draw not in suite selection' do
@@ -211,28 +211,18 @@ RSpec.describe SuiteAssignmentPolicy do
           allow(draw).to receive(:suite_selection?).and_return(true)
         end
 
-        context 'leader and next group' do
+        context 'not next group' do
           before do
-            allow(user).to receive(:leader_of?).with(group).and_return(true)
-            allow(draw).to receive(:next_group?).with(group).and_return(true)
-          end
-          it { is_expected.to permit(user, assignment) }
-        end
-
-        context 'leader, not next' do
-          before do
-            allow(user).to receive(:leader_of?).with(group).and_return(true)
             allow(draw).to receive(:next_group?).with(group).and_return(false)
           end
           it { is_expected.not_to permit(user, assignment) }
         end
 
-        context 'not leader, next' do
+        context 'next group' do
           before do
-            allow(user).to receive(:leader_of?).with(group).and_return(false)
             allow(draw).to receive(:next_group?).with(group).and_return(true)
           end
-          it { is_expected.not_to permit(user, assignment) }
+          it { is_expected.to permit(user, assignment) }
         end
       end
     end
@@ -320,7 +310,7 @@ RSpec.describe SuiteAssignmentPolicy do
           allow(draw).to receive(:suite_selection?).and_return(true)
         end
 
-        it { is_expected.not_to permit(user, assignment) }
+        it { is_expected.to permit(user, assignment) }
       end
     end
 

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable ClassLength
+
 # Class for Group permissions
 class GroupPolicy < ApplicationPolicy
   def show?
@@ -101,8 +103,9 @@ class GroupPolicy < ApplicationPolicy
       student_can_select_suite?
   end
 
-  def assign_suite?
-    select_suite?
+  def admin_suite_assignment_during_student_selection?
+    record.draw.student_selection? && record.draw.next_group?(record) &&
+      user_has_uber_permission?
   end
 
   class Scope < Scope # rubocop:disable Style/Documentation

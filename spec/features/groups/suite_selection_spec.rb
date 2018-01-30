@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.feature 'Suite Selection' do
-  context 'valid' do
+  context 'user mode' do
     let(:leader) do
       create(:draw_in_selection,
              suite_selection_mode: 'student_selection').next_groups.first.leader
@@ -20,6 +20,22 @@ RSpec.feature 'Suite Selection' do
       click_on 'Select Suite'
       select number, from: "suite_assignment_suite_id_for_#{group_id}"
       click_on 'Assign suites'
+    end
+
+    context 'admins can assign from group#show' do
+      it 'only if the group is next' do
+        log_in(FactoryGirl.create(:admin))
+        suite = leader.draw.suites.where(size: leader.group.size).first
+        visit draw_group_path(leader.draw, leader.group)
+        admin_suite_assign(suite.number, leader.group.id)
+        expect(page).to have_content('Suite assignment successful')
+      end
+
+      def admin_suite_assign(number, group_id)
+        click_on 'Assign Suites'
+        select number, from: "suite_assignment_suite_id_for_#{group_id}"
+        click_button 'Assign suites'
+      end
     end
   end
 
@@ -47,20 +63,15 @@ RSpec.feature 'Suite Selection' do
                  .next_groups.first.leader
     end
 
-    it 'link does not show' do
+    it 'link does not show in student selection' do
       log_in leader
       expect(page).not_to have_content('Select Suite')
     end
 
-    it 'cannot reach page' do
+    it 'cannot reach page from student selection' do
       log_in leader
       visit new_group_suite_assignment_path(leader.group)
       expect(page).to have_content("don't have permission")
     end
-  end
-
-  context 'not next group' do
-    # TODO: fix this
-    xit 'WRITE'
   end
 end
