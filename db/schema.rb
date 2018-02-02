@@ -203,16 +203,12 @@ ActiveRecord::Schema.define(version: 20180216182524) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-<<<<<<< HEAD
+
   add_foreign_key "clip_memberships", "clips"
   add_foreign_key "clip_memberships", "groups"
   add_foreign_key "groups", "lottery_assignments"
   add_foreign_key "lottery_assignments", "clips"
   add_foreign_key "lottery_assignments", "draws"
-=======
-  add_foreign_key "favorites", "groups"
-  add_foreign_key "favorites", "suites"
->>>>>>> ba264cd... Resolves #675
   add_foreign_key "users", "rooms"
 
   create_view "lottery_base_views",  sql_definition: <<-SQL

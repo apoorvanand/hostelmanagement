@@ -7,7 +7,7 @@
       <table>
         <thead>
           <tr>
-            <td>#</td>
+            <td>#</td>  
             <td># Singles</td>
             <td># Doubles</td>
             <td># Common</td>
@@ -26,7 +26,7 @@
               <td data-role="suite-draws">
                 <%= render partial: 'suites/draw_link', collection: suite.draws, spacer_template: 'shared/comma' %>
               </td>
-              #### Mark as favorite
+              <td><% if policy(Like).new? %> Like this suite. <%end%></td>
               <td class="actions" data-role="suite-actions">
                 <%= link_to 'View', suite_path(suite), class: 'button' %>
                 <% if policy(suite).edit? %>

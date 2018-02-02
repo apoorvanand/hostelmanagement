@@ -18,7 +18,7 @@ RSpec.describe LikePolicy do
       group.draw.suites << suite
     end
 
-    permissions :show?, :create?, :delete? do
+    permissions :show?, :create?, :new?, :edit?, :delete? do
       let(:fave) { FactoryGirl.create(:favorite, group: group, suite: suite) }
       let(:like) { FactoryGirl.create(:like, user: user, favorite: fave) }
 

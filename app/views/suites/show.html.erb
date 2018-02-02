@@ -23,8 +23,11 @@
       <%= render partial: 'draw_link', collection: @draws, spacer_template: 'shared/comma' %>
     <% end %>
   </li>
-</ul>
-#### mark as favorite
+  </ul>
+  <% if policy(Like).new? %>
+    Like this suite. 
+    <% end %>
+
 <h3>Rooms</h3>
 <%= render 'rooms/summary', rooms: @rooms %>
 <p><%= link_to 'Add room', new_suite_room_path(@suite), class: 'button secondary' if policy(Room).new? %></p>

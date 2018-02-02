@@ -16,7 +16,7 @@
           <td><%= suite.singles.count %></td>
           <td><%= suite.doubles.count %></td>
           <td><%= suite.common_rooms.count %></td>
-          ###add link for favorite
+          <td><% if policy(Like).new? %> Like this suite. <%end%></td>
         </tr>
       <% end %>
     </tbody>
