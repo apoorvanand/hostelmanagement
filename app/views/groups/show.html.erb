@@ -1,5 +1,20 @@
 <% provide(:title, @group.name) %>
 <%= render 'group_details', group: @group %>
+<% if policy(Like).new? %> 
+  <% unless @group.favorites.empty? %>
+    <h3> Favorite Suites </h3>
+    <ul> <% @group.favorites.each do |r| %>
+      <li>
+        <%= link_to r.suite.name, suite_path(r) %>
+        <% if policy(Like).delete? %>
+        #how to make it so only the person that created the like can delete it
+        (Delete this like - only if you made the like)
+        <%end%>
+      </li>
+    </ul>
+  <% end %>
+<% end %>
+
 <% if policy(@group).view_pending_members? %>
   <% unless @group.requests.empty? %>
     <h3 class="group-requests">Requests:</h3>
@@ -103,3 +118,4 @@
     <%= render 'groups/suites_table', suites: @compatible_suites.group_by(&:building) %>
   <% end %>
 <% end %>
+<%end%>
