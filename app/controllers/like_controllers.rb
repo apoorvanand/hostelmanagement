@@ -9,25 +9,25 @@ class LikesController < ApplicationController
   def new; end
 
   def create
-  	@favorite = Favorite.create(group: @group, suite: @suite)
-  	result = Like.create(user: @user, favorite: @favorite)
-  	@like = result[:record]
-  	handle_action(action: 'new', **result)
+    @favorite = Favorite.create(group: @group, suite: @suite,
+                                params: like_params)
+    result = Like.create(user: @user, favorite: @favorite)
+    @like = result[:record]
+    handle_action(action: 'new', **result)
   end
 
   def delete
-  	result = Destroyer.new(object: @like, name_method: :name).destroy
+    result = Destroyer.new(object: @like, name_method: :name).destroy
     path = params[:redirect_path] || draw_path(@draw)
     handle_action(**result, path: path)
- 	end
+  end
 
   def edit; end
 
   private
 
   def like_params
-  	p = params.require(:like).permit(%i(suite_id))
-    p.reject { |v| v.empty? }
+    params.require(:like).permit(%i(suite_id))
   end
 
   def set_user

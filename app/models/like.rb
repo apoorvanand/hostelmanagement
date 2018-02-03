@@ -2,7 +2,6 @@
 
 # Model for relationships between Favorites and Users
 class Like < ApplicationRecord
-
   attr_accessor :suite_id
 
   belongs_to :user
