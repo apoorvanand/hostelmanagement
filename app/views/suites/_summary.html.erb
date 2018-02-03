@@ -27,7 +27,9 @@
                 <%= render partial: 'suites/draw_link', collection: suite.draws, spacer_template: 'shared/comma' %>
               </td>
               <td>
-                <% if policy(Like).new? %> Like this suite. <%end%>
+                <% if policy(Like).new? %> <% binding.pry %>
+                  <%= render 'likes/hidden_form', suite: @suite, btn_str: 'Like' %></li>
+                <%end%>
               </td>
               <td class="actions" data-role="suite-actions">
                 <%= link_to 'View', suite_path(suite), class: 'button' %>

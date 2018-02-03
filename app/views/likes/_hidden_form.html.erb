@@ -1,0 +1,7 @@
+<%= simple_form_for Like.create, url: draw_group_like_path(@draw, @group), html: { class: 'hidden-form' } do |f| %>
+  <% if suite.present? %>
+    <%= f.input :suite_id, as: :hidden, input_html: { value: suite.id } %>
+  <% end %>
+  <%= f.input :user, as: :hidden, input_html: { value: current_user } %>
+  <%= f.button :submit, btn_str, class: 'button secondary' %>
+<% end %>

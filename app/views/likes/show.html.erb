@@ -1,0 +1,15 @@
+<% provide(:title, 'Likes') %>
+<h1>Likes</h1>
+<% if current_user.likes.empty? %>
+  <p>No matching likes,</p>
+<% else %>
+  <table>
+    <tbody>
+      <% current_user.likes.each do |l| %>
+        <tr>
+          <td><%= l.favorite.suite %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

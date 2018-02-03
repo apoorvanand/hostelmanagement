@@ -25,7 +25,7 @@
   </li>
   </ul>
   <% if policy(Like).new? %>
-    Like this suite. 
+    <%= link_to 'Like Suite', draw_group_like(@user, @suite), class: 'button secondary'
     <% end %>
 
 <h3>Rooms</h3>
