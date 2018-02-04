@@ -85,6 +85,14 @@ RSpec.describe LotteryAssignment, type: :model do
     expect { lottery.destroy }.to change { LotteryAssignment.count }.by(-1)
   end
 
+  it 'properly updates groups when created from a clip' do
+    clip = create(:clip)
+    clip.draw.lottery!
+    groups = clip.groups
+    lottery = create(:lottery_assignment, :defined_by_clip, clip: clip)
+    expect(lottery.reload.groups).to match_array(groups)
+  end
+
   describe '#update_selected!' do
     it 'updates selected to true when group has suite' do
       group = FactoryGirl.create(:group_with_suite)
@@ -111,14 +119,27 @@ RSpec.describe LotteryAssignment, type: :model do
         expect(lottery.group).to eq(lottery.groups.first)
       end
     end
-    # TODO: re-enable when we have clips
-    # context 'when multiple groups' do
-    #   it do
-    #     lottery = FactoryGirl.create(:lottery_assignment)
-    #     lottery.groups << FactoryGirl.create(:group, :defined_by_draw,
-    #                                          draw: lottery.draw)
-    #     expect(lottery.group).to eq(nil)
-    #   end
-    # end
+
+    context 'when multiple groups' do
+      it do
+        lottery = FactoryGirl.create(:lottery_assignment)
+        lottery.groups << FactoryGirl.create(:group, :defined_by_draw,
+                                             draw: lottery.draw)
+        expect(lottery.group).to eq(nil)
+      end
+    end
+  end
+
+  describe '#leader' do
+    it 'returns the clip leader when a clip is present' do
+      clip = create(:locked_clip)
+      clip.draw.lottery!
+      lottery = create(:lottery_assignment, :defined_by_clip, clip: clip)
+      expect(lottery.leader).to eq(clip.leader)
+    end
+    it "returns the first group's leader otherwise" do
+      lottery = create(:lottery_assignment)
+      expect(lottery.leader).to eq(lottery.groups.first.leader)
+    end
   end
 end

@@ -1,6 +1,6 @@
-<td class="group-name"><%= link_to group.leader.full_name, draw_group_path(@draw, group) %></td>
+<td class="lottery-owner"><%= link_to lottery.leader.full_name, lottery_owner_url(lottery) %></td>
 <td>
-  <%= simple_form_for [group.draw, group.lottery_assignment], remote: true do |f| %>
+  <%= simple_form_for [@draw, lottery], remote: true do |f| %>
     <%= f.input :number, input_html: { class: 'lottery_field autosubmitme' } %>
   <% end %>
 </td>

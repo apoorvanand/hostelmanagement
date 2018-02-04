@@ -41,9 +41,12 @@ RSpec.describe ClipPolicy do
           end
 
           context 'and is not in a clip' do
-            before { allow(group).to receive(:clip).and_return(nil) }
             let(:draw) { instance_spy('Draw') }
-            before { allow(clip).to receive(:draw).and_return(draw) }
+
+            before do
+              allow(group).to receive(:clip).and_return(nil)
+              allow(clip).to receive(:draw).and_return(draw)
+            end
 
             context 'but the draw is not in a pre-lottery stage' do
               before do
@@ -83,9 +86,12 @@ RSpec.describe ClipPolicy do
         it { is_expected.not_to permit(user, clip) }
       end
       context 'in a group' do
-        before { allow(user).to receive(:group).and_return(group) }
         let(:draw) { instance_spy('Draw') }
-        before { allow(clip).to receive(:draw).and_return(draw) }
+
+        before do
+          allow(user).to receive(:group).and_return(group)
+          allow(clip).to receive(:draw).and_return(draw)
+        end
 
         context 'but the draw is not in a pre-lottery stage' do
           before do

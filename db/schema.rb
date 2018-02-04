@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171226003422) do
+ActiveRecord::Schema.define(version: 20180204220607) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -107,6 +107,8 @@ ActiveRecord::Schema.define(version: 20171226003422) do
     t.boolean "selected", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "clip_id"
+    t.index ["clip_id"], name: "index_lottery_assignments_on_clip_id"
     t.index ["draw_id"], name: "index_lottery_assignments_on_draw_id"
   end
 
@@ -176,6 +178,7 @@ ActiveRecord::Schema.define(version: 20171226003422) do
   add_foreign_key "clip_memberships", "clips"
   add_foreign_key "clip_memberships", "groups"
   add_foreign_key "groups", "lottery_assignments"
+  add_foreign_key "lottery_assignments", "clips"
   add_foreign_key "lottery_assignments", "draws"
   add_foreign_key "users", "rooms"
 

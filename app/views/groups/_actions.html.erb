@@ -7,5 +7,5 @@
               data: { confirm:  'Are you sure you want to disband this group?' }, class: 'button alert' %>
 <% end %>
 <% if group.clip.present? %>
-  <%= link_to 'View Clip', draw_clip_path(@draw, group.clip), class: 'button' %>
+  <%= link_to 'View Clip', clip_path(group.clip), class: 'button' %>
 <% end %>

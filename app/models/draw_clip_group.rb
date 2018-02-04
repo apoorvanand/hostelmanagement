@@ -5,22 +5,34 @@
 #
 # @attr draw [Draw] The draw that the group or clip is associated with.
 # @attr clip [Clip] A clip that exists in the database. This attribute will be
-# nil if a group value exists.
+#   nil if a group value exists.
 # @attr group [Group] A group that does not have a clip in the database. Will be
-# nil if a clip value exists.
+#   nil if a clip value exists.
 class DrawClipGroup < ApplicationRecord
   belongs_to :draw
   belongs_to :clip
   belongs_to :group
 
-  # Converts a row in the view to the object it's referencing
+  # Converts a row in the view to its associated LotteryAssignment; returns an
+  # unpersisted yet associated record if one does not exist.
   #
-  # @return [Clip,Group] the clip or the group in the row
-  def to_obj
-    clip || group
+  # @return [LotteryAssignment] either the lottery assignment associated with an
+  #   object or an unpersisted object
+  def to_lottery
+    lottery = to_obj.lottery_assignment || LotteryAssignment.new
+    return lottery if lottery.persisted?
+    lottery.tap do |l|
+      l.clip_id = clip&.id
+      l.groups = clip&.groups || [group]
+      l.draw_id = l.groups.first.draw_id
+    end
   end
 
   private
+
+  def to_obj
+    clip || group
+  end
 
   def readonly?
     true

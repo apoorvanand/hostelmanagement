@@ -48,12 +48,14 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
            if: ->() { will_save_change_to_size? }
   validate :validate_members_count, if: ->(g) { g.size.present? }
   validate :validate_status, if: ->(g) { g.size.present? }
-  validate :validate_lottery_assignment, if: -> { lottery_assignment.present? }
+  validate :validate_lottery_assignment,
+           if: -> { will_save_change_to_lottery_assignment_id? }
 
-  before_update ->() { throw(:abort) if changing_lottery_when_clipped? }
   before_validation :add_leader_to_members, if: ->(g) { g.leader.present? }
   after_save :update_status!,
              if: ->() { saved_change_to_transfers || saved_change_to_size }
+  before_update :freeze_lottery,
+                if: -> { will_save_change_to_lottery_assignment_id? }
   after_update :remove_clip_memberships,
                if: ->() { changed_draw_with_clip_memberships? }
   before_destroy :remove_member_rooms
@@ -257,14 +259,22 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   end
 
   def validate_lottery_assignment
-    return unless will_save_change_to_lottery_assignment_id?
-    return if lottery_assignment.groups.size == 1 &&
-              lottery_assignment.group == self
-    errors.add :lottery_assignment, 'can only have one group'
+    # TODO: fix this
+    # if lottery_assignment_id_in_database.present?
+    #   lottery = LotteryAssignment.find(lottery_assignment_id_in_database)
+    #   return unless lottery.clip.present?
+    #   errors.add :lottery_assignment, 'cannot change if clipped'
+    # else
+    #   return unless lottery_assignment.clip.present? &&
+    #                 clip != lottery_assignment.clip
+    #   binding.pry
+    #   errors.add :lottery_assignment, 'must have one group unless clipped'
+    # end
   end
 
-  def changing_lottery_when_clipped?
-    clip.present? && will_save_change_to_lottery_number?
+  def freeze_lottery
+    return unless lottery_assignment_id_in_database.present?
+    throw(:abort)
   end
 
   def changed_draw_with_clip_memberships?

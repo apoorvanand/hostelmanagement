@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 # Query to return the groups and clips ready for lottery
-class GroupsForLotteryQuery
+class LotteriesForLotteryQuery
   # See IntentMetricsQuery for explanation.
   class << self
     delegate :call, to: :new
   end
 
-  # Initialize a GroupsForLotteryQuery
+  # Initialize a LotteriesForLotteryQuery
   def initialize
     @relation = DrawClipGroup.includes(
       [group: :leader], [clip: [clip_memberships: [group: :leader]]]
@@ -19,7 +19,7 @@ class GroupsForLotteryQuery
   # @param draw [Draw] The draw to restrict scope to.
   # @return [Array<Group,Clip>] The groups and clips ready for lottery numbers.
   def call(draw:)
-    @relation.where(draw: draw).map(&:to_obj)
+    @relation.where(draw: draw).map(&:to_lottery)
              .sort_by { |result| result.leader.last_name }
   end
 end

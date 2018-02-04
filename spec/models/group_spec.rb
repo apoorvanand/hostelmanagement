@@ -95,11 +95,43 @@ RSpec.describe Group, type: :model do
       group.status = 'open'
       expect(group.valid?).to be_falsey
     end
-    it 'cannot change a lottery_number if the group is in a clip' do
-      clip = FactoryGirl.create(:clip)
-      group = clip.groups.reload.first
-      group.lottery_number = 2
-      expect(group.save).to be_falsey
+  end
+
+  describe 'lottery validations' do
+    context 'when clipped' do
+      let(:clip) { create(:clip) }
+      let(:draw) { clip.draw }
+      let(:group) { clip.groups.first }
+
+      before { draw.lottery! }
+
+      it 'can create a lottery assignment for a clip' do
+        lottery = create(:lottery_assignment, :defined_by_clip, clip: clip)
+        expect(group.reload.lottery_assignment_id).to eq(lottery.id)
+      end
+
+      it 'cannot assign the group to a lottery not belonging to the clip' do
+        lottery = create(:lottery_assignment, draw: draw)
+        expect { group.update!(lottery_assignment_id: lottery.id) }.to \
+          raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context 'when not clipped' do
+      let(:group) { create(:locked_group) }
+
+      before { group.draw.lottery! }
+
+      it 'can create a lottery assignment for a group' do
+        lottery = create(:lottery_assignment, :defined_by_group, group: group)
+        expect(group.reload.lottery_assignment_id).to eq(lottery.id)
+      end
+    end
+
+    it 'cannot change a lottery_assignment once set' do
+      lottery = create(:lottery_assignment)
+      group = lottery.group
+      expect(group.update(lottery_assignment: nil)).to be_falsey
     end
   end
 
