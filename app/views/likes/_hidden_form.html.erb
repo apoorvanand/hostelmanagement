@@ -1,4 +1,6 @@
-<%= simple_form_for Like.create, url: draw_group_like_path(@draw, @group), html: { class: 'hidden-form' } do |f| %>
+<%= simple_form_for Like.new, url: new_draw_group_like_path(current_user.draw, current_user.group), html: { class: 'hidden-form' } do |f| %>
+	<%= f.input :draw_id, as :hidden, input_html: {value: current_user.draw.id} %>
+	<%= f.input :group_id, as :hidden, input_html: {value: current_user.group.id }x %>
   <% if suite.present? %>
     <%= f.input :suite_id, as: :hidden, input_html: { value: suite.id } %>
   <% end %>

@@ -16,7 +16,9 @@
           <td><%= suite.singles.count %></td>
           <td><%= suite.doubles.count %></td>
           <td><%= suite.common_rooms.count %></td>
-          <td><% if policy(Like).new? %> Like this suite. <%end%></td>
+          <td><% if policy(Like).new? %>
+            <%= link_to "Like Suite", new_draw_group_like_path(current_user.draw, current_user.group), draw_id: current_user.draw.id, group_id: current_user.group.id, method: :put, remote: true %>
+          <%end%></td>
         </tr>
       <% end %>
     </tbody>
