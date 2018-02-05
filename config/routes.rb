@@ -104,7 +104,8 @@ Rails.application.routes.draw do
       collection do
         resource :suite_assignment, only: %i(new create destroy)
       end
-      resources :likes, only: %i(new create index)
+      resources :likes, only: %i(new create)
+      
     end
 
     resource :clip, only: %i(new create)

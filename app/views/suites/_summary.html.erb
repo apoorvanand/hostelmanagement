@@ -28,7 +28,7 @@
               </td>
               <td>
                 <% if policy(Like).new? %>
-                  <%= link_to "Like Suite", new_draw_group_like_path(current_user.draw, current_user.group), draw_id: current_user.draw.id, group_id: current_user.group.id, method: :put, remote: true %></li>
+                  <%= render 'likes/hidden_form', draw:current_user.draw, group:current_user.group, suite:@suite, btn_str:'Like Suite' %></li>
                 <%end%>
               </td>
               <td class="actions" data-role="suite-actions">
