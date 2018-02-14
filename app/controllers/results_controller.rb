@@ -25,8 +25,8 @@ class ResultsController < ApplicationController
   end
 
   def collect_student_data
-    @students = User.includes(room: :suite).where(role: %w(student rep))
-                    .where.not(room_id: nil)
+    @students = User.joins(room_assignment: [room: :suite])
+                    .where(role: %w(student rep))
   end
 
   def csv_filename

@@ -11,6 +11,7 @@ class SuiteSelector
   validate :suite_exists
   validate :group_locked
   validate :suite_not_already_assigned
+  validate :draws_match_if_they_exist
 
   # Initialize a new SuiteSelector
   #
@@ -68,13 +69,18 @@ class SuiteSelector
     errors.add(:suite, 'is assigned to a different group')
   end
 
+  def draws_match_if_they_exist
+    return unless suite
+    return if group.draw.nil? # skips validation if this is a drawless group
+    return if suite.draws.include?(group.draw)
+    errors.add(:base, 'Group draw does not match suite draw.')
+  end
+
   def assign_room
-    suite.rooms.each do |room|
-      r_id = room.id.to_s
-      m_id = group.members.first.id
-      @params = { "room_id_for_#{m_id}" => r_id } unless room.type == 'common'
+    user = group.members.first
+    suite.rooms.each do |r|
+      RoomAssignment.create!(user: user, room: r) unless r.type == 'common'
     end
-    RoomAssignment.new(group: group).assign(@params)
   end
 
   def success

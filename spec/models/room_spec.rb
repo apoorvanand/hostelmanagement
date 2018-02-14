@@ -29,16 +29,6 @@ RSpec.describe Room, type: :model do
     end
   end
 
-  it 'nullify student room_id on deletion' do
-    room = FactoryGirl.create(:room)
-    user = FactoryGirl.create(:user)
-    # rubocop:disable Rails/SkipsModelValidations
-    user.update_columns(room_id: room.id)
-    # rubocop:enable Rails/SkipsModelValidations
-    expect { room.destroy }.to \
-      change { user.reload.room_id }.from(room.id).to(nil)
-  end
-
   describe '#type' do
     it 'is "single" when one bed' do
       room = FactoryGirl.build_stubbed(:room, beds: 1)

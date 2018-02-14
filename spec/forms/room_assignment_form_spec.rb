@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe RoomAssignment do
+RSpec.describe RoomAssignmentForm do
   let(:rooms) { mock_array('room', 2, beds: 1) }
   let(:suite) { instance_spy('suite', rooms: rooms) }
   let(:members) { mock_array('user', 2) }

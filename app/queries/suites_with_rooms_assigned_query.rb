@@ -20,7 +20,7 @@ class SuitesWithRoomsAssignedQuery
   # @return [Suite::ActiveRecord_Relation] the suites for which rooms have been
   #   assigned, eager loads rooms and users
   def call
-    @relation.includes(rooms: :users).where.not(users: { room_id: nil })
+    @relation.joins(rooms: [room_assignments: :user])
              .order(%w(suites.number rooms.number))
   end
 end

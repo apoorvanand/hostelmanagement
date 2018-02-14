@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe RoomAssignmentPolicy do
+RSpec.describe RoomAssignmentFormPolicy do
   subject { described_class }
 
   let(:user) { instance_spy('user') }

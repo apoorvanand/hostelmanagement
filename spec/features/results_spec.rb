@@ -99,7 +99,7 @@ RSpec.feature 'Results' do
   def assign_students_to_rooms(assignment_hash)
     assignment_hash.each do |group, suite|
       group.members.each_with_index do |member, i|
-        member.update(room_id: suite.rooms[i].id)
+        create(:room_assignment, user: member, room_id: suite.rooms[i].id)
       end
     end
   end

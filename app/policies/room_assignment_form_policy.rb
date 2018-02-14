@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Policy for assigning rooms
-class RoomAssignmentPolicy < ApplicationPolicy
+class RoomAssignmentFormPolicy < ApplicationPolicy
   def create?
     new? || edit?
   end

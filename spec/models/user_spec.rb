@@ -15,7 +15,7 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_one(:membership) }
     it { is_expected.to have_many(:memberships) }
     it { is_expected.to have_one(:group).through(:membership) }
-    it { is_expected.to belong_to(:room) }
+    it { is_expected.to have_one(:room) }
   end
 
   describe 'other validations' do

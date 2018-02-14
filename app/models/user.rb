@@ -44,7 +44,8 @@ class User < ApplicationRecord
   has_one :group, through: :membership
   has_many :memberships, dependent: :destroy
 
-  belongs_to :room
+  has_one :room_assignment, dependent: :destroy
+  has_one :room, through: :room_assignment
 
   validates :email, uniqueness: true
   validates :username, presence: true, if: :cas_auth?
