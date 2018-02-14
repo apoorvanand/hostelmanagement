@@ -1,0 +1,9 @@
+version: '3'
+services:
+  web:
+    build: .
+    env_file: .env
+    environment:
+      RAILS_ENV: $RAILS_ENV
+      PORT: '8080'
+    ports: '8080:8080'
