@@ -37,12 +37,12 @@ RSpec.describe Suite, type: :model do
     end
   end
 
-  it 'clears room ids when group assignment changes' do
+  it 'destroys room assignments when group assignment changes' do
     group = FactoryGirl.create(:lottery_assignment).group
-    suite = FactoryGirl.create(:suite_with_rooms, group_id: group.id)
-    group.leader.update!(room_id: suite.rooms.first.id)
+    suite = FactoryGirl.create(:suite_with_rooms, group_id: group.id).reload
+    a = create(:room_assignment, user: group.leader, room: suite.rooms.first)
     expect { group.suite.update!(group_id: nil) }.to \
-      change { group.leader.reload.room_id }.from(suite.rooms.first.id).to(nil)
+      change { group.leader.reload.room_assignment }.from(a).to(nil)
   end
 
   it 'removes draws if changed to a medical suite' do

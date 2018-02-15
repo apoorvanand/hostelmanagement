@@ -81,13 +81,13 @@ RSpec.feature 'Results' do
     group = FactoryGirl.create(:locked_group, leader: draw.students.first)
     suite1 = FactoryGirl.create(:suite_with_rooms,
                                 rooms_count: special.size, group: special,
-                                draws: [draw])
+                                draws: [draw]).reload
     suite2 = FactoryGirl.create(:suite_with_rooms,
                                 rooms_count: group.size, group: group,
-                                draws: [draw])
+                                draws: [draw]).reload
     suite3 = FactoryGirl.create(:suite_with_rooms,
                                 rooms_count: transfer.size, group: transfer,
-                                draws: [draw])
+                                draws: [draw]).reload
     assign_students_to_rooms(special => suite1, group => suite2,
                              transfer => suite3)
     members = special.members + group.members + transfer.members

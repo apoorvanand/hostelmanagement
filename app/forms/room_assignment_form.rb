@@ -69,7 +69,7 @@ class RoomAssignmentForm
   # @return [RoomAssignment] returns self
   def build_from_group!
     params_hash = members.each_with_object({}) do |m, hash|
-      hash[param_for(m).to_s] = m.room_id.to_s
+      hash[param_for(m).to_s] = m.room.id.to_s
       hash
     end
     prepare(params_hash)

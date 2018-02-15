@@ -37,11 +37,13 @@ RSpec.describe ResultsCSVGenerator do
     group2 = FactoryGirl.create(:group, size: 1, leader: draw.students.last)
     suite1 = FactoryGirl.create(:suite_with_rooms, group: group1, draws: [draw])
     suite2 = FactoryGirl.create(:suite_with_rooms, group: group2, draws: [draw])
-    draw.students.first.update(room_id: suite1.rooms.first.id,
-                               last_name: 'Last2')
-    draw.students.last.update(room_id: suite2.rooms.first.id,
-                              last_name: 'Last1')
-    User.includes(room: :suite).where.not(room_id: nil)
+    student1 = draw.students.first
+    student2 = draw.students.last
+    create(:room_assignment, user: student1, room: suite1.reload.rooms.first)
+    create(:room_assignment, user: student2, room: suite2.reload.rooms.first)
+    student1.update(last_name: 'Last2')
+    student2.update(last_name: 'Last1')
+    User.joins(room_assignment: [room: :suite])
   end
 
   def export_headers

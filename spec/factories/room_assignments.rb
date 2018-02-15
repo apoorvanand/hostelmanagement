@@ -3,6 +3,6 @@
 FactoryGirl.define do
   factory :room_assignment do
     association :user, factory: :student_in_draw, intent: 'on_campus'
-    room { build(:suite_with_rooms).room }
+    room { create(:suite_with_rooms).rooms.first }
   end
 end

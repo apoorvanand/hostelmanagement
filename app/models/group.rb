@@ -58,7 +58,7 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
                 if: -> { will_save_change_to_lottery_assignment_id? }
   after_update :remove_clip_memberships,
                if: ->() { changed_draw_with_clip_memberships? }
-  before_destroy :remove_member_rooms
+  before_destroy :destroy_member_room_assignments
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
 
@@ -246,8 +246,12 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
     members.each { |u| u.restore_draw.save }
   end
 
-  def remove_member_rooms
-    ActiveRecord::Base.transaction { members.update(room_id: nil) }
+  def destroy_member_room_assignments
+    ActiveRecord::Base.transaction do
+      members.each do |m|
+        m.room_assignment.destroy! if m.room_assignment.present?
+      end
+    end
   rescue
     throw(:abort)
   end

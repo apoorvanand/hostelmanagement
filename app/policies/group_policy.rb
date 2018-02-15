@@ -136,6 +136,6 @@ class GroupPolicy < ApplicationPolicy
   end
 
   def rooms_assigned?(group)
-    group.leader.room_id.present?
+    group.leader.room_assignment.present?
   end
 end
