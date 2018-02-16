@@ -32,17 +32,14 @@ RSpec.describe ResultsCSVGenerator do
     # Returns two students with last names 'Last1' and 'Last2' assigned to
     # different suites with 'Last2' assigned to a lower numbered suite
     # and 'Last1' to a higher numbered suite
-    draw = FactoryGirl.create(:draw_with_members, students_count: 2)
-    group1 = FactoryGirl.create(:group, size: 1, leader: draw.students.first)
-    group2 = FactoryGirl.create(:group, size: 1, leader: draw.students.last)
-    suite1 = FactoryGirl.create(:suite_with_rooms, group: group1, draws: [draw])
-    suite2 = FactoryGirl.create(:suite_with_rooms, group: group2, draws: [draw])
-    student1 = draw.students.first
-    student2 = draw.students.last
-    create(:room_assignment, user: student1, room: suite1.reload.rooms.first)
-    create(:room_assignment, user: student2, room: suite2.reload.rooms.first)
-    student1.update(last_name: 'Last2')
-    student2.update(last_name: 'Last1')
+    draw = create(:draw_with_members, students_count: 2)
+    draw.students.each do |s|
+      group = create(:group, size: 1, leader: s)
+      suite = create(:suite_with_rooms, group: group, draws: [draw])
+      create(:room_assignment, user: s, room: suite.reload.rooms.first)
+    end
+    draw.students.first.update(last_name: 'Last2')
+    draw.students.last.update(last_name: 'Last1')
     User.joins(room_assignment: [room: :suite])
   end
 
