@@ -2,15 +2,14 @@
 
 # Class for Like permissions
 class LikePolicy < ApplicationPolicy
-  attr_reader :user, :group
-
-  def initiatilize(user, suite)
-    @user = user
-    @suite = suite
+  def initialize(user, suite)
+    @user ||= user
+    @suite ||= suite
   end
 
   def show?
-    !user.admin? && (user.group&.finalizing? || user.group&.locked?) && (user.group&.size == suite.size)
+    !user.admin? && (user.group&.finalizing? || user.group&.locked?) &&
+      (user.group&.size == @suite.size)
   end
 
   def new?

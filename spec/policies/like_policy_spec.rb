@@ -27,14 +27,14 @@ RSpec.describe LikePolicy do
           allow(group).to receive(:finalizing?).and_return(false)
           allow(user).to receive(:group).and_return(group)
         end
-        it { is_expected.not_to permit(user, fave) }
+        it { is_expected.not_to permit(user, fave.suite) }
       end
       context 'full group' do
         before do
           allow(group).to receive(:finalizing?).and_return(true)
           allow(user).to receive(:group).and_return(group)
         end
-        it { is_expected.to permit(user, fave) }
+        it { is_expected.to permit(user, fave.suite) }
       end
     end
   end

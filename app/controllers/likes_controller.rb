@@ -12,7 +12,6 @@ class LikesController < ApplicationController
   end
 
   def create
-    binding.pry
     @favorite = Favorite.new(group: @group, suite: @suite,
                              params: like_params)
     @like = Like.new(user: @user, favorite: @favorite)
