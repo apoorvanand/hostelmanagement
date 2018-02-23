@@ -3,10 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 ### Changed
+* Bulk user add instructions are now auth-dependent and no longer Yale specific ([#157](https://gitlab.com/yale-sdmp/vesta/issues/157)).
 * Renamed DrawReport#ungrouped_students to #ungrouped_students_by_intent ([#793](https://gitlab.com/yale-sdmp/vesta/issues/793)).
 
 ### Added
 * Add dependent: :destroy for group in draw model ([#687](https://gitlab.com/yale-sdmp/vesta/issues/687)).
+
+### Fixed
+* Intent and locking deadline cannot be in the past ([#600](https://gitlab.com/yale-sdmp/vesta/issues/600))
 
 ## v1.0.8 - 2018-04-09
 ### Fixed
