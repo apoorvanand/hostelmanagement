@@ -6,7 +6,7 @@ class LikePolicy < ApplicationPolicy
 
   def initialize(user, like)
     @user ||= user
-    @suite ||= like.favorite.suite
+    @suite ||= like&.favorite&.suite
   end
 
   def show?

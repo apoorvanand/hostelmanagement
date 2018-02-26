@@ -1,12 +1,12 @@
 <% provide(:title, @group.name) %>
 <%= render 'group_details', group: @group %>
-<% if policy(Like).new? %> 
+<% if policy(Like.new).show? %> 
   <% unless @group.favorites.empty? %>
     <h3> Favorite Suites </h3>
     <ul> <% @group.favorites.each do |r| %>
       <li>
         <%= link_to r.suite.name, suite_path(r) %>
-        <% if policy(Like).delete? %>
+        <% if policy(Like.new).delete? %>
         #how to make it so only the person that created the like can delete it
         (Delete this like - only if you made the like)
         <%end%>
