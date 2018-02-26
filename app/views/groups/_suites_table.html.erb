@@ -16,8 +16,8 @@
           <td><%= suite.singles.count %></td>
           <td><%= suite.doubles.count %></td>
           <td><%= suite.common_rooms.count %></td>
-          <td><% if policy(Like).new? %>
-            <%= render 'likes/hidden_form', draw:current_user.draw, group:current_user.group, suite:@suite, btn_str:'Like Suite' %>
+          <td><% if policy(Like.new(user:current_user, favorite: Favorite.new(group: current_user.group, suite: suite))).new? %>
+            <%= render 'likes/hidden_form', user: current_user, favorite: Favorite.new(current_user.group, suite: suite), btn_str:'Like Suite' %>
           <%end%></td>
         </tr>
       <% end %>

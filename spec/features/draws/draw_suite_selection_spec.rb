@@ -89,6 +89,7 @@ RSpec.feature 'Draw suite selection' do
     before { log_in clip.groups.first.leader }
 
     it 'can view draw page' do
+      allow(groups).to receive(:locked).and_return(true)
       visit draw_path(draw)
       expect(page).to have_content(draw.name)
     end
