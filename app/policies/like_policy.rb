@@ -10,7 +10,7 @@ class LikePolicy < ApplicationPolicy
   end
 
   def show?
-    !user.admin? && (user.group&.finalizing? || user.group&.locked?) 
+    !user.admin? && (user.group&.finalizing? || user.group&.locked?)
   end
 
   def new?
