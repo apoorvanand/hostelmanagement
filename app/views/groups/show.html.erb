@@ -11,6 +11,7 @@
         (Delete this like - only if you made the like)
         <%end%>
       </li>
+      <% end %>
     </ul>
   <% end %>
 <% end %>
@@ -118,4 +119,3 @@
     <%= render 'groups/suites_table', suites: @compatible_suites.group_by(&:building) %>
   <% end %>
 <% end %>
-<%end%>
