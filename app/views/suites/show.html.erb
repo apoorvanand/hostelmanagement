@@ -24,8 +24,8 @@
     <% end %>
   </li> 
   </ul>
-  <% if policy(Like.new(user:current_user, favorite: Favorite.new(group: current_user.group, suite: suite))).new? %>
-            <%= render 'likes/hidden_form', user: current_user, suite: suite, btn_str:'Like Suite' %>
+  <% if policy(Like.new(user:current_user, favorite: Favorite.new(group: current_user.group, suite: @suite))).new? %>
+            <%= render 'likes/hidden_form', user: current_user, suite: @suite, btn_str:'Like Suite' %>
           <%end%>
 
 <h3>Rooms</h3>
