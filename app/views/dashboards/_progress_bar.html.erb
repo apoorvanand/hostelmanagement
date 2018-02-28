@@ -1,0 +1,33 @@
+<div class="progress" style="height: 30px;font-weight: bold;">
+  <% if local_assigns[:green_percent] && local_assigns[:green_count] %>
+    <div class="progress-bar bg-success"
+         role="progressbar"
+         style="width: <%= green_percent %>%"
+         aria-valuenow="<%= green_percent %>"
+         aria-valuemin="0" aria-valuemax="100">
+         <% if green_count > 0 %>
+           <%= green_count %> <%= green_text if local_assigns[:green_text] %>
+         <% end %>
+    </div>
+  <% end %>
+  <% if local_assigns[:blue_percent] && local_assigns[:blue_count] %>
+    <div class="progress-bar bg-info" 
+         role="progressbar"
+         style="width: <%= blue_percent %>%"
+         aria-valuenow="<%= blue_percent %>"
+         aria-valuemin="0" aria-valuemax="100">
+         <% if blue_count > 0 %>
+           <%= blue_count %> <%= blue_text if local_assigns[:blue_text] %>
+         <% end %>
+    </div>
+  <% end %>
+  <div class="progress-bar bg-secondary" 
+       role="progressbar"
+       style="width: <%= gray_percent %>%"
+       aria-valuenow="<%= gray_percent %>"
+       aria-valuemin="0" aria-valuemax="100">
+       <% if gray_count > 0 %>
+         <%= gray_count %> <%= gray_text if local_assigns[:gray_text] %>
+       <% end %>
+  </div>
+</div>

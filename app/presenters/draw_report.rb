@@ -85,6 +85,7 @@ class DrawReport < SimpleDelegator
     @ungrouped_students ||= UngroupedStudentsQuery.new(students).call
                                                   .group_by(&:intent)
     @ungrouped_students.delete('off_campus')
+    @ungrouped_students.default = []
     @ungrouped_students
   end
 

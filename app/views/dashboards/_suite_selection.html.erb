@@ -4,6 +4,27 @@
       Groups currently picking suites: <%= draw.next_groups.map(&:name).join(', ') %> 
     </li>
   <% end %>
+  <li class="list-group-item">
+    <h6>Suite Selection Progress</h6>
+
+    <%= render 'progress_bar', 
+      green_percent: (draw.groups_with_suites_count / draw.group_count.to_f) * 100,
+      green_count: draw.groups_with_suites_count,
+      green_text: 'with suites',
+      gray_percent: (draw.groups_without_suites_count / draw.group_count.to_f) * 100,
+      gray_count: draw.groups_without_suites_count,
+      gray_text: 'without suites' %>
+  </li>
+  <li class="list-group-item">
+    <h6>Room Selection Progress</h6>
+    <%= render 'progress_bar', 
+      green_percent: ((draw.groups_with_suites_count - draw.groups_without_rooms_count) / draw.groups_with_suites_count.to_f)  * 100,
+      green_count: draw.groups_with_suites_count - draw.groups_without_rooms_count,
+      green_text: 'with rooms',
+      gray_percent: (draw.groups_without_rooms_count / draw.groups_with_suites_count.to_f) * 100,
+      gray_count: draw.groups_without_rooms_count,
+      gray_text: 'without rooms' %>
+  </li>
 </ul>
 
 

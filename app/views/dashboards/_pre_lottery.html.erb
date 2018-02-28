@@ -1,5 +1,26 @@
 <ul class="list-group list-group-flush">
   <li class="list-group-item">
+    <h6>Intent</h6>
+    <%= render 'progress_bar', 
+               green_percent: bar.intent[:on_campus],
+               green_count: draw.intent_metrics['on_campus'],
+               green_text: 'on campus',
+               blue_percent: bar.intent[:off_campus],
+               blue_count: draw.intent_metrics['off_campus'],
+               blue_text: 'off campus',
+               gray_percent: bar.intent[:undeclared],
+               gray_count: draw.intent_metrics['undeclared'],
+               gray_text: 'undeclared' %>
+  </li>
+  <li class="list-group-item">
+    <h6> Group Formation </h6>
+    <%= render 'progress_bar', 
+               green_percent: bar.group_formation[:in_groups],
+               green_count: bar.group_formation_counts[:in_groups],
+               green_text: 'in groups',
+               gray_percent: bar.group_formation[:not_in_groups],
+               gray_count: bar.group_formation_counts[:not_in_groups],
+               gray_text: 'not_in groups' %>
     <div class="oversub-report">
       <table class="table">
         <thead class="thead-light">

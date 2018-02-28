@@ -58,12 +58,12 @@
   <% if @draws.empty? %>
     <p>Welcome to Vesta! Use the navbar above to manage housing inventory and create draws!</p>
   <% else %>
-          <%= render draw.status, draw: draw %>
     <% @draws.each do |draw, progress_bar| %>
       <div class="card mt-2">
         <div class="card-body">
           <h4 class="card-title"><%= link_to draw.name, draw_path(draw) %></h4>
           <h6 class="card-subtitle mb-2 text-muted"><%= draw.status.humanize %></h6>
+          <%= render draw.status, draw: draw, bar: progress_bar %>
         </div>
       </div>
     <% end %>

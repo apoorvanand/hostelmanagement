@@ -13,7 +13,10 @@ class DashboardsController < ApplicationController
 
   def admin_metrics
     @draws = Draw.all.includes(:groups).sort_by(&:name)
-                 .map { |d| DrawReport.new(d) }
+                 .map do |d|
+      dr = DrawReport.new(d)
+      [dr, DrawProgressBar.new(draw_report: dr)]
+    end
   end
 
   def student_variables
