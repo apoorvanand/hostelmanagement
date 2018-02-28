@@ -212,4 +212,17 @@ RSpec.describe User, type: :model do
       expect(user.admin?).to be(false)
     end
   end
+  describe 'destroys dependent' do
+    let(:suite) { FactoryGirl.create(:suite_with_rooms, rooms_count: 2) }
+    let(:group) { FactoryGirl.create(:locked_group, size: 2) }
+    let(:favorite) { FactoryGirl.create(:favorite, suite: suite, group: group) }
+
+    it 'like on destruction' do
+      group.draw.suites << suite
+      user = group.leader
+      l = FactoryGirl.create(:like, favorite: favorite, user: user).id
+      user.destroy
+      expect { Like.find(l) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
 end

@@ -97,15 +97,6 @@ ActiveRecord::Schema.define(version: 20180216182524) do
     t.index ["suite_id"], name: "index_favorites_on_suite_id"
   end
 
-  create_table "favorites", force: :cascade do |t|
-    t.bigint "group_id", null: false
-    t.bigint "suite_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["group_id"], name: "index_favorites_on_group_id"
-    t.index ["suite_id"], name: "index_favorites_on_suite_id"
-  end
-
   create_table "groups", force: :cascade do |t|
     t.integer "size", default: 1, null: false
     t.integer "status", default: 0, null: false
@@ -121,6 +112,15 @@ ActiveRecord::Schema.define(version: 20180216182524) do
     t.index ["lottery_assignment_id"], name: "index_groups_on_lottery_assignment_id"
   end
 
+  create_table "likes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "favorite_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["favorite_id"], name: "index_likes_on_favorite_id"
+    t.index ["user_id"], name: "index_likes_on_user_id"
+  end
+
   create_table "lottery_assignments", force: :cascade do |t|
     t.bigint "draw_id"
     t.integer "number", null: false
@@ -130,15 +130,6 @@ ActiveRecord::Schema.define(version: 20180216182524) do
     t.bigint "clip_id"
     t.index ["clip_id"], name: "index_lottery_assignments_on_clip_id"
     t.index ["draw_id"], name: "index_lottery_assignments_on_draw_id"
-  end
-
-  create_table "likes", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "favorite_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["favorite_id"], name: "index_likes_on_favorite_id"
-    t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
   create_table "memberships", force: :cascade do |t|

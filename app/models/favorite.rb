@@ -4,7 +4,7 @@
 class Favorite < ApplicationRecord
   belongs_to :group
   belongs_to :suite
-  has_many :likes
+  has_many :likes, dependent: :destroy
 
   validates :group, presence: true
   validates :suite, presence: true
