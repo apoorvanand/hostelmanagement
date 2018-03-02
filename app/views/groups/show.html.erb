@@ -1,20 +1,20 @@
 <% provide(:title, @group.name) %>
 <%= render 'group_details', group: @group %>
+
 <% if policy(Like.new).show? %> 
   <% unless @group.favorites.empty? %>
     <h3> Favorite Suites </h3>
-    <ul> <% @group.favorites.each do |fave| %>
-      <li>
-        <%= link_to fave.suite.name, suite_path(fave) %>
-        <% current_user.likes.each do |like| %>
-          <% if fave == like.favorite %>
-            <%= render 'likes/hidden_delete_form', user: current_user, suite: fave.suite, btn_str:'Like Suite' %>
-          <%end%>
-        <% end%>
-        <%end%>
-      </li>
-      <% end %>
-    </ul>
+          <ul> <% @group.favorites.each do |fave| %>
+                <li>
+                  <%= link_to fave.suite.name, suite_path(fave) %>
+                        <% current_user.likes.each do |like| %>
+                              <% if fave == like.favorite %>
+                                <%= render 'likes/hidden_delete_form', user: current_user, suite: fave.suite, btn_str:'Remove Like' %>
+                              <% end %>
+                        <% end %>
+                <% end %>
+          </li>
+        </ul>
   <% end %>
 <% end %>
 
@@ -112,8 +112,8 @@
   <% end %>
   <%= link_to('Disband', draw_group_path(@draw, @group), method: :delete, data: { confirm: 'Are you sure you want to disband this group?' }, class: 'button alert') if policy(@group).destroy? %>
 </div>
-<%= link_to 'Return to draw', draw_path(@draw) %>
 
+<%= link_to 'Return to draw', draw_path(@draw) %>
 <% content_for :sidebar do %>
   <h3><%= @same_size_groups_count %> <%= 'group'.pluralize(@same_size_groups_count) %> of size <%= @group.size %></h3>
   <h3><%= @compatible_suites.count %> available <%= size_str(@group.size).capitalize.pluralize(@compatible_suites.count) %></h3>
