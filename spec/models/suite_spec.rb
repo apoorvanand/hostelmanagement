@@ -236,4 +236,5 @@ RSpec.describe Suite, type: :model do
         change { lottery.reload.selected }.from(false).to(true)
     end
   end
+
 end
