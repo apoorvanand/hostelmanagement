@@ -236,5 +236,25 @@ RSpec.describe Suite, type: :model do
         change { lottery.reload.selected }.from(false).to(true)
     end
   end
+  describe '#clear_room_id callbacks' do
+    # I try to mimic the style of the above callback test
+    it "sets room id to nil" do
+      group = FactoryGirl.create(:group)
 
+      id_array = group.id
+      members = User.includes(:group).where(groups: { id: id_array })
+      members.update(room_id: nil)
+      expect(group.members.first.room_id).to eq(nil)
+
+    end
+  end
+  describe '#remove_draw_from_medical_suites callbacks' do
+    it "removes draw from medical suites" do
+
+    end
+
+    if "does not remove draw from non-medical suites" do
+
+    end
+  end
 end
