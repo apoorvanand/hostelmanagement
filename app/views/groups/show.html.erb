@@ -3,12 +3,14 @@
 <% if policy(Like.new).show? %> 
   <% unless @group.favorites.empty? %>
     <h3> Favorite Suites </h3>
-    <ul> <% @group.favorites.each do |r| %>
+    <ul> <% @group.favorites.each do |fave| %>
       <li>
-        <%= link_to r.suite.name, suite_path(r) %>
-        <% if policy(Like.new).delete? %>
-        #how to make it so only the person that created the like can delete it
-        (Delete this like - only if you made the like)
+        <%= link_to fave.suite.name, suite_path(fave) %>
+        <% current_user.likes.each do |like| %>
+          <% if fave == like.favorite %>
+            <%= render 'likes/hidden_delete_form', user: current_user, suite: fave.suite, btn_str:'Like Suite' %>
+          <%end%>
+        <% end%>
         <%end%>
       </li>
       <% end %>
