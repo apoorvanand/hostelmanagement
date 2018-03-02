@@ -1,6 +1,17 @@
 <% if groups.all? { |_s, groups| groups.empty? } %>
   <p>There are no groups yet.</p>
 <% else %>
+  <hr />
+  <div class="report_filter">
+    <h3>Filter groups</h3>
+    <%= render 'draws#group_report' %>
+    <%= simple_form_for @group_filter, url: group_report_draw_path(@draw) do |f| %>
+      <%= f.input :statuses, collection: Group.status, label_method: :humanize, as: :check_boxes,
+        include_hidden: false, error: false %>
+      <%= f.submit 'Filter' %>
+    <% end %>
+  </div>
+  <hr />
   <% sizes.each do |size| %>
     <div class="groups-<%= size %>">
       <% if diff.present? && suite_counts.present? && group_counts.present? %>

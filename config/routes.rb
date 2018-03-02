@@ -57,7 +57,9 @@ Rails.application.routes.draw do
     member do
       patch 'activate'
       get 'intent_report'
-      post 'intent_report', to: 'draws#filter_intent_report'
+      post 'intent_report', to: 'draws#filter_group_report'
+      get 'group_report'
+      post 'group_report', to: 'draws#filter_intent_report'
       post 'reminder'
       patch 'bulk_on_campus'
       get 'students', to: 'draws#student_summary', as: 'student_summary'

@@ -59,6 +59,24 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     render action: 'intent_report'
   end
 
+  def group_report
+    @group_filter = GroupReportFilter.new
+    @groups_by_status = @draw.groups.order(:status, :size)
+                             .group_by(&:status)
+    @groups_by_size = @draw.groups.order(:size)
+                           .group_by(&:size)
+    @status_metrics = @groups_by_status.transform_values(&:count)
+    @size_metrics = @groups_by_size.transform_values(&:count)
+  end
+
+  def filter_group_report
+    @group_filter = GroupReportFilter.new(group_filter_params)
+    @groups_by_status = @filter.filter(@draw.groups)
+                               .order(:status, :size).group_by(&:status)
+    @status_metrics = @groups_by_status.transform_values(&:count)
+    render action: 'group_report'
+  end
+
   def bulk_on_campus
     result = BulkOnCampusUpdater.update(draw: @draw)
     # note that BulkOnCampusUpdater.update always returns a success hash with
@@ -158,6 +176,10 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
 
   def filter_params
     params.fetch(:intent_report_filter, {}).permit(intents: [])
+  end
+
+  def group_filter_params
+    params.fetch(:group_report_filter, {}).permit(statuses: [], sizes: [])
   end
 
   def prune_params
