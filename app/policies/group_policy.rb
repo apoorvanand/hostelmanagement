@@ -31,41 +31,8 @@ class GroupPolicy < ApplicationPolicy
       user_has_uber_permission?
   end
 
-  def request_to_join?
-    (user.draw == record.draw) && !user.group && record.draw.pre_lottery?
-  end
-
-  def accept_request?
-    edit?
-  end
-
-  def send_invites?
-    invite?
-  end
-
-  def invite?
-    (record.leader == user || user_has_uber_permission?) && record.open?
-  end
-
-  def reject_pending?
-    edit?
-  end
-
-  def accept_invitation?
-    !user.group && record.invitations.include?(user)
-  end
-
-  def leave?
-    !record.locked? && record.members.include?(user) && record.leader != user
-  end
-
   def finalize?
     edit? && record.full? && !record.finalizing? && !record.locked?
-  end
-
-  def finalize_membership?
-    (user.group == record && !record.locked_members.include?(user)) &&
-      record.finalizing?
   end
 
   def lock?
