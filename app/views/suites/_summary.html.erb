@@ -26,10 +26,15 @@
               <td data-role="suite-draws">
                 <%= render partial: 'suites/draw_link', collection: suite.draws, spacer_template: 'shared/comma' %>
               </td>
-              <td><%if policy(Like.new(user:current_user, favorite: Favorite.new(group: current_user.group, suite: suite))).new? %>
-                    <%= render 'likes/hidden_form', user: current_user, suite: suite, btn_str:'Like Suite' %>
-                  <% end %>
-              </td>
+              <td><% suite.favorites.each do |suite_fave| %>
+                <% if suite_fave.group == current_user.group && policy(Like.new(user: current_user, favorite: suite_fave)).new? %>
+                    <%= render 'likes/hidden_form', user: current_user, favorite:suite_fave, btn_str:'Like Suite' %>
+                <% end %>
+              <% end %>
+              <% if policy(Like.new(user:current_user)).new? && policy(Favorite.new(group: current_user.group, suite: suite)).new? %>
+                <%= render 'favorites/hidden_form', suite: suite, btn_str:'Like Suite' %>
+              <% end %>
+            </td>
               <td class="actions" data-role="suite-actions">
                 <%= link_to 'View', suite_path(suite), class: 'button' %>
                 <% if policy(suite).edit? %>

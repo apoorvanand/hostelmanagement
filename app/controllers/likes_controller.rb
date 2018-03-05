@@ -2,18 +2,15 @@
 
 # Likes Controller class
 class LikesController < ApplicationController
-  prepend_before_action :set_user
+  prepend_before_action :set_params
 
   def show; end
 
   def new
-    @favorite = Favorite.new(like_params)
     Like.new(user: @user, favorite: @favorite)
   end
 
   def create
-    @favorite = Favorite.new(group: @group, suite: @suite,
-                             params: like_params)
     @like = Like.new(user: @user, favorite: @favorite)
     handle_action(action: 'new', **like)
   end
@@ -28,14 +25,8 @@ class LikesController < ApplicationController
 
   private
 
-  def like_params
-    params.require(:like).permit(:group_id, :suite_id)
-  end
-
-  def set_user
+  def set_params
     @user = current_user
-    @group = Group.find(params[:group_id])
-    @draw = Draw.find(params[:draw_id])
-    @suite = Suite.find(params[:suite_id])
+    @favorite = Favorite.find(params[:favorite_id])
   end
 end

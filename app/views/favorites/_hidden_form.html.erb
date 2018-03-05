@@ -1,0 +1,9 @@
+<%= simple_form_for Favorite.new,
+	url: new_draw_group_favorite_path(current_user.draw, current_user.group),	
+	html: { :class => 'hidden-form' } do |f| %>
+	<%= f.input :group_id, as: :hidden, input_html: {value: current_user.group.id } %>
+  <% if suite.present? %>
+    <%= f.input :suite_id, as: :hidden, input_html: { value: suite.id } %>
+  <% end %>
+  <%= f.button :submit, btn_str, class: 'button secondary' %>
+<% end %>
