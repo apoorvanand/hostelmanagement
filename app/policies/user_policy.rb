@@ -15,6 +15,10 @@ class UserPolicy < ApplicationPolicy
       (user == record && !user.group && draw_intent_state)
   end
 
+  def import_intent?
+    user.admin?
+  end
+
   def build?
     new?
   end

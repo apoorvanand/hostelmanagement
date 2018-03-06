@@ -52,6 +52,7 @@ Rails.application.routes.draw do
 
     collection do
       get 'build'
+      patch 'import_intent'
     end
   end
 

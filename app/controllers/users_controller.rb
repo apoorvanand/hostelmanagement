@@ -2,7 +2,8 @@
 
 # Users Controller class
 class UsersController < ApplicationController
-  prepend_before_action :set_user, except: %i(index new build create)
+  prepend_before_action :set_user, except: %i(index new build create
+                                              import_intent)
 
   def index
     @users = User.includes(:draw).all.order(:class_year, :last_name)
@@ -11,6 +12,7 @@ class UsersController < ApplicationController
       @users['student'] = @users['student'].group_by(&:class_year)
     end
     @users.default = []
+    @intent_import_form = IntentImportForm.new(college: College.current)
   end
 
   def show; end
@@ -62,6 +64,12 @@ class UsersController < ApplicationController
     end
   end
 
+  def import_intent
+    result = IntentImportForm.import(college: College.current,
+                                     file: user_params[:file].path)
+
+  end
+
   private
 
   def authorize!
@@ -83,7 +91,11 @@ class UsersController < ApplicationController
   def user_params
     params.require(:user).permit(:first_name, :last_name, :role, :email,
                                  :intent, :gender, :username, :class_year,
-                                 :college)
+                                 :college, :file)
+  end
+
+  def import_intent_params
+    params.permit(:file)
   end
 
   def querier

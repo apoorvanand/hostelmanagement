@@ -1,4 +1,13 @@
 <% provide(:title, 'All Users') %>
+<% if policy(User).import_intent? %>
+  <h3>Import Intent Data</h3>
+  <p>TODO: instructions / format / example CSV?</p>
+  <p>
+  <%= simple_form_for @intent_import_form, url: import_intent_users_path, method: :patch do |f| %>
+    <%= f.input :file, label: 'Upload a CSV', as: :file %>
+    <%= f.submit 'Upload Intents' %>
+  <% end %>
+<% end %>
 <h1 id="top">All Users</h1>
 <p><a href="#admins">Admins</a> / <a href="#reps">Housing Committee</a> / <a href="#students">Students</a></p>
 <h3 id="admins">Admins</h3>

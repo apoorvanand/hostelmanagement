@@ -64,7 +64,7 @@ RSpec.describe UserPolicy do
     permissions :destroy?, :update?, :edit?, :edit_intent?, :update_intent? do
       it { is_expected.not_to permit(user, other_user) }
     end
-    permissions :index?, :build?, :create?, :new? do
+    permissions :index?, :build?, :create?, :new?, :import_intent? do
       it { is_expected.not_to permit(user, User) }
     end
     permissions :draw_info? do
@@ -135,7 +135,7 @@ RSpec.describe UserPolicy do
     permissions :destroy?, :update?, :edit? do
       it { is_expected.not_to permit(user, other_user) }
     end
-    permissions :index?, :build?, :create?, :new? do
+    permissions :index?, :build?, :create?, :new?, :import_intent? do
       it { is_expected.not_to permit(user, User) }
     end
     permissions :draw_info? do
@@ -164,7 +164,7 @@ RSpec.describe UserPolicy do
                 :edit_intent?, :update_intent? do
       it { is_expected.to permit(user, other_user) }
     end
-    permissions :index?, :build?, :create?, :new? do
+    permissions :index?, :build?, :create?, :new?, :import_intent? do
       it { is_expected.to permit(user, User) }
     end
     permissions :draw_info? do
