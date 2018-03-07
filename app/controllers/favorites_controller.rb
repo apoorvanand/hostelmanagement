@@ -13,7 +13,7 @@ class FavoritesController < ApplicationController
   def create
     @favorite = Favorite.new(group: group, suite: suite)
     handle_action(action: 'new', **favorite)
-    LikeGenerator.create!(@favorite)
+    LikeGenerator.create!(favorite: @favorite, user: current_user)
   end
 
   def delete

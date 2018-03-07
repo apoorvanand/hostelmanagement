@@ -5,7 +5,6 @@ class FavoritePolicy < ApplicationPolicy
   attr_reader :group, :suite
 
   def initialize(group, suite)
-    binding.pry
     @group ||= group
     @suite ||= suite
   end
