@@ -1,8 +1,8 @@
 <%= simple_form_for Like.new,
 	url: new_draw_group_like_path(current_user.draw, current_user.group),	
 	html: { :class => 'hidden-form' } do |f| %>
-  <% if favorite.present? %>
-    <%= f.input :favorite_id, as: :hidden, input_html: { value: favorite.id } %>
+	<% if favorite %>
+  	<%= f.input :favorite_id, as: :hidden, input_html: { value: favorite.id } %>
   <% end %>
   <%= f.input :user, as: :hidden, input_html: { value: current_user } %>
   <%= f.button :submit, btn_str, class: 'button secondary' %>

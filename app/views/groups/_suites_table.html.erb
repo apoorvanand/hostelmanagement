@@ -16,9 +16,15 @@
           <td><%= suite.singles.count %></td>
           <td><%= suite.doubles.count %></td>
           <td><%= suite.common_rooms.count %></td>
-          <td><% if policy(Like.new(user:current_user, favorite: Favorite.new(group: current_user.group, suite: suite))).new? %>
-            <%= render 'likes/hidden_form', user: current_user, suite: suite, btn_str:'Like Suite' %>
-          <%end%></td>
+          <td><% suite.favorites.each do |suite_fave| %>
+                <% if suite_fave.group == current_user.group && policy(Like.new(user: current_user, favorite: suite_fave)).new? %>
+                    <%= render 'likes/hidden_form', user: current_user, favorite:suite_fave, btn_str:'Like Suite' %>
+                <% end %>
+              <% end %>
+              <% if policy(Like.new(user:current_user)).student_in_group? && policy(Favorite.new(group: current_user.group, suite: suite)).new? %>
+                <%= render 'favorites/hidden_form', suite: suite, btn_str:'Like Suite' %>
+              <% end %>
+            </td>
         </tr>
       <% end %>
     </tbody>

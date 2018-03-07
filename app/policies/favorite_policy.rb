@@ -5,16 +5,16 @@ class FavoritePolicy < ApplicationPolicy
   attr_reader :group, :suite
 
   def initialize(group, suite)
-    @group ||= group
-    @suite ||= suite
+    @group ||= group.group
+    @suite ||= suite.suite
   end
 
   def show?
-    (group.finalizing? || group.locked?)
+    (@group.finalizing? || @group.locked?)
   end
 
   def new?
-    show? && (group.size == suite.size)
+    show? && (@group.size == @suite.size)
   end
 
   def create?

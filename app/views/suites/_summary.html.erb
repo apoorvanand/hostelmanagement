@@ -31,7 +31,7 @@
                     <%= render 'likes/hidden_form', user: current_user, favorite:suite_fave, btn_str:'Like Suite' %>
                 <% end %>
               <% end %>
-              <% if policy(Like.new(user:current_user)).new? && policy(Favorite.new(group: current_user.group, suite: suite)).new? %>
+              <% if policy(Like.new(user:current_user)).student_in_group? && policy(Favorite.new(group: current_user.group, suite: suite)).new? %>
                 <%= render 'favorites/hidden_form', suite: suite, btn_str:'Like Suite' %>
               <% end %>
             </td>

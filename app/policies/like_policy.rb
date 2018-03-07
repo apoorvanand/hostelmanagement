@@ -28,4 +28,8 @@ class LikePolicy < ApplicationPolicy
   def delete?
     show?
   end
+
+  def student_in_group?
+    !user.admin? && user.membership
+  end
 end
