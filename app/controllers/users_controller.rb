@@ -66,8 +66,8 @@ class UsersController < ApplicationController
 
   def import_intent
     result = IntentImportForm.import(college: College.current,
-                                     file: user_params[:file].path)
-
+                                     file: import_intent_params[:file].path)
+    handle_action(**result, path: users_path)
   end
 
   private
@@ -95,7 +95,7 @@ class UsersController < ApplicationController
   end
 
   def import_intent_params
-    params.permit(:file)
+    params.require(:intent_import_form).permit(:file)
   end
 
   def querier

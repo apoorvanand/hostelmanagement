@@ -7,7 +7,6 @@ RSpec.feature 'User Intent Import' do
   end
   it 'succeeds' do
     click_on 'All Users'
-    save_and_open_page
     attach_file('intent_import_form[file]',
                 Rails.root.join('spec', 'fixtures', 'intent_upload.csv'))
     click_on 'Upload Intents'

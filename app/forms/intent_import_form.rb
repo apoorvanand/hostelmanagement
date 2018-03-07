@@ -8,14 +8,14 @@ class IntentImportForm
   include ActiveModel::Model
   include Callable
 
-  HEADER = %w(number common single double medical).freeze
+  HEADER = %w(username intent).freeze
 
   # Initialize a new SuiteImporter and call #import on it
   #
   # @param [String] file The path to the CSV
   # @param [Building] building The building to put the suites in
   def initialize(file: nil, college:)
-    @college = college
+    college.activate!
     @file = file
     @successes = []
     @failures = []
@@ -33,7 +33,7 @@ class IntentImportForm
     @body = CSVReader.read(filename: file)
     return error('Header incorrect') unless correct_header?
     CSV.parse(@body.join("\n"), headers: true).each do |row|
-      create_suite_from_row(row: row.to_hash.symbolize_keys)
+      update_intent(row: row.to_hash.symbolize_keys)
     end
     result
   end
@@ -43,28 +43,15 @@ class IntentImportForm
   private
 
   attr_accessor :successes, :failures
-  attr_reader :body, :header, :string, :building, :file
+  attr_reader :body, :header, :string, :file
 
-  BED_COUNTS = { common: 0, single: 1, double: 2 }.freeze
-
-  def create_suite_from_row(row:)
+  def update_intent(row:)
     ActiveRecord::Base.transaction do
-      suite = Suite.create!(number: row[:number], building: building,
-                            medical: row[:medical].present?)
-      create_rooms(suite: suite, row: row.except!(:number, :medical))
+      User.find_by(username: row[:username]).update!(intent: row[:intent])
     end
     successes << row[:number]
   rescue ActiveRecord::RecordInvalid
     failures << row[:number]
-  end
-
-  def create_rooms(suite:, row:)
-    row.each do |type, room_numbers|
-      next unless room_numbers.present?
-      room_numbers.split(/\s+/).each do |number|
-        Room.create!(beds: BED_COUNTS[type], suite: suite, number: number)
-      end
-    end
   end
 
   def result
@@ -83,12 +70,12 @@ class IntentImportForm
 
   def success_msg
     return nil if successes.empty?
-    "Successfully imported #{successes.size} suites."
+    "Successfully updated intent for #{successes.size} students."
   end
 
   def failure_msg
     return nil if failures.empty?
-    "Failed to import suites from the following rows: #{failures.join(', ')}."
+    "Failed to update intents for the following rows: #{failures.join(', ')}."
   end
 
   def error(msg)

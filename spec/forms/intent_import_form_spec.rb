@@ -2,20 +2,18 @@
 
 require 'rails_helper'
 
-RSpec.describe SuiteImportForm do
+RSpec.describe IntentImportForm do
   include ActionDispatch::TestProcess
 
   context 'valid csv' do
-    let(:building) { instance_spy('Building') }
-    let(:file) { fixture_file_upload(csv_path('suite_upload'), 'text/csv') }
+    let(:file) { fixture_file_upload(csv_path('intent_upload'), 'text/csv') }
 
-    before { stub_suite_create }
-
-    it 'creates the suites' do
-      # from the fixture
-      count = 3
-      described_class.import(file: file, building: building)
-      expect(Suite).to have_received(:create!).exactly(count)
+    it 'updates the users' do
+      # match the fixture
+      users = Array.new(2) { |i| create(:student, username: "user#{i}") }
+      described_class.import(file: file, college: College.first)
+      expect(users).to \
+        all(have_received(:update).with(intent: 'on_campus'))
     end
     it 'returns nil in :redirect_object' do
       result = described_class.import(file: file, building: building)
