@@ -10,6 +10,10 @@ class UserPolicy < ApplicationPolicy
     update_intent?
   end
 
+  def bulk_destroy?
+    destroy?
+  end
+
   def update_intent?
     user.admin? || user.rep? ||
       (user == record && !user.group && draw_intent_state)

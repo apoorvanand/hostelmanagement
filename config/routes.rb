@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     end
 
     collection do
+      delete 'bulk_destroy/:class_year', to: 'users#bulk_destroy', as: 'bulk_destroy'
       get 'build'
     end
   end

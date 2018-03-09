@@ -2,7 +2,7 @@
 
 # Users Controller class
 class UsersController < ApplicationController
-  prepend_before_action :set_user, except: %i(index new build create)
+  prepend_before_action :set_user, except: %i(index new build create bulk_destroy)
 
   def index
     @users = User.includes(:draw).all.order(:class_year, :last_name)
@@ -48,6 +48,21 @@ class UsersController < ApplicationController
   def destroy
     result = Destroyer.new(object: @user, name_method: :full_name).destroy
     handle_action(path: users_path, **result)
+  end
+
+  def bulk_destroy
+    @year = params[:class_year].to_i
+    @users = User.all
+
+    @users.each do |user|
+      if(!user.room.nil? && user.class_year == @year)
+       Destroyer.new(object: user, name_method: :full_name).destroy
+      end
+    end
+
+    result = { redirect_object: nil, msg: { notice: "All old users in #{@year} are removed" }} 
+    handle_action(path: users_path, **result)
+
   end
 
   def edit_intent; end
