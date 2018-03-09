@@ -192,6 +192,12 @@ class Draw < ApplicationRecord # rubocop:disable ClassLength
     end
   end
 
+  def oversubscribed_sizes
+    @oversubscribed_sizes=group_sizes.any? do |size|
+      groups.where(size: size).count > suites.where(size: size).count
+    end
+  end
+
   # Query method to check whether or not a given group size is locked
   #
   # @param [Integer] the group size to check
