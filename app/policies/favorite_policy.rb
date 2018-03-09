@@ -5,8 +5,8 @@ class FavoritePolicy < ApplicationPolicy
   attr_reader :group, :suite
 
   def initialize(group, suite)
-    @group ||= group.group
-    @suite ||= suite.suite
+    @group ||= group
+    @suite ||= suite
   end
 
   def show?
