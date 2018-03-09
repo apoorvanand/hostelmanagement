@@ -30,7 +30,7 @@ class Draw < ApplicationRecord # rubocop:disable ClassLength
   has_many :lottery_assignments, dependent: :destroy
   has_many :clips, dependent: :destroy
 
-  validates :name, presence: true
+  #validates :name, presence: true
   validates :status, presence: true
   validates :suite_selection_mode, presence: true
 
