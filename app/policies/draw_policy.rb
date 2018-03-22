@@ -31,17 +31,17 @@ class DrawPolicy < ApplicationPolicy
   end
 
   def reminder?
-    record.pre_lottery? && !user.student?
+    record.pre_lottery? && user_has_uber_permission?
   end
 
   def intent_reminder?
-    return false unless record.intent_deadline
+    return false unless record.intent_deadline.present?
     reminder? && Time.zone.today <= record.intent_deadline
   end
 
   def locking_reminder?
-    return false unless record.locking_deadline
-    reminder? && Time.zone.today > record.intent_deadline
+    return false unless record.locking_deadline.present?
+    reminder? && Time.zone.today <= record.locking_deadline
   end
 
   def bulk_on_campus?
@@ -96,6 +96,10 @@ class DrawPolicy < ApplicationPolicy
 
   def selection_metrics?
     record.suite_selection? && user.draw == record && user.group.present?
+  end
+
+  def group_export?
+    record.lottery_or_later? && user_has_uber_permission?
   end
 
   class Scope < Scope # rubocop:disable Style/Documentation

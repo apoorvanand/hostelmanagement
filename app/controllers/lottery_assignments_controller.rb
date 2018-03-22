@@ -2,8 +2,7 @@
 
 # Controller for LotteryAssignments
 class LotteryAssignmentsController < ApplicationController
-  prepend_before_action :set_draw_with_eager_load, only: %(index)
-  prepend_before_action :set_draw, except: %(index)
+  prepend_before_action :set_draw
   prepend_before_action :set_lottery_assignment, only: %i(update)
 
   def index
@@ -30,15 +29,6 @@ class LotteryAssignmentsController < ApplicationController
     handle_action(**result, action: 'index')
   end
 
-  def export
-    @lotteries = @draw.groups.includes(:lottery_assignment)
-                      .order('lottery_assignments.number')
-    attributes = %i(name lottery_number)
-    result = CSVGenerator.generate(data: @lotteries, attributes: attributes,
-                                   name: 'lotteries')
-    handle_file_action(**result)
-  end
-
   private
 
   def lottery_assignment_params
@@ -48,11 +38,6 @@ class LotteryAssignmentsController < ApplicationController
 
   def set_lottery_assignment
     @lottery = LotteryAssignment.includes(:groups).find(params[:id])
-  end
-
-  def set_draw_with_eager_load
-    @draw = Draw.includes(groups: :leader).includes(:lottery_assignments)
-                .find(params[:draw_id])
   end
 
   def set_draw

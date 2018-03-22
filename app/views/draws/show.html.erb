@@ -2,40 +2,39 @@
 <h1 class="draw-name"><%= @draw.name %> (<%= @draw.status.humanize %>)</h1>
 <div class="contextual-draw-buttons"><%= render "contextual_draw_buttons", draw: @draw %></div>
 <% if @draw.draft? %>
-  <div class="suite-report">
-    <%= render 'suite_report' %>
+  <div class="suite-metrics">
+    <%= render 'suite_metrics' %>
   </div>
   <hr />
 <% else %>
-  <% if policy(@draw).oversub_report? %>
-      <div class="oversub-report">
-        <%= render 'oversub_report', draw: @draw, path: draw_path(@draw) %>
-        <% if policy(@draw).lock_all_sizes? %>
-          <%= link_to 'Lock all sizes', lock_all_sizes_draw_path(@draw, redirect_path: draw_path(@draw)), method: :patch, **with_tooltip(text: 'This will lock ALL group sizes, preventing new groups from being created.', class_override: 'button') %>
-        <% end %>
-        <% if policy(DrawSuite.new(draw: @draw.__getobj__)).index?%>
-          <%= link_to 'View suites', draw_suites_path(@draw, method: :get), class: 'button secondary' %>
-        <% end %>
-      </div>
+  <% if @draw.suite_selection? %>
+    <div class="suite-selection-report">
+      <h2>Suite Selection Summary</h2>
+      <%= render 'suite_selection_report', draw: @draw %>
+    </div>
   <% end %>
-  <% if policy(@draw).group_report? && @draw.lottery_or_later? %>
-      <div class="secondary-group-report">
-        <h3>Group Report</h3>
-        <%= render 'groups/secondary_report', groups: @draw.groups_by_size, path: draw_path(@draw),
-            actions_partial: 'groups/actions' %>
-      </div>
+  <% if policy(@draw).oversub_report? %>
+    <div class="oversub-report">
+    <h2>Draw Summary</h2>
+      <%= render 'oversub_report', draw: @draw, path: draw_path(@draw) %>
+      <% if policy(@draw).lock_all_sizes? %>
+        <%= link_to 'Lock all sizes', lock_all_sizes_draw_path(@draw, redirect_path: draw_path(@draw)), method: :patch, **with_tooltip(text: 'This will lock ALL group sizes, preventing new groups from being created.', class_override: 'button') %>
+      <% end %>
+    </div>
   <% end %>
   <ul class="accordion" data-accordion data-multi-expand="true" data-accordion data-allow-all-closed="true">
     <% if policy(:intent).report? && @draw.pre_lottery? %>
-      <li class="accordion-item is-active' %>" data-accordion-item>
-        <a href="#" class="accordion-title">Intent</a>
+      <li class="accordion-item is-active" data-accordion-item>
+        <a href="#" class="accordion-title"><h2 class="h4">Intent</h2></a>
         <div class="accordion-content" data-tab-content>
-          <p class="h3"><%= @draw.intent_metrics['on_campus'] %> on campus students</p>
-          <p class="h3"><%= @draw.intent_metrics['off_campus'] %> off campus students</p>
-          <p class="h3"><%= @draw.intent_metrics['undeclared'] %> undeclared students</p>
-          <% if @draw.ungrouped_students.key?('undeclared') %>
+          <ul class="no-bullet">
+            <li class="h5"><%= @draw.intent_metrics['on_campus'] %> on campus students</li>
+            <li class="h5"><%= @draw.intent_metrics['off_campus'] %> off campus students</li>
+            <li class="h5"><%= @draw.intent_metrics['undeclared'] %> undeclared students</li>
+          </ul>
+          <% if @draw.ungrouped_students_by_intent.key?('undeclared') %>
             <ul style="columns: 4; list-style-type: none; padding-bottom: 1em;">
-              <% @draw.ungrouped_students['undeclared'].each do |student| %>
+              <% @draw.ungrouped_students_by_intent['undeclared'].each do |student| %>
                 <li><%= link_to student.full_name, user_path(student) %></li>
               <% end %>
             </ul>
@@ -46,24 +45,58 @@
     <% end %>
     <% if policy(@draw).group_report? && @draw.pre_lottery? %>
       <li class="accordion-item" data-accordion-item>
-        <a href="#" class="accordion-title">Groups</a>
+        <a href="#" class="accordion-title"><h2 class="h4">Groups and Students</h2></a>
         <div class="accordion-content group-report" data-tab-content>
-          <h3>Group Report</h3>
           <%= render 'group_report', sizes: @draw.sizes, groups: @draw.groups_by_size,
             diff: @draw.oversubscription, group_counts: @draw.group_counts, suite_counts: @draw.suite_counts,
             actions_partial: 'groups/actions', path: draw_path(@draw) %>
           <div class="ungrouped-report">
             <%= render 'ungrouped_report' %>
           </div>
+          <% if policy(@draw).student_summary? %>
+            <%= link_to 'View or edit students', student_summary_draw_path(@draw), class: 'button secondary' %>
+          <% end %>
           <% if policy(Group).index? %>
             <%= link_to 'View printable group report', draw_groups_path(@draw), class: 'button secondary' %>
           <% end %>
         </div>
       </li>
     <% end %>
-    <% if policy(@draw).selection_metrics? %>
+    <% if policy(@draw).group_report? && @draw.lottery_or_later? %>
       <li class="accordion-item" data-accordion-item>
-        <a href="#" class="accordion-title">Selection Metrics</a>
+        <a href="#" class="accordion-title"><h2 class="h4">Groups</h2></a>
+        <div class="accordion-content secondary-group-report" data-tab-content>
+            <%= render 'groups/secondary_report', groups: @draw.groups_by_size, path: draw_path(@draw),
+                actions_partial: 'groups/actions' %>
+        </div>
+      </li>
+    <% end %>
+    <% if policy(DrawSuite.new(draw: @draw.__getobj__)).index? && @draw.pre_lottery? %>
+      <li class="accordion-item" data-accordion-item>
+        <a href="#" class="accordion-title"><h2 class="h4">Suites</h2></a>
+        <div class="accordion-content suite-report" data-tab-content>
+          <%= render 'suite_report', sizes: @draw.sizes, suites: @draw.suites_by_size,
+            diff: @draw.oversubscription, group_counts: @draw.group_counts, suite_counts: @draw.suite_counts,
+            path: draw_path(@draw) %>
+          <% if policy(DrawSuite.new(draw: @draw.__getobj__)).edit_collection? %>
+            <div style="padding-top: 1em;">
+              <%= link_to 'Edit suites', edit_collection_draw_suites_path(@draw), class: 'button secondary' %>
+            </div>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+    <% if @draw.allow_clipping? && @draw.pre_lottery? %>
+      <li class="accordion-item" data-accordion-item>
+        <a href="#" class="accordion-title"><h2 class="h4">Clips</h2></a>
+        <div class="accordion-content clip-report" data-tab-content>
+          <%= render 'clip_report', clips: @draw.clips.includes(clip_memberships: :group) %>
+        </div>
+      </li>
+    <% end %>
+    <% if policy(@draw).selection_metrics? %>
+      <li class="accordion-item is-active" data-accordion-item>
+        <a href="#" class="accordion-title"><h2 class="h4">Selection Status</h2></a>
         <div class="accordion-content selection-metrics" data-tab-content>
           <%= render 'selection_metrics', draw: @draw, group: current_user.group,
             without_suites: @draw.groups_without_suites_by_size[current_user.group.size],
@@ -71,9 +104,9 @@
         </div>
       </li>
     <% end %>
-    <% if @draw.intent_deadline.present? || @draw.locking_deadline.present? %>
+    <% if @draw.pre_lottery? && (@draw.intent_deadline.present? || @draw.locking_deadline.present?) %>
       <li class="accordion-item" data-accordion-item>
-        <a href="#" class="accordion-title">Deadlines</a>
+        <a href="#" class="accordion-title"><h2 class="h4">Deadlines</h2></a>
         <div class="accordion-content deadlines" data-tab-content>
           <h3>Deadlines</h3>
           <% if @draw.intent_deadline.present? %>
@@ -112,13 +145,13 @@
     <% end %>
     <% if policy(EmailExport).new? %>
       <li class="accordion-item" data-accordion-item>
-        <a href="#" class="accordion-title">Export Leader E-mails</a>
+        <a href="#" class="accordion-title"><h2 class="h4">Export Leader E-mails</h2></a>
         <div class="accordion-content export-leader-btns" data-tab-content>
           <p>Click the buttons below to export the e-mail addresses of either all group leaders or leaders of groups of a specific size.</p>
           <ul>
-            <li><%= render 'email_exports/hidden_form', draw: @draw, size: nil, btn_str: 'All' %></li>
+            <li><%= render 'email_exports/hidden_form', draw: @draw, size: nil, id: "email_export_all", btn_str: 'All' %></li>
             <% @draw.group_sizes.each do |size| %>
-              <li><%= render 'email_exports/hidden_form', draw: @draw, size: size, btn_str: headerize_size(size) %></li>
+              <li><%= render 'email_exports/hidden_form', draw: @draw, size: size, id: "email_export_#{size}", btn_str: headerize_size(size) %></li>
             <% end %>
           </ul>
         </div>

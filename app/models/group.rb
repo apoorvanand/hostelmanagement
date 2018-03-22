@@ -25,8 +25,13 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   has_one :clip, through: :clip_membership
   has_many :clip_memberships, dependent: :destroy
   has_one :suite, dependent: :nullify
-  belongs_to :lottery_assignment, dependent: :destroy
+  belongs_to :lottery_assignment
   accepts_nested_attributes_for :suite
+
+  # This before_destroy clears room assignments and needs to be added before
+  # the dependent: :delete_all in the memberships association or there won't be
+  # any members to update
+  before_destroy :remove_member_rooms
 
   has_many :memberships, dependent: :delete_all
   has_many :full_memberships, -> { where(status: 'accepted') },
@@ -61,9 +66,10 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
                 if: -> { will_save_change_to_lottery_assignment_id? }
   after_update :remove_clip_memberships,
                if: ->() { changed_draw_with_clip_memberships? }
-  before_destroy :remove_member_rooms
   after_destroy :restore_member_draws, if: ->(g) { g.draw.nil? }
   after_destroy :notify_members_of_disband
+  after_destroy :destroy_lottery_assignment,
+                if: ->(g) { g.lottery_assignment.present? }
 
   attr_reader :remove_ids
 
@@ -73,9 +79,11 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   # Generate the group name
   #
   # @return [String] the group's name
-  def name
-    year_str = leader.class_year.present? ? " (#{leader.class_year})" : ''
-    "#{leader.full_name}'s Group" + year_str
+  def name(*opts)
+    base = "#{leader.full_name}'s Group"
+    opt_strs = opts.map { |o| name_str(o) }.compact.join(', ')
+    return base unless opt_strs.present?
+    "#{base} (#{opt_strs})"
   end
 
   # Updates the status to match the group size (open when fewer members than
@@ -92,14 +100,14 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   #
   # @return [Array<User>] the users who have requested to join the housing group
   def requests
-    memberships.where(status: 'requested').map(&:user)
+    memberships.select { |m| m.status == 'requested' }.map(&:user)
   end
 
   # Get the group's membership invitations
   #
   # @return [Array<User>] the users who have been invited to join the group
   def invitations
-    memberships.where(status: 'invited').map(&:user)
+    memberships.select { |m| m.status == 'invited' }.map(&:user)
   end
 
   # Get all of the non-accepted memberships for the group
@@ -176,6 +184,15 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   end
 
   private
+
+  def name_str(opt)
+    case opt
+    when :with_size
+      Suite.size_str(size)
+    when :with_year
+      leader.class_year.to_s
+    end
+  end
 
   def notify_members_of_disband
     members.each do |m|
@@ -283,8 +300,10 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
   end
 
   def freeze_lottery
-    return unless lottery_assignment_id_in_database.present?
-    throw(:abort)
+    if lottery_assignment_id_in_database.present? &&
+       lottery_assignment_id.present?
+      throw(:abort)
+    end
   end
 
   def changed_draw_with_clip_memberships?
@@ -298,5 +317,9 @@ class Group < ApplicationRecord # rubocop:disable ClassLength
       self.status = 'closed' unless finalizing? || lockable?
       self.status = 'locked' if lockable?
     end
+  end
+
+  def destroy_lottery_assignment
+    lottery_assignment.process_group_destruction!
   end
 end
