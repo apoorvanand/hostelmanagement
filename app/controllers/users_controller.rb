@@ -56,6 +56,9 @@ class UsersController < ApplicationController
 
     @users.each do |user|
       if(!user.room.nil? && user.class_year == @year)
+        if(!user.group.nil? && user.led_group.nil?)
+          user.group.remove_members!( ids: [user.id])
+        end
        Destroyer.new(object: user, name_method: :full_name).destroy
       end
     end
