@@ -32,9 +32,8 @@
         <h4>Class of <%= year %> (<%= @users['student'][year].size %> total)</h4>
         <%= render 'table', users: @users['student'][year], hide_actions: false %>
 
-        <! Will this work for authorization? >
         <% if policy(:user).bulk_destroy? %>
-          <%= link_to "Remove Old Users", bulk_destroy_users_path(year), method: :delete, data: { confirm: 'Are you sure you want to delete ALL old users' }, class: 'button alert', id: "remove-students-#{year}" %>
+          <%= link_to "Remove Old Users", bulk_destroy_users_path(year), method: :delete, data: { confirm: "This action cannot be undone. Are you sure you want to delete ALL old users from #{year}. Old users are defined as users who have already received a room assignment." }, class: 'button alert', id: "remove-students-#{year}" %>
         <% end %>
 
       </div>

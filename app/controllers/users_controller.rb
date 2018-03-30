@@ -54,17 +54,32 @@ class UsersController < ApplicationController
     @year = params[:class_year].to_i
     @users = User.all
 
+    failed_users = Array.new
+
     @users.each do |user|
       if(!user.room.nil? && user.class_year == @year)
         if(!user.group.nil? && user.led_group.nil?)
-          user.group.remove_members!( ids: [user.id])
+         user.group.remove_members!( ids: [user.id] )
         end
-       Destroyer.new(object: user, name_method: :full_name).destroy
+
+        result = Destroyer.new(object: user, name_method: :full_name).destroy
+
+        if(!result[:redirect_object].nil?)
+          failed_users.push(user.full_name)
+        end
       end
     end
-
-    result = { redirect_object: nil, msg: { notice: "All old users in #{@year} are removed" }} 
-    handle_action(path: users_path, **result)
+    if(failed_users.empty?)
+      results = { redirect_object: nil, msg: { notice: "All old users in #{@year} are removed" }} 
+    else
+      str = ""
+      failed_users.each do |name|
+        str += "{#{name}} "
+      end
+      results = { redirect_object: nil, msg: { error: "Deletion failed for users #{str}" }} 
+    end
+    
+    handle_action(path: users_path, **results)
 
   end
 
