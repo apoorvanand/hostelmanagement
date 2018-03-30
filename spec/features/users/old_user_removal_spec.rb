@@ -2,25 +2,30 @@
 
 require 'rails_helper'
 
-RSpec.feature "Old user removal" do 
-	before { log_in FactoryGirl.create(:admin) }
-	let!(:user) { FactoryGirl.create(:user) }
-	let(:room) { FactoryGirl.create(:room) }
-	let!(:user_in_room) { FactoryGirl.create(:user, room_id: room.id) }
-	let(:year) { Time.zone.today.year }
-	let!(:user_next_year_in_room) { FactoryGirl.create(:user, class_year: (year+1), room_id: room.id) }
+RSpec.feature 'Old user removal' do
+  before { log_in FactoryGirl.create(:admin) }
+  let(:room) { FactoryGirl.create(:room) }
 
-	it "removes user in room and year as specified" do
-		msg = "All old users in #{year} are removed"
+  it 'removes user in room' do
+    user = FactoryGirl.create(:user, room_id: room.id)
+    msg = "All old users in #{user.class_year} are removed"
+    visit users_path
+    click_on "remove-students-#{user.class_year}"
+    expect(page).to have_content(msg)
+  end
 
-		visit users_path
+  it 'keeps user in different year' do
+    user = FactoryGirl.create(:user, room_id: room.id)
+    user_next_year = FactoryGirl.create(:user, room_id: room.id, class_year: 1)
+    visit users_path
+    click_on "remove-students-#{user.class_year}"
+    expect(User.where(id: user_next_year.id)).to exist
+  end
 
-		expect(page).to have_content("Students (3 total)")
-
-		find("#students-#{year}").click
-		click_on "remove-students-#{year}"
-
-		expect(page).to have_content(msg)
-		expect(page).to have_content("Students (2 total)")
-	end
+  it 'keeps user not in room' do
+    user = FactoryGirl.create(:user)
+    visit users_path
+    click_on "remove-students-#{user.class_year}"
+    expect(User.where(id: user.id)).to exist
+  end
 end

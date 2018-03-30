@@ -2,7 +2,8 @@
 
 # Users Controller class
 class UsersController < ApplicationController
-  prepend_before_action :set_user, except: %i(index new build create bulk_destroy)
+  prepend_before_action :set_user,
+                        except: %i(index new build create bulk_destroy)
 
   def index
     @users = User.includes(:draw).all.order(:class_year, :last_name)
@@ -54,33 +55,25 @@ class UsersController < ApplicationController
     @year = params[:class_year].to_i
     @users = User.all
 
-    failed_users = Array.new
+    failure = false
 
     @users.each do |user|
-      if(!user.room.nil? && user.class_year == @year)
-        if(!user.group.nil? && user.led_group.nil?)
-         user.group.remove_members!( ids: [user.id] )
-        end
-
-        result = Destroyer.new(object: user, name_method: :full_name).destroy
-
-        if(!result[:redirect_object].nil?)
-          failed_users.push(user.full_name)
-        end
+      next if user.room.nil? || user.class_year != @year
+      if !user.group.nil? && user.led_group.nil?
+        user.group.remove_members!(ids: [user.id])
       end
+
+      result = Destroyer.new(object: user, name_method: :full_name).destroy
+
+      failure = true unless result[:redirect_object].nil?
     end
-    if(failed_users.empty?)
-      results = { redirect_object: nil, msg: { notice: "All old users in #{@year} are removed" }} 
-    else
-      str = ""
-      failed_users.each do |name|
-        str += "{#{name}} "
-      end
-      results = { redirect_object: nil, msg: { error: "Deletion failed for users #{str}" }} 
-    end
-    
+    msg = if failure
+            { error: 'Deletion failed' }
+          else
+            { notice: "All old users in #{@year} are removed" }
+          end
+    results = { redirect_object: nil, msg: msg }
     handle_action(path: users_path, **results)
-
   end
 
   def edit_intent; end
