@@ -135,8 +135,15 @@ RSpec.describe Group, type: :model do
 
     it 'cannot change a lottery_assignment once set' do
       lottery = create(:lottery_assignment)
+      new_lottery = create(:lottery_assignment)
       group = lottery.group
-      expect(group.update(lottery_assignment_id: nil)).to be_falsey
+      expect(group.update(lottery_assignment_id: new_lottery.id)).to be_falsey
+    end
+
+    it 'can remove a lottery assignment if set' do
+      lottery = create(:lottery_assignment)
+      group = lottery.group
+      expect(group.update(lottery_assignment_id: nil)).to be_truthy
     end
 
     it 'must be the only group unless in a clip' do
@@ -169,7 +176,7 @@ RSpec.describe Group, type: :model do
   end
 
   it 'removes member room ids when disbanding' do
-    group = FactoryGirl.create(:locked_group, size: 1)
+    group = FactoryGirl.create(:locked_group, size: 1).reload
     suite = FactoryGirl.create(:suite_with_rooms, group_id: group.id)
     group.leader.update!(room_id: suite.rooms.first.id)
     expect { group.destroy! }.to \
@@ -323,6 +330,16 @@ RSpec.describe Group, type: :model do
       m = group.clip_membership
       group.destroy!
       expect { m.reload } .to raise_error(ActiveRecord::RecordNotFound)
+    end
+    it 'destroys the lottery assignment if not clipped' do
+      group = create(:lottery_assignment).groups.first
+      expect { group.destroy! }.to change { LotteryAssignment.count }.by(-1)
+    end
+    it 'does not destroy the lottery assignment if clipped' do
+      clip = create(:clip, draw: create(:draw, status: 'lottery'))
+      group = create(:lottery_assignment, :defined_by_clip, clip: clip).groups
+                                                                       .first
+      expect { group.destroy! }.not_to change { LotteryAssignment.count }
     end
   end
 

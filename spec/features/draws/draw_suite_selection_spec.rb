@@ -10,8 +10,8 @@ RSpec.feature 'Draw suite selection' do
     clip.groups.map { |g| create(:suite_with_rooms, rooms_count: g.size) }
   end
   let!(:other_suite) { create(:suite_with_rooms, rooms_count: group.size) }
-  let(:f) { "vesta_lotteries_export_#{Time.zone.today.to_s(:number)}.csv" }
-  let(:h_str) { 'name,lottery_number' }
+  let(:f) { "vesta_groups_export_#{Time.zone.today.to_s(:number)}.csv" }
+  let(:h_str) { 'name,lottery_number,suite_number' }
 
   before do
     draw.suites << clip_suites << other_suite
@@ -33,10 +33,10 @@ RSpec.feature 'Draw suite selection' do
     end
 
     it 'permits disbanding of groups' do
-      draw.suites.delete_all
-      visit draw_path(draw)
-      click_on 'Select suites'
-      within("#group-fields-#{clip.groups.first.id}") { click_on 'Disband' }
+      visit new_draw_suite_assignment_path(draw)
+      within("#group-fields-#{clip.groups.first.id}") do
+        click_on 'Disband Group'
+      end
       expect(page).to have_css('.flash-notice', text: /Group.+deleted/)
     end
 
@@ -66,7 +66,7 @@ RSpec.feature 'Draw suite selection' do
       draw.groups.where.not(id: group.id).each(&:destroy!)
       draw.suites.delete_all
       visit new_draw_suite_assignment_path(draw)
-      click_on 'Disband'
+      click_on 'Disband Group'
       expect(page).to have_css('.flash-success', text: /All groups have suites/)
     end
 
@@ -104,6 +104,6 @@ RSpec.feature 'Draw suite selection' do
   end
 
   def export_row_for(group)
-    [group.name, group.lottery_number].join(',')
+    [group.name, group.lottery_number, group.suite_number].join(',')
   end
 end

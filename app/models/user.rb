@@ -14,7 +14,7 @@
 # @attr last_name [String] the user's last name (required)
 # @attr intent [Integer] an enum for the user's housing intent, on_campus,
 #   off_campus, or undeclared (required)
-# @attr class_year [Integer] the graduating class year of the student (optional)
+# @attr class_year [Integer] the graduating class year of the student (required)
 # @attr tos_accepted [DateTime] the time of agreement to the terms of service
 class User < ApplicationRecord
   # Determine whether or not CAS authentication is being used, must be at the
@@ -45,8 +45,11 @@ class User < ApplicationRecord
 
   belongs_to :room
 
+  delegate :name, to: :draw, prefix: :draw, allow_nil: true
+  delegate :name, to: :group, prefix: :group, allow_nil: true
   delegate :number, to: :room, prefix: :room, allow_nil: true
   delegate :suite_number, to: :group, allow_nil: true
+  delegate :lottery_number, to: :group, allow_nil: true
 
   validates :email, uniqueness: true
   validates :username, presence: true, if: :cas_auth?
@@ -55,6 +58,8 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :intent, presence: true
+  validates :class_year, presence: true,
+                         if: ->() { role == 'student' || role == 'rep' }
   validate :room_in_suite, if: ->() { group.present? && group.suite.present? }
 
   enum role: %w(student admin rep superuser)
