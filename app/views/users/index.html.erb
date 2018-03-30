@@ -22,15 +22,21 @@
   <ul class="tabs" data-tabs id="student-year-tabs">
 
     <!-- Tabs-titles for class years -->
-    binding.pry
-    <% @users['student'].keys.sort
-    .each do |year| %>
+    <% if @users['student'].keys.include? nil then %>
+    <h1>Has nil!</h1>
+    <% end %>
+
+<% if false %> <!-- this line for debug only, comments out all following lines until end -->
+    <% @users['student'].keys.sort.each do |year| %>
+
       <% if year.nil? then continue %>
       <% end %>
+
       <li class="tabs-title<%= @users['student'].keys.sort.first == year ? ' is-active' : '' %>">
         <a href="#students-<%= year %>"<%= @users['student'].keys.sort.first == year ? ' aria-selected=true' : '' %>><%= year %></a>
       </li>
     <% end %>
+
 
     <!-- Tabs-titles for students without a class year (year == nil) -->
     <li class="tabs-title<%= @users['student'].keys.sort.first == nil ? ' is-active' : '' %>">
@@ -55,7 +61,11 @@
         <%= render 'table', users: @users['student'][2021], hide_actions: false %>
     </div>
 
+
   </div>
+
+<% end %> <!-- this line for debug only, paired with above "if false" -->
+
 <% else %>
   <p>No regular students!</p>
 <% end %>
