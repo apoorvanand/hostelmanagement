@@ -11,6 +11,7 @@ class UsersController < ApplicationController
       @users['student'] = @users['student'].group_by(&:class_year)
     end
     @users.default = []
+    binding.pry
   end
 
   def show; end
