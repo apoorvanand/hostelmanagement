@@ -35,7 +35,7 @@
     <!-- Tabs-title for students without a class year (year == nil) -->
     <!-- Only appears if there is at least 1 such student -->
     <% if @years_nil.length > 0 %> <!-- Equivalent to: %= @users['student'].keys.include? nil % -->
-      <li class="tabs-title<%= @years_nil.first == 'nil' ? ' is-active' : '' %>">
+      <li class="tabs-title<%= @years_nil.first == 'nil' ? ' is-active' : '' %>" style="background-color: #ffbf00"> <!-- background color is light orange until you hover or click on it -->
           <a href="#students-NIL"<%= @years_nil.first == 'nil' ? ' aria-selected=true' : '' %>>Class year unassigned</a>
       </li>
     <% end %>
