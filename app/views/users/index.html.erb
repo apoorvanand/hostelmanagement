@@ -35,8 +35,8 @@
     <!-- Tabs-title for students without a class year (year == nil) -->
     <!-- Only appears if there is at least 1 such student -->
     <% if @years_nil.length > 0 %> <!-- Equivalent to: %= @users['student'].keys.include? nil % -->
-      <li class="tabs-title<%= @years_nil.first == nil ? ' is-active' : '' %>">
-          <a href="#students-NIL"<%= @years_nil.first == nil ? ' aria-selected=true' : '' %>>Class year unassigned</a>
+      <li class="tabs-title<%= @years_nil.first == 'nil' ? ' is-active' : '' %>">
+          <a href="#students-NIL"<%= @years_nil.first == 'nil' ? ' aria-selected=true' : '' %>>Class year unassigned</a>
       </li>
     <% end %>
   </ul>
@@ -54,7 +54,7 @@
     <!-- Tabs-panel for students without a class year (year == nil) -->
     <!-- Only appears if there is at least 1 such student -->
     <% if @years_nil.length > 0 %>
-      <div class="tabs-panel<%= @years_nil.first == nil ? ' is-active' : '' %>" id="students-NIL">
+      <div class="tabs-panel<%= @years_nil.first == 'nil' ? ' is-active' : '' %>" id="students-NIL">
         <h3>Class year unassigned (<%= @users['student'][nil].size %> total)</h3>
           <%= render 'table', users: @users['student'][nil], hide_actions: false %>
       </div>
