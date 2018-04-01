@@ -4,6 +4,7 @@
 class UsersController < ApplicationController
   prepend_before_action :set_user,
                         except: %i(index new build create bulk_destroy)
+  prepend_before_action :set_bulk_params, only: %i(bulk_destroy)
 
   def index
     @users = User.includes(:draw).all.order(:class_year, :last_name)
@@ -52,27 +53,16 @@ class UsersController < ApplicationController
   end
 
   def bulk_destroy
-    @year = params[:class_year].to_i
-    @users = User.all
-
     failure = false
-
     @users.each do |user|
       next if user.room.nil? || user.class_year != @year
-      if !user.group.nil? && user.led_group.nil?
-        user.group.remove_members!(ids: [user.id])
-      end
+      remove_group user
 
       result = Destroyer.new(object: user, name_method: :full_name).destroy
 
       failure = true unless result[:redirect_object].nil?
     end
-    msg = if failure
-            { error: 'Deletion failed' }
-          else
-            { notice: "All old users in #{@year} are removed" }
-          end
-    results = { redirect_object: nil, msg: msg }
+    results = { redirect_object: nil, msg: check_failure(failure) }
     handle_action(path: users_path, **results)
   end
 
@@ -89,6 +79,24 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def set_bulk_params
+    @users = User.all
+    @year = params[:class_year].to_i
+  end
+
+  def check_failure(failure)
+    if failure
+      { error: 'Deletion failed' }
+    else
+      { notice: "All old users in #{@year} are removed" }
+    end
+  end
+
+  def remove_group(user)
+    return unless !user.group.nil? && user.led_group.nil?
+    user.group.remove_members!(ids: [user.id])
+  end
 
   def authorize!
     if @user
