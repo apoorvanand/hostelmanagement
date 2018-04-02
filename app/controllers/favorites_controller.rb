@@ -22,12 +22,20 @@ class FavoritesController < ApplicationController
     handle_action(**result, path: path)
   end
 
+  def authorize!
+    if @favorite
+      authorize @favorite
+    else
+      authorize Favorite.new(group: @group, suite: @suite)
+    end
+  end
+
   def edit; end
 
   private
 
   def set_params
-    @group = Group.find(params[:group_id])
-    @suite = Suite.find(params[:suite_id])
+    @group = Group.find(params[:favorite][:group_id])
+    @suite = Suite.find(params[:favorite][:suite_id])
   end
 end
