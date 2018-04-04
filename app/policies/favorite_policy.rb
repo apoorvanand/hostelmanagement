@@ -13,7 +13,7 @@ class FavoritePolicy < ApplicationPolicy
     if suite
       @suite = suite
     else
-      @suite = favorite.suite unless suite
+      @suite = favorite.suite
     end
   end
 
@@ -26,7 +26,6 @@ class FavoritePolicy < ApplicationPolicy
   end
 
   def create?
-    new?
   end
 
   def edit?

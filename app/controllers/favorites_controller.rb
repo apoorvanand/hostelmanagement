@@ -13,6 +13,7 @@ class FavoritesController < ApplicationController
   def create
     @favorite = Favorite.new(group: @group, suite: @suite)
     LikeGenerator.create!(favorite: @favorite, user: current_user)
+    authorize!
   end
 
   def delete
@@ -23,7 +24,7 @@ class FavoritesController < ApplicationController
 
   def authorize!
     if @favorite
-      authorize @favorite, @favorite.group, @favorite.suite
+      authorize @favorite
     else
       FavoritePolicy.new(@group, @suite)
     end
