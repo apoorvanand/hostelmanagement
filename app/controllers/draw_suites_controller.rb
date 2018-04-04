@@ -6,10 +6,23 @@ class DrawSuitesController < ApplicationController
   before_action :set_form_data, only: %i(new edit)
 
   def index
+    logger.debug "\ndraw"
+    logger.debug @draw.name
+    logger.debug "\n"
+    # Query to return available non-medical suites,
     suites = ValidSuitesQuery.new(@draw.suites.includes(:rooms)).call
+    # Query to return all of the suite sizes in the database.
     @all_sizes = SuiteSizesQuery.new(suites).call
+    logger.debug "\nsuites"
+    logger.debug suites
+    logger.debug "\nall sizes"
+    logger.debug @all_sizes
+    logger.debug "\n"
     @suites_by_size = SuitesBySizeQuery.new(suites).call
     @suites_by_size.default = []
+    logger.debug "\nsuites by size"
+    logger.debug @all_sizes
+    logger.debug "\n"
   end
 
   def edit_collection
@@ -18,7 +31,20 @@ class DrawSuitesController < ApplicationController
 
   def update_collection
     result = DrawSuitesUpdate.update(draw: @draw, params: suites_update_params)
+
+
+    logger.debug "\nsuites_update_params"
+    logger.debug suites_update_params
+
+    logger.debug "\nresult"
+    logger.debug result
+
     @suites_update = result[:update_object]
+
+    logger.debug "\nsuites update"
+    logger.debug @suites_update
+
+
     if @suites_update
       prepare_suites_edit_data
       result[:action] = 'edit_collection'
@@ -49,8 +75,23 @@ class DrawSuitesController < ApplicationController
   end
 
   def prepare_suites_edit_data # rubocop: disable MethodLength
+    # Query to return available non-medical suites,
     all_suites = ValidSuitesQuery.call
+    logger.debug "\nall_suites"
+    logger.debug all_suites
+    logger.debug "\n"
+
+    # draw suites update here... suites update contains the suite id for this draw id
     @suites_update ||= DrawSuitesUpdate.new(draw: @draw)
+    logger.debug "\nsuites_update"
+    logger.debug @suites_update
+    logger.debug "\n"
+
+
+    logger.debug "\nsuite_ids for suites update"
+    logger.debug @suites_update.suite_ids
+    logger.debug "\n"
+
     @current_suites = suite_hash_merge(
       ValidSuitesQuery.new(@draw.suites.includes(:draws)).call
     )
@@ -60,6 +101,16 @@ class DrawSuitesController < ApplicationController
     @drawn_suites = suite_hash_merge(
       SuitesInOtherDrawsQuery.new(all_suites).call(draw: @draw)
     )
+
+    logger.debug "\ncurrent_suites"
+    logger.debug @current_suites
+
+    logger.debug "\ndrawless_suites"
+    logger.debug @drawless_suites
+
+    logger.debug "\ndrawn_suites"
+    logger.debug @drawn_suites
+    logger.debug "\n"
   end
 
   # rubocop: enable MethodLength
