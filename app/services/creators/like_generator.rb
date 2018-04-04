@@ -6,12 +6,13 @@ class LikeGenerator < Creator
   include Callable
 
   # Initialize the favorite
-  def initialize(params:)
+  def initialize(params)
     @params = params.to_h.transform_keys(&:to_sym)
     process_params
+    super(klass: Like, name_method: nil, params: @params)
   end
 
-  def create
+  def create!
     ActiveRecord::Base.transaction do
       @like = Like.new(**params)
       @like.save!
@@ -21,7 +22,7 @@ class LikeGenerator < Creator
     error(e)
   end
 
-  make_callable :create
+  make_callable :create!
 
   private
 

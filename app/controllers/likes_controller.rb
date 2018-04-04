@@ -21,6 +21,14 @@ class LikesController < ApplicationController
     handle_action(**result, path: path)
   end
 
+  def authorize!
+    if @like
+      authorize @like
+    else
+      LikePolicy.new(user: current_user, like: @like)
+    end
+  end
+
   def edit; end
 
   private
