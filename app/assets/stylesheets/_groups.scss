@@ -1,11 +1,12 @@
 .printable-group-report {
   td[data-role="group-leader"] { width: 20%; }
   td[data-role="group-members"] { width: 70%; }
-  td[data-role="group-transfers"] { width: 20%; }
+  td[data-role="group-transfers"] { width: 10%; }
 }
 
 /* styles for physically printing the group report */
 @media print {
+  /* remove navbar and footer */
   .top-bar, .top-bar-title, .footer, .footer-links, footer {
     display: none;
   }
@@ -33,7 +34,14 @@
     border-collapse: collapse;
     border: none !important;
   }
-  table tr:nth-child(even) {
-    background: #DFDFDF !important;
+
+  .page-break{
+    display: block;
+    page-break-after: always !important;
   }
+/*
+  table {
+    page-break-after: always !important;
+  }
+  */
 }

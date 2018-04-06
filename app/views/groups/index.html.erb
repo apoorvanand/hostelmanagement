@@ -6,9 +6,9 @@
   <div class="printable-group-report">
     <% @groups.each do |size, group_array| %>
       <h3><%= headerize_size(size) %></h3>
-      <table>
+      <table class="page-break">
         <thead>
-          <tr>
+          <tr class="page-break">
             <td>Group Leader</td>
             <td>Other Members</td>
             <td>Transfers</td>
@@ -16,7 +16,7 @@
         </thead>
         <tbody>
           <% group_array.each do |group| %>
-            <tr>
+            <tr class="page-break">
               <td data-role="group-leader">
                 <% if policy(group).show? %>
                   <%= link_to group.leader.full_name, draw_group_path(@draw, group) %>
