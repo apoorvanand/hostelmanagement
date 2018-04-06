@@ -1,0 +1,39 @@
+.printable-group-report {
+  td[data-role="group-leader"] { width: 20%; }
+  td[data-role="group-members"] { width: 70%; }
+  td[data-role="group-transfers"] { width: 20%; }
+}
+
+/* styles for physically printing the group report */
+@media print {
+  .top-bar, .top-bar-title, .footer, .footer-links, footer {
+    display: none;
+  }
+
+  a[href]:after {
+    content: none !important;
+  }
+
+  /* only display links which are students' names */
+  a[href] {
+    display: none;
+  }
+  a[href*="groups"] {
+    display: inline !important;
+    font-weight: 510 !important;
+    text-decoration: none !important;
+  }
+
+  /* add stripes to the table for legibility */
+  table thead {
+    border-bottom: 2px solid #333333 !important;
+    background: #ECECEC !important;
+  }
+  table, thead, tbody, tfoot {
+    border-collapse: collapse;
+    border: none !important;
+  }
+  table tr:nth-child(even) {
+    background: #DFDFDF !important;
+  }
+}
