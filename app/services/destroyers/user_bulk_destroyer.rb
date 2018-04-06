@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 # User destroy class that destroys all old users in a given year
-# Definition of 'old user': Any user that has already been assigned
-# a room accross any housing draw
+#   Definition of 'old user': Any user that has already been assigned
+#   a room accross any housing draw
 class UserBulkDestroyer
-	include Callable;
+  include Callable
 
   # Create a UserBulkDestroyer
   #
   # @param [Array] users The users to be deleted
-	def initialize(users:)
+  def initialize(users:)
     @users = users
-	end
+  end
 
   # Use UserBulkDestroyer to attempt to destroy multiple users at one time
   #
@@ -40,7 +40,7 @@ class UserBulkDestroyer
 
   def build_results
     @failures, @successes = @results.partition { |r| r[:msg].key? :error }
-    #??
+    # ??
     { redirect_object: nil, msg: build_msg }
   end
 
@@ -55,16 +55,16 @@ class UserBulkDestroyer
   end
 
   def success_msg
-    if(@successes.empty?)
-      "Could not find old users to delete"
+    if @successes.empty?
+      'No old users detected'
     else
-      "Successfully Deleted: #{ @successes.map { |s| s[:msg][:notice] }.join(' ') }"
+      "Successfully Deleted: #{@successes
+                                 .map { |s| s[:msg][:notice] }.join(' ')}"
     end
   end
 
   def error_msg
     return if @failures.empty?
-    "Unexpected Failure: #{ @failures.map { |f| f[:msg][:error] }.join(' ') }"
+    "Unexpected Failure: #{@failures.map { |f| f[:msg][:error] }.join(' ')}"
   end
-
 end
