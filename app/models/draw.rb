@@ -70,7 +70,7 @@ class Draw < ApplicationRecord # rubocop:disable ClassLength
   #
   # @return [ActiveRecord::Relation] the suites without assigned groups
   def available_suites
-    suites.available
+    suites.includes(:rooms).available
   end
 
   # Query method to see if a draw has at least one student.
@@ -219,6 +219,7 @@ class Draw < ApplicationRecord # rubocop:disable ClassLength
   #
   # @param [Mailer] The mailer to use
   def notify_next_groups(mailer = StudentMailer)
+    return unless student_selection?
     next_groups.each do |group|
       mailer.selection_invite(user: group.leader).deliver_later
     end

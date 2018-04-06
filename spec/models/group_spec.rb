@@ -25,6 +25,11 @@ RSpec.describe Group, type: :model do
     it { is_expected.not_to allow_value(-1).for(:memberships_count) }
     it { is_expected.to validate_presence_of(:transfers) }
     it { is_expected.not_to allow_value(-1).for(:transfers) }
+    it { is_expected.to delegate_method(:suite_number).to(:suite).as(:number) }
+    it do
+      is_expected.to delegate_method(:lottery_number).to(:lottery_assignment)
+                                                     .as(:number)
+    end
   end
 
   describe 'size validations' do
@@ -179,18 +184,46 @@ RSpec.describe Group, type: :model do
   end
 
   describe '#name' do
-    it "includes the leader's name" do
-      leader = instance_spy('User', full_name: 'First Last')
-      group = FactoryGirl.build_stubbed(:group)
-      allow(group).to receive(:leader).and_return(leader)
-      expect(group.name).to include(leader.full_name)
+    let(:group) { build_stubbed(:group) }
+    let(:leader) { instance_spy('user', full_name: 'First Last') }
+
+    before { allow(group).to receive(:leader).and_return(leader) }
+
+    context 'default' do
+      it "includes the leader's name" do
+        expect(group.name).to eq("First Last's Group")
+      end
+
+      it 'ignores unexpected options' do
+        expect(group.name(:foo)).to eq("First Last's Group")
+      end
     end
 
-    it "includes the leader's class year" do
-      leader = instance_spy('User', full_name: 'First Last', class_year: 2017)
-      group = FactoryGirl.build_stubbed(:group)
-      allow(group).to receive(:leader).and_return(leader)
-      expect(group.name).to include(leader.class_year.to_s)
+    context 'with just size' do
+      it 'includes the group size' do
+        allow(group).to receive(:size).and_return(2)
+        allow(Suite).to receive(:size_str).with(2).and_return('double')
+        expect(group.name(:with_size)).to \
+          eq("First Last's Group (double)")
+      end
+    end
+
+    context 'with just class year' do
+      it "includes the leader's class year" do
+        allow(leader).to receive(:class_year).and_return(2017)
+        expect(group.name(:with_year)).to \
+          eq("First Last's Group (2017)")
+      end
+    end
+
+    context 'with both size and class year' do
+      it "includes both the group size and leader's class year" do
+        allow(group).to receive(:size).and_return(2)
+        allow(Suite).to receive(:size_str).with(2).and_return('double')
+        allow(leader).to receive(:class_year).and_return(2017)
+        expect(group.name(:with_size, :with_year)).to \
+          eq("First Last's Group (double, 2017)")
+      end
     end
   end
 
@@ -290,6 +323,16 @@ RSpec.describe Group, type: :model do
       m = group.clip_membership
       group.destroy!
       expect { m.reload } .to raise_error(ActiveRecord::RecordNotFound)
+    end
+    it 'destroys the lottery assignment if not clipped' do
+      group = create(:lottery_assignment).groups.first
+      expect { group.destroy! }.to change { LotteryAssignment.count }.by(-1)
+    end
+    it 'does not destroy the lottery assignment if clipped' do
+      clip = create(:clip, draw: create(:draw, status: 'lottery'))
+      group = create(:lottery_assignment, :defined_by_clip, clip: clip).groups
+                                                                       .first
+      expect { group.destroy! }.not_to change { LotteryAssignment.count }
     end
   end
 

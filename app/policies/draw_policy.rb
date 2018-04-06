@@ -14,14 +14,6 @@ class DrawPolicy < ApplicationPolicy
     edit? && record.draft?
   end
 
-  def intent_report?
-    user.admin? || user.rep?
-  end
-
-  def filter_intent_report?
-    intent_report?
-  end
-
   def student_summary?
     edit?
   end
@@ -39,17 +31,17 @@ class DrawPolicy < ApplicationPolicy
   end
 
   def reminder?
-    record.pre_lottery? && !user.student?
+    record.pre_lottery? && user_has_uber_permission?
   end
 
   def intent_reminder?
-    return false unless record.intent_deadline
+    return false unless record.intent_deadline.present?
     reminder? && Time.zone.today <= record.intent_deadline
   end
 
   def locking_reminder?
-    return false unless record.locking_deadline
-    reminder? && Time.zone.today > record.intent_deadline
+    return false unless record.locking_deadline.present?
+    reminder? && Time.zone.today <= record.locking_deadline
   end
 
   def bulk_on_campus?
@@ -65,7 +57,7 @@ class DrawPolicy < ApplicationPolicy
   end
 
   def group_report?
-    !record.groups.empty?
+    true
   end
 
   def start_lottery?

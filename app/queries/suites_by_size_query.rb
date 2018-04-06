@@ -19,8 +19,11 @@ class SuitesBySizeQuery
   # Execute the query
   #
   # @return [Hash{Integer=>Array<Suite>}] the suites in the relation collected
-  #   by size
+  #   by size and ordered by number
   def call
-    @relation.order(:number).group_by(&:size)
+    result = @relation.includes(:building, :draws, :draw_suites).order(:number)
+                      .group_by(&:size)
+    result.default = []
+    result
   end
 end

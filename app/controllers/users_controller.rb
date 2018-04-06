@@ -21,11 +21,12 @@ class UsersController < ApplicationController
     @user = User.new
   end
 
-  def new
+  def new # rubocop:disable AbcSize
     redirect_to(build_user_path) && return unless params['user']
-    result = UserBuilder.build(id_attr: build_user_params['username'],
+    result = UserBuilder.build(id_attr: build_user_params[User.login_attr.to_s],
                                querier: querier)
     @user = result[:user]
+    @roles = valid_user_roles
     handle_action(**result)
   rescue Rack::Timeout::RequestTimeoutException => exception
     Honeybadger.notify(exception)
@@ -35,6 +36,7 @@ class UsersController < ApplicationController
   def create
     result = UserCreator.create!(params: user_params)
     @user = result[:user]
+    @roles = valid_user_roles unless result[:redirect_object].present?
     handle_action(action: 'new', **result)
   end
 
@@ -53,17 +55,8 @@ class UsersController < ApplicationController
   end
 
   def bulk_destroy
-    failure = false
-    @users.each do |user|
-      next if user.room.nil? || user.class_year != @year
-      remove_group user
-
-      result = Destroyer.new(object: user, name_method: :full_name).destroy
-
-      failure = true unless result[:redirect_object].nil?
-    end
-    results = { redirect_object: nil, msg: check_failure(failure) }
-    handle_action(path: users_path, **results)
+    result = UserBulkDestroyer.new(users: @users_to_destroy).bulk_destroy
+    handle_action(path: users_path, **result)
   end
 
   def edit_intent; end
@@ -81,21 +74,8 @@ class UsersController < ApplicationController
   private
 
   def set_bulk_params
-    @users = User.all
     @year = params[:class_year].to_i
-  end
-
-  def check_failure(failure)
-    if failure
-      { error: 'Deletion failed' }
-    else
-      { notice: "All old users in #{@year} are removed" }
-    end
-  end
-
-  def remove_group(user)
-    return unless !user.group.nil? && user.led_group.nil?
-    user.group.remove_members!(ids: [user.id])
+    @users_to_destroy = User.where(class_year: @year).where.not(room: nil)
   end
 
   def authorize!
@@ -111,13 +91,17 @@ class UsersController < ApplicationController
   end
 
   def build_user_params
-    params.require(:user).permit(:username)
+    params.require(:user).permit(User.login_attr)
   end
 
   def user_params
     params.require(:user).permit(:first_name, :last_name, :role, :email,
                                  :intent, :gender, :username, :class_year,
-                                 :college)
+                                 :college).tap { |p| process_params(p) }
+  end
+
+  def process_params(p)
+    p[:role] = 'student' if p[:role] == 'superuser' && !current_user.superuser?
   end
 
   def querier
@@ -131,5 +115,10 @@ class UsersController < ApplicationController
     flash[:error] = 'There was a problem with that request, please try again.'
     @user = User.new
     render action: 'build'
+  end
+
+  def valid_user_roles
+    return User.roles.keys if current_user.superuser?
+    User.roles.keys - %w(superuser)
   end
 end

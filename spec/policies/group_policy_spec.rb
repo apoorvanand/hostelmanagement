@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable RSpec/ScatteredSetup, RSpec/RepeatedExample
+# rubocop:disable RSpec/NestedGroups
 
 require 'rails_helper'
 
@@ -94,7 +95,7 @@ RSpec.describe GroupPolicy do
       end
     end
     permissions :index? do
-      it { is_expected.to permit(user, Group) }
+      it { is_expected.not_to permit(user, Group) }
     end
     permissions :show? do
       it { is_expected.to permit(user, group) }
@@ -140,14 +141,23 @@ RSpec.describe GroupPolicy do
       end
     end
     permissions :request_to_join? do
-      context 'in same draw as record, not in group' do
+      context 'in same draw as record, not in group, draw is pre_lottery' do
         before do
-          draw = instance_spy('Draw')
+          draw = instance_spy('Draw', pre_lottery?: true)
           allow(group).to receive(:draw).and_return(draw)
           allow(user).to receive(:draw).and_return(draw)
           allow(user).to receive(:group).and_return(nil)
         end
         it { is_expected.to permit(user, group) }
+      end
+      context 'in same draw as record, not in group, draw is not pre_lottery' do
+        before do
+          draw = instance_spy('Draw', pre_lottery?: false)
+          allow(group).to receive(:draw).and_return(draw)
+          allow(user).to receive(:draw).and_return(draw)
+          allow(user).to receive(:group).and_return(nil)
+        end
+        it { is_expected.not_to permit(user, group) }
       end
       context 'in different draw, not in group' do
         before do
@@ -199,8 +209,32 @@ RSpec.describe GroupPolicy do
       end
     end
     permissions :finalize? do
-      before { allow(group).to receive(:full?).and_return(true) }
-      it { is_expected.to permit(user, group) }
+      context 'group is not full' do
+        before { allow(group).to receive(:full?).and_return(false) }
+        it { is_expected.not_to permit(user, group) }
+      end
+
+      context 'group is full' do
+        before { allow(group).to receive(:full?).and_return(true) }
+
+        context 'group is already finalizing' do
+          before { allow(group).to receive(:finalizing?).and_return(true) }
+          it { is_expected.not_to permit(user, group) }
+        end
+
+        context 'group is not finalizing' do
+          before { allow(group).to receive(:finalizing?).and_return(false) }
+
+          context 'group is already locked' do
+            before { allow(group).to receive(:locked?).and_return(true) }
+            it { is_expected.not_to permit(user, group) }
+          end
+          context 'and group is not locked' do
+            before { allow(group).to receive(:locked?).and_return(false) }
+            it { is_expected.to permit(user, group) }
+          end
+        end
+      end
     end
     permissions :assign_rooms? do
       before do
@@ -317,8 +351,32 @@ RSpec.describe GroupPolicy do
       it { is_expected.not_to permit(user, group) }
     end
     permissions :finalize? do
-      before { allow(group).to receive(:full?).and_return(true) }
-      it { is_expected.to permit(user, group) }
+      context 'group is not full' do
+        before { allow(group).to receive(:full?).and_return(false) }
+        it { is_expected.not_to permit(user, group) }
+      end
+
+      context 'group is full' do
+        before { allow(group).to receive(:full?).and_return(true) }
+
+        context 'group is already finalizing' do
+          before { allow(group).to receive(:finalizing?).and_return(true) }
+          it { is_expected.not_to permit(user, group) }
+        end
+
+        context 'group is not finalizing' do
+          before { allow(group).to receive(:finalizing?).and_return(false) }
+
+          context 'group is already locked' do
+            before { allow(group).to receive(:locked?).and_return(true) }
+            it { is_expected.not_to permit(user, group) }
+          end
+          context 'and group is not locked' do
+            before { allow(group).to receive(:locked?).and_return(false) }
+            it { is_expected.to permit(user, group) }
+          end
+        end
+      end
     end
     permissions :assign_rooms? do
       before do
@@ -398,8 +456,32 @@ RSpec.describe GroupPolicy do
       it { is_expected.not_to permit(user, group) }
     end
     permissions :finalize? do
-      before { allow(group).to receive(:full?).and_return(true) }
-      it { is_expected.to permit(user, group) }
+      context 'group is not full' do
+        before { allow(group).to receive(:full?).and_return(false) }
+        it { is_expected.not_to permit(user, group) }
+      end
+
+      context 'group is full' do
+        before { allow(group).to receive(:full?).and_return(true) }
+
+        context 'group is already finalizing' do
+          before { allow(group).to receive(:finalizing?).and_return(true) }
+          it { is_expected.not_to permit(user, group) }
+        end
+
+        context 'group is not finalizing' do
+          before { allow(group).to receive(:finalizing?).and_return(false) }
+
+          context 'group is already locked' do
+            before { allow(group).to receive(:locked?).and_return(true) }
+            it { is_expected.not_to permit(user, group) }
+          end
+          context 'and group is not locked' do
+            before { allow(group).to receive(:locked?).and_return(false) }
+            it { is_expected.to permit(user, group) }
+          end
+        end
+      end
     end
     permissions :assign_rooms? do
       before do

@@ -20,6 +20,7 @@ class College < ApplicationRecord
   before_validation :set_subdomain
   before_update :freeze_subdomain
   after_create :create_schema!
+  after_destroy :drop_schema!
 
   # Returns the current Apartment tenant. Raises an ActiveRecord::RecordNotFound
   # exception if the tenant does not exist (shouldn't be possible unless we're
@@ -28,6 +29,13 @@ class College < ApplicationRecord
   # @return [College] the current college or a null college
   def self.current
     find_by!(subdomain: Apartment::Tenant.current)
+  end
+
+  # Activate a given college, by subdomain
+  #
+  # @param subdomain [String] the subdomain of the college to activate
+  def self.activate!(subdomain)
+    find_by(subdomain: subdomain).activate!
   end
 
   # Switch to the college's Postgres schema
@@ -57,5 +65,9 @@ class College < ApplicationRecord
 
   def create_schema!
     Apartment::Tenant.create(subdomain)
+  end
+
+  def drop_schema!
+    Apartment::Tenant.drop(subdomain)
   end
 end

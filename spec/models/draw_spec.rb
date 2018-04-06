@@ -128,7 +128,7 @@ RSpec.describe Draw, type: :model do
     it 'returns the number of beds across all available suites' do
       draw = FactoryGirl.create(:draw_with_members, suites_count: 2)
       group = FactoryGirl.create(:locked_group, :defined_by_draw, draw: draw)
-      draw.suites.last.update(group: group)
+      draw.reload.suites.last.update(group: group)
       available_beds = draw.suites.sum(&:size) - draw.suites.last.size
       expect(draw.send(:bed_count)).to eq(available_beds)
     end
@@ -355,7 +355,7 @@ RSpec.describe Draw, type: :model do
   describe '#notify_next_groups' do
     # rubocop:disable RSpec/ExampleLength
     it 'sends a selection invite to the leaders of the next groups' do
-      draw = FactoryGirl.build_stubbed(:draw)
+      draw = build_stubbed(:draw, suite_selection_mode: 'student_selection')
       group = instance_spy('Group', leader: instance_spy('User'))
       allow(draw).to receive(:next_groups).and_return([group])
       msg = instance_spy(ActionMailer::MessageDelivery, deliver_later: true)
@@ -363,6 +363,14 @@ RSpec.describe Draw, type: :model do
       draw.notify_next_groups(StudentMailer)
       expect(StudentMailer).to \
         have_received(:selection_invite).with(user: group.leader)
+    end
+    it 'does not send emails when admin selection mode is enabled' do
+      draw = build_stubbed(:draw, suite_selection_mode: 'admin_selection')
+      group = instance_spy('Group', leader: instance_spy('User'))
+      allow(draw).to receive(:next_groups).and_return([group])
+      allow(StudentMailer).to receive(:selection_invite)
+      draw.notify_next_groups(StudentMailer)
+      expect(StudentMailer).not_to have_received(:selection_invite)
     end
     # rubocop:enable RSpec/ExampleLength
   end

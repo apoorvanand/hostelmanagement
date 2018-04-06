@@ -21,9 +21,10 @@ RSpec.describe DrawReport do
   end
 
   describe '#groups' do
-    it 'gets the groups with the leader eager-loaded' do
+    it 'gets the groups with the a bunch of stuff eager-loaded' do
       groups = instance_spy('ActiveRecord::Associations::CollectionProxy')
-      allow(groups).to receive(:includes).with(:leader).and_return(1)
+      eager_loads = [:leader, :lottery_assignment, suite: :building]
+      allow(groups).to receive(:includes).with(*eager_loads).and_return(1)
       draw = instance_spy('draw', groups: groups)
       expect(described_class.new(draw).groups).to eq(1)
     end
@@ -85,8 +86,7 @@ RSpec.describe DrawReport do
   end
 
   describe '#valid_suites' do
-    # rubocop:disable RSpec/ExampleLength
-    it 'excludes non-valid suites' do
+    it 'excludes non-valid suites' do # rubocop:disable RSpec/ExampleLength
       size = 2
       draw = FactoryGirl.create(:group_with_suite, size: size).draw
       create_invalid_suites(draw: draw, size: size)
@@ -95,7 +95,6 @@ RSpec.describe DrawReport do
       expect(described_class.new(draw).valid_suites(size: size)).to \
         eq(valid_suite.building => [valid_suite])
     end
-    # rubocop:enable RSpec/ExampleLength
 
     def create_invalid_suites(draw:, size:)
       FactoryGirl.create(:suite_with_rooms, draws: [draw], medical: true,
@@ -103,6 +102,16 @@ RSpec.describe DrawReport do
       FactoryGirl.create(:suite_with_rooms, draws: [draw],
                                             rooms_count: size + 1)
       FactoryGirl.create(:suite_with_rooms, rooms_count: size)
+    end
+  end
+
+  describe '#suites_by_size' do
+    it 'groups available suites by size' do
+      suites = [instance_spy('suite')]
+      qo = instance_spy(SuitesBySizeQuery, call: {})
+      allow(SuitesBySizeQuery).to receive(:new).with(suites).and_return(qo)
+      draw = instance_spy('draw', available_suites: suites)
+      expect(described_class.new(draw).suites_by_size).to eq({})
     end
   end
 

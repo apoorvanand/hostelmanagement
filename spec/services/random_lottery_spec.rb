@@ -33,7 +33,6 @@ RSpec.describe RandomLottery do
       expect(result[:redirect_object]).to eq(draw)
     end
     xit 'destroys existing lottery assignments before assigning numbers'
-    xit 'generates cryptographically secure random numbers'
   end
 
   describe 'validations' do
@@ -109,7 +108,8 @@ RSpec.describe RandomLottery do
   end
 
   def valid_mock_draw
-    instance_spy(Draw, lottery_assignments: [], lottery?: true).tap do |d|
+    # persisting data because of the lottery notification e-mail
+    create(:draw_in_lottery).tap do |d|
       allow(ObjectsForLotteryQuery).to \
         receive(:call).with(draw: d).and_return([])
     end

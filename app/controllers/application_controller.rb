@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!, unless: :unauthenticated?
   before_action :authorize!, unless: :unauthenticated?
   before_action :set_current_college
+  before_action :verify_tos_accepted, unless: :unauthenticated?
   after_action :verify_authorized, unless: :unauthenticated?
 
   rescue_from Pundit::NotAuthorizedError do |exception|
@@ -48,6 +49,23 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Abstract method to handle file export actions. Handles success, failure,
+  # and setting the flash appropriately.
+  #
+  # @abstract
+  # @param file [Object] the file to be exported.
+  # @param filename [String] the file name.
+  # @param type [String] the type of the file (ex: 'text/csv').
+  # @param errors [String] the errors incurred during file creation, if any.
+  def handle_file_action(file:, filename:, type:, errors: nil)
+    if errors
+      flash[:error] = errors
+      redirect_to request.referer
+    else
+      send_data(file, filename: filename, type: type)
+    end
+  end
+
   # Abstract method to enforce permissions authorization in all controllers.
   # Must be overridden in all controllers.
   #
@@ -61,5 +79,11 @@ class ApplicationController < ActionController::Base
   rescue ActiveRecord::RecordNotFound
     flash[:error] = 'Please select a valid college to proceed.'
     redirect_to colleges_path
+  end
+
+  def verify_tos_accepted
+    return if current_user.admin? || current_user.tos_accepted
+    flash[:error] = 'You must accept the Terms of Service to proceed.'
+    redirect_to terms_of_service_path
   end
 end

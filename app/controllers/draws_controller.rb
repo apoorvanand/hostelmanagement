@@ -44,21 +44,6 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     handle_action(action: 'show', **result)
   end
 
-  def intent_report
-    @filter = IntentReportFilter.new
-    @students_by_intent = @draw.students.order(:intent, :last_name)
-                               .group_by(&:intent)
-    @intent_metrics = @students_by_intent.transform_values(&:count)
-  end
-
-  def filter_intent_report
-    @filter = IntentReportFilter.new(filter_params)
-    @students_by_intent = @filter.filter(@draw.students)
-                                 .order(:intent, :last_name).group_by(&:intent)
-    @intent_metrics = @students_by_intent.transform_values(&:count)
-    render action: 'intent_report'
-  end
-
   def bulk_on_campus
     result = BulkOnCampusUpdater.update(draw: @draw)
     # note that BulkOnCampusUpdater.update always returns a success hash with
@@ -156,10 +141,6 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     params.fetch(:draw_student_assignment_form, {}).permit(%i(username adding))
   end
 
-  def filter_params
-    params.fetch(:intent_report_filter, {}).permit(intents: [])
-  end
-
   def prune_params
     {
       id: params.fetch(:id, ''),
@@ -168,7 +149,9 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
   end
 
   def set_draw
-    @draw = Draw.includes(:groups, :suites).find(params[:id])
+    @draw = Draw.includes(:suites,
+                          groups: [:lottery_assignment, suite: :building])
+                .find(params[:id])
   end
 
   def calculate_metrics

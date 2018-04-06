@@ -38,11 +38,18 @@ RSpec.describe College do
     end
   end
 
-  describe 'apartment callback' do
+  describe 'apartment callbacks' do
     it 'creates a schema on create' do
       allow(Apartment::Tenant).to receive(:create).with('foo')
       FactoryGirl.create(:college, subdomain: 'foo')
       expect(Apartment::Tenant).to have_received(:create).with('foo')
+    end
+
+    it 'drops the schema on destroy' do
+      allow(Apartment::Tenant).to receive(:drop).with('foo')
+      college = create(:college, subdomain: 'foo')
+      college.destroy
+      expect(Apartment::Tenant).to have_received(:drop).with('foo')
     end
   end
 
@@ -54,6 +61,19 @@ RSpec.describe College do
                                                   .and_return(college)
       expect(described_class.current).to eq(college)
     end
+  end
+
+  describe '.activate!' do
+    # rubocop:disable RSpec/ExampleLength
+    it 'activates a given college by subdomain' do
+      college = described_class.new
+      allow(college).to receive(:activate!)
+      allow(described_class).to receive(:find_by).with(subdomain: 'foo')
+                                                 .and_return(college)
+      described_class.activate!('foo')
+      expect(college).to have_received(:activate!)
+    end
+    # rubocop:enable RSpec/ExampleLength
   end
 
   describe '#activate!' do
