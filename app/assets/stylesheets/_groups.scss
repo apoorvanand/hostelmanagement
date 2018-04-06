@@ -6,6 +6,11 @@
 
 /* styles for physically printing the group report */
 @media print {
+
+  td[data-role="group-leader"] { width: 20%; }
+  td[data-role="group-members"] { width: 70%; }
+  td[data-role="group-transfers"] { width: 10%; }
+
   /* remove navbar and footer */
   .top-bar, .top-bar-title, .footer, .footer-links, footer {
     display: none;
@@ -29,19 +34,30 @@
   table thead {
     border-bottom: 2px solid #333333 !important;
     background: #ECECEC !important;
+    display: none;
   }
   table, thead, tbody, tfoot {
     border-collapse: collapse;
     border: none !important;
   }
 
+
+  td[data-role="group-leader"]::before {
+    content: "Group Leader: ";
+  }
+  td[data-role="group-members"]::before {
+    content: "Other Memebers: ";
+  }
+  td[data-role="group-transfers"]::before {
+    content: "Transfers: ";
+  }
+
   .page-break{
     display: block;
-    page-break-after: always !important;
+    page-break-before: always !important;
   }
-/*
+
   table {
     page-break-after: always !important;
   }
-  */
 }
