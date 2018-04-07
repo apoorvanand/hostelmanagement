@@ -57,7 +57,8 @@ class User < ApplicationRecord
   validates :intent, presence: true
   validates :class_year, presence: true, if: 
             ->(){ 
-                  role == 'student' || role == 'rep'
+                  role == 'student' || 
+                  role == 'rep'
                 }
   validate :room_in_suite, if: ->() { group.present? && group.suite.present? }
 
