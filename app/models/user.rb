@@ -55,14 +55,10 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :intent, presence: true
-  validates :class_year, presence: true, if: 
-    ->() { 
-      role == 'student' || role == 'rep' 
-    }
-  validate :room_in_suite, if: 
-    ->() { 
-      group.present? && group.suite.present?
-    }
+  validates :class_year, presence: true, 
+            if: ->() { role == 'student' || role == 'rep' }
+  validate :room_in_suite,
+            if:  ->() { group.present? && group.suite.present? }
 
   enum role: %w(student admin rep superuser)
   enum intent: %w(undeclared on_campus off_campus)
