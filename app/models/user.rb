@@ -55,9 +55,10 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :intent, presence: true
-  validates :class_year, presence: true, if: ->() { 
-    role == 'student' || role == 'rep' 
-  }
+  # rubocop:disable AlignHash
+  validates :class_year, presence: true, 
+            if: ->() { role == 'student' || role == 'rep' }
+  # rubocop:enable AlignHash
   validate :room_in_suite, if: ->() { group.present? && group.suite.present? }
 
   enum role: %w(student admin rep superuser)
