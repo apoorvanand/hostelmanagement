@@ -19,50 +19,21 @@
 <h2 id="students">Students (<%= @users['student'].empty? ? 0 : @users['student'].values.map(&:size).reduce(:+) %> total)</h2>
 <p><a href="#top">Back to top</a></p>
 <% if @users.has_key? 'student' %>
-
-  <!-- Separate users into those with a class year, and those without one -->
-  <% @years_nil = @users['student'].keys.select { |key| key.nil? } %>
-  <% @years_non_nil = @users['student'].keys - @years_nil %>
-
   <ul class="tabs" data-tabs id="student-year-tabs">
-    <!-- Tabs-titles for class years -->
-    <% @years_non_nil.each do |year| %>
-      <li class="tabs-title<%= @years_non_nil.sort.first == year ? ' is-active' : '' %>">
-        <a href="#students-<%= year %>"<%= @years_non_nil.sort.first == year ? ' aria-selected=true' : '' %>><%= year %></a>
-      </li>
-    <% end %>
-
-    <!-- Tabs-title for students without a class year (year == nil) -->
-    <!-- Only appears if there is at least 1 such student -->
-    <% if @years_nil.length > 0 %> <!-- Equivalent to: %= @users['student'].keys.include? nil % -->
-      <li class="tabs-title<%= @years_nil.first == 'nil' ? ' is-active' : '' %>" style="background-color: #ffbf00"> <!-- background color is light orange until you hover or click on it -->
-          <a href="#students-NIL"<%= @years_nil.first == 'nil' ? ' aria-selected=true' : '' %>>Class year unassigned</a>
+    <% @users['student'].keys.sort.each do |year| %>
+      <li class="tabs-title<%= @users['student'].keys.sort.first == year ? ' is-active' : '' %>">
+        <a href="#students-<%= year %>"<%= @users['student'].keys.sort.first == year ? ' aria-selected=true' : '' %>><%= year %></a>
       </li>
     <% end %>
   </ul>
-
   <div class="tabs-content" data-tabs-content="student-year-tabs">
-
-    <!-- Tabs-panels for class years -->
-    <% @years_non_nil.sort.each do |year| %>
-      <div class="tabs-panel<%= @years_non_nil.sort.first == year ? ' is-active' : '' %>" id="students-<%= year %>">
+    <% @users['student'].keys.sort.each do |year| %>
+      <div class="tabs-panel<%= @users['student'].keys.sort.first == year ? ' is-active' : '' %>" id="students-<%= year %>">
         <h3>Class of <%= year %> (<%= @users['student'][year].size %> total)</h3>
         <%= render 'table', users: @users['student'][year], hide_actions: false %>
       </div>
     <% end %>
-
-    <!-- Tabs-panel for students without a class year (year == nil) -->
-    <!-- Only appears if there is at least 1 such student -->
-    <% if @years_nil.length > 0 %>
-      <div class="tabs-panel<%= @years_nil.first == 'nil' ? ' is-active' : '' %>" id="students-NIL">
-        <h3>Class year unassigned (<%= @users['student'][nil].size %> total)</h3>
-          <%= render 'table', users: @users['student'][nil], hide_actions: false %>
-      </div>
-    <% end %>
-
-
   </div>
-
 <% else %>
   <p>No regular students!</p>
 <% end %>
