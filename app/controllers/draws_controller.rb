@@ -148,6 +148,8 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
 
   def student_assignment_params
     params.fetch(:draw_student_assignment_form, {}).permit(%i(username adding))
+    params[:username] = params[:username].downcase
+    return params
   end
 
   def prune_params
@@ -171,7 +173,8 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     @students_update ||= DrawStudentsUpdate.new(draw: @draw)
     @student_assignment_form ||= DrawStudentAssignmentForm.new(draw: @draw)
     @class_years = AvailableStudentClassYearsQuery.call
-    @students = @draw.students.order(:last_name)
+    # @students = @draw.students.order(:last_name)
+    @students = @draw.students.map { |student| student.username.downcase! }.order(:last_name)
     @available_students_count = UngroupedStudentsQuery.call.where(draw_id: nil)
                                                       .count
   end
