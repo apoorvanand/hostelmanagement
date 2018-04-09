@@ -2,7 +2,7 @@
   <% @groups.each do |group| %>
     <div id="group-fields-<%= group.id %>" class="actions">
       <h2 class="h3"><%= group.name %></h2>
-      <% if @draw.present? # admin suite selection mode %>
+      <% if show_skip_btn?(@draw) # admin suite selection mode %>
         <div class="reveal" id="disbandModal<%=group.id%>" data-reveal>
           <p><em>WARNING</em>: Clicking the button below will disband <%= group.name %>, removing them from this draw's suite selection process. Proceed with caution.</p>
           <%= link_to 'Disband Group', draw_group_path(@draw, group, redirect_path: new_draw_suite_assignment_path(@draw)),
@@ -11,7 +11,7 @@
         </div>
       <% end %>
       <div class="row">
-        <div class="columns small-<%= @draw.present? ? 10 : 12 %>">
+        <div class="columns small-<%= show_skip_btn?(@draw) ? 10 : 12 %>">
           <% if @suites_by_size[group.size].count >= @groups_by_size[group.size].count %>
             <%= f.label "suite_id_for_#{group.id}".to_sym, text: group.name, style: 'display: none;' %>
             <% if policy(Suite).medical? %>
@@ -23,7 +23,7 @@
             <p>There are not enough suites of size <%= group.size %> available. You must disband a group to proceed and its members will have to regroup following this draw.</p>
           <% end %>
         </div>
-        <% if @draw.present? %>
+        <% if show_skip_btn?(@draw) %>
           <div class="columns small-2">
             <a href="#" role="button" class="button secondary small has-tip" data-open="disbandModal<%=group.id%>" style="float: right;"
             data-tooltip aria-haspopup="true" data-disable-hover="false" tabindex="1" title="Disband this group and continue suite selection">Skip</a>

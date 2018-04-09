@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 ### Fixed
 * Groups of locked sizes can now finalize ([#788](https://gitlab.com/yale-sdmp/vesta/issues/788)).
+* Properly authorize the display of the "Skip" button during suite selection ([#787](https://gitlab.com/yale-sdmp/vesta/issues/787)).
 
 ### Added
 * Add more attributes to the results export ([#789](https://gitlab.com/yale-sdmp/vesta/issues/789)).
