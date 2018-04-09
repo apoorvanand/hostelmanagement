@@ -25,10 +25,17 @@ class DrawSuitesController < ApplicationController
     else
       result[:path] = draw_suites_path(@draw)
     end
+    ensure_rooms(result)
     handle_action(**result)
   end
 
   private
+
+  def ensure_rooms(msg)
+    return if @draw.enough_beds?
+    msg[:msg][:alert] =
+      'Warning: There are not enough beds for every student in this draw.'
+  end
 
   def suite_edit_param_hash
     suite_edit_sizes.flat_map do |s|
