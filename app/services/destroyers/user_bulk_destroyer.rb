@@ -56,7 +56,7 @@ class UserBulkDestroyer
 
   def success_msg
     if @successes.empty?
-      'No old users detected'
+      'No users deleted'
     else
       "Successfully Deleted: #{@successes
                                  .map { |s| s[:msg][:notice] }.join(' ')}"

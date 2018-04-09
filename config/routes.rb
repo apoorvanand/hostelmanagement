@@ -87,7 +87,6 @@ Rails.application.routes.draw do
     resources :lottery_assignments, only: %i(update create index) do
       collection do
         post 'automatic'
-        get 'export'
       end
     end
 

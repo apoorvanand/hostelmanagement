@@ -55,7 +55,7 @@ class UsersController < ApplicationController
   end
 
   def bulk_destroy
-    result = UserBulkDestroyer.new(users: @users_to_destroy).bulk_destroy
+    result = UserBulkDestroyer.bulk_destroy(users: @users_to_destroy)
     handle_action(path: users_path, **result)
   end
 
