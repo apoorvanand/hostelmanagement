@@ -65,7 +65,6 @@ class DrawStudentsUpdate
 
   def students_to_add_by_username
     return [] unless to_add
-    ## not sure if correct:
     user = UngroupedStudentsQuery.call.find_by(username: to_add)
     return [] unless user
     return [] unless (user.student? || user.rep?) && user.membership.nil?
