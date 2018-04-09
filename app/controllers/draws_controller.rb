@@ -171,7 +171,7 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     @students_update ||= DrawStudentsUpdate.new(draw: @draw)
     @student_assignment_form ||= DrawStudentAssignmentForm.new(draw: @draw)
     @class_years = AvailableStudentClassYearsQuery.call
-    @students = @draw.students.order(:last_name);
+    @students = @draw.students.order(:last_name)
     @available_students_count = UngroupedStudentsQuery.call.where(draw_id: nil)
                                                       .count
   end
