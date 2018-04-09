@@ -30,26 +30,47 @@ class DrawSuitesController < ApplicationController
   end
 
   def update_collection
-    result = DrawSuitesUpdate.update(draw: @draw, params: suites_update_params)
 
+    logger.debug "\n hello!!"
+    @current_suite_ids = @draw.suites.available.map(&:id)
+    logger.debug "\n"
+
+    logger.debug "\n current suites ids we want to end up having???"
+    logger.debug @current_suites
+    logger.debug "\n"
+
+    logger.debug "\n current suites group by size ???"
+    logger.debug @draw.suites.available.group_by(&:size)
+    logger.debug "\n"
+
+    
+    result = DrawSuitesUpdate.update(draw: @draw, current_suite_ids: @current_suite_ids, params: suites_update_params)
 
     logger.debug "\nsuites_update_params"
-    logger.debug suites_update_params
+    logger.debug suites_update_params.to_h
+    logger.debug "\n"
 
     logger.debug "\nresult"
     logger.debug result
+    logger.debug "\n"
 
     @suites_update = result[:update_object]
 
     logger.debug "\nsuites update"
     logger.debug @suites_update
+    logger.debug "\n"
 
 
     if @suites_update
+      logger.debug "suites update is not nil\n"
       prepare_suites_edit_data
       result[:action] = 'edit_collection'
     else
+      logger.debug "suites update is nil\n"
       result[:path] = draw_suites_path(@draw)
+      logger.debug "\nresult[:path]"
+      logger.debug draw_suites_path(@draw)
+      logger.debug "\n"
     end
     handle_action(**result)
   end
@@ -57,9 +78,22 @@ class DrawSuitesController < ApplicationController
   private
 
   def suite_edit_param_hash
-    suite_edit_sizes.flat_map do |s|
+    suite_edit_param_hash = suite_edit_sizes.flat_map do |s|
       DrawSuitesUpdate::CONSOLIDATED_ATTRS.map { |p| ["#{p}_#{s}".to_sym, []] }
     end.to_h
+
+    logger.debug "\n suite edit param hash"
+    logger.debug suite_edit_param_hash
+    logger.debug "\n"
+
+    # suite_edit_param_hash[:current_suites_ids] = []
+
+    # logger.debug "\n suite edit param hash after??"
+    # logger.debug suite_edit_param_hash
+    # logger.debug "\n"
+
+    suite_edit_param_hash
+
   end
 
   def suite_edit_sizes
