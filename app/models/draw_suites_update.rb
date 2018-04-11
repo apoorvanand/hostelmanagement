@@ -12,11 +12,13 @@ class DrawSuitesUpdate
   # Initialize a new DrawSuitesUpdate
   #
   # @param draw [Draw] the draw to be updated
+  # @param current_suite_ids [Hash] the current suites in the draw
   # @param params [#to_h] the parameters from the form
-  def initialize(draw:, params: nil)
+  def initialize(draw:, current_suite_ids: nil, params: nil)
     @draw = draw
     prepare_current_suite_attrs
-    @suite_ids = draw.suites.available.map(&:id)
+    # @suite_ids = draw.suites.available.map(&:id)
+    suite_ids = current_suite_ids
     process_params(params) if params
   end
 
@@ -52,10 +54,30 @@ class DrawSuitesUpdate
   end
 
   def process_params(params)
+
+    Rails.logger.debug "\nparams before consolidation"
+    Rails.logger.debug params.to_h
+    Rails.logger.debug "\n"
+
     @params = consolidate_params(params.to_h.transform_keys(&:to_sym))
+
+    Rails.logger.debug "\nparams after consolidation"
+    Rails.logger.debug @params
+    Rails.logger.debug "\n"
+
+
     CONSOLIDATED_ATTRS.each { |attr| update_ids_param(attr) }
     @suites_to_remove = find_suites_to_remove
+
+    Rails.logger.debug "\nsuites to remove"
+    Rails.logger.debug @suites_to_remove
+    Rails.logger.debug "\n"
+
     @suites_to_add = find_suites_to_add
+
+    Rails.logger.debug "\nsuites to add"
+    Rails.logger.debug @suites_to_add
+    Rails.logger.debug "\n"
   end
 
   def consolidate_params(p)
