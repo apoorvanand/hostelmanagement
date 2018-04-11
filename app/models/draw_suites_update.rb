@@ -16,6 +16,7 @@ class DrawSuitesUpdate
   # @param params [#to_h] the parameters from the form
   def initialize(draw:, current_suite_ids: nil, params: nil)
     @draw = draw
+    @current_suite_ids = current_suite_ids
     prepare_current_suite_attrs
     # @suite_ids = draw.suites.available.map(&:id)
     suite_ids = current_suite_ids
@@ -100,7 +101,7 @@ class DrawSuitesUpdate
     return [] unless params[:suite_ids]
     # TODO: refactor not to require an extra db hit here, also makes testing
     # better
-    current_suite_ids = draw.suites.available.map(&:id)
+    current_suite_ids = @current_suite_ids
     passed_suite_ids = params[:suite_ids].map(&:to_i)
     Suite.find(current_suite_ids - passed_suite_ids)
   end
