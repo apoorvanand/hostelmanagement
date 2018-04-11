@@ -10,56 +10,75 @@ RSpec.describe DrawSuitesUpdate do
 
   describe '#update' do
     context 'success' do
+      let(:draw) { FactoryGirl.create(:draw) }
+      let(:current_suites) { draw.suites.available.map(&:id) }
+      let(:draw1) { FactoryGirl.create(:draw_with_members, suites_count: 1) }
+      let(:current_suites1) { draw1.suites.available.map(&:id) }
+
       it 'removes current suites of all sizes' do
-        draw = FactoryGirl.create(:draw_with_members, suites_count: 1)
-        draw.suites << FactoryGirl.create(:suite_with_rooms, rooms_count: 2)
+        draw1.suites << FactoryGirl.create(:suite_with_rooms, rooms_count: 2)
         params = mock_params(suite_ids_1: [])
-        expect { described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: params) }.to \
-          change { draw.suites.count }.by(-2)
+        expect do
+          described_class.update(draw: draw1,
+                                 current_suites: current_suites1,
+                                 params: params)
+        end.to \
+          change { draw1.suites.count }.by(-2)
       end
       it 'does not remove suites with groups' do
-        draw = FactoryGirl.create(:draw)
         FactoryGirl.create(:group_with_suite, :defined_by_draw, draw: draw)
         params = mock_params(suite_ids_1: [])
-        expect { described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: params) }.to \
+        expect do
+          described_class.update(draw: draw,
+                                 current_suites: current_suites,
+                                 params: params)
+        end.to \
           change { draw.suites.count }.by(0)
       end
       # rubocop:disable RSpec/ExampleLength
       it 'adds suites from both drawn_ids and drawless_ids' do
-        draw = FactoryGirl.create(:draw)
         drawless_suite = FactoryGirl.create(:suite)
         drawn_suite = create_drawn_suite
         params = mock_params(drawn_ids_1: [drawn_suite.id.to_s],
                              drawless_ids_1: [drawless_suite.id.to_s])
-        expect { described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: params) }.to \
+        expect do
+          described_class.update(draw: draw, current_suites:
+          current_suites, params: params)
+        end.to \
           change { draw.suites.count }.by(2)
       end
       it 'handles multiple suite sizes' do
-        draw = FactoryGirl.create(:draw)
         drawless1 = FactoryGirl.create(:suite)
         drawless2 = FactoryGirl.create(:suite)
         params = mock_params(drawless_ids_1: [drawless1.id.to_s],
                              drawless_ids_2: [drawless2.id.to_s])
-        expect { described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: params) }.to \
+        expect do
+          described_class.update(draw: draw,
+                                 current_suites: current_suites,
+                                 params: params)
+        end.to \
           change { draw.suites.count }.by(2)
       end
       # rubocop:enable RSpec/ExampleLength
       it 'sets :redirect_object to nil' do
         draw = FactoryGirl.create(:draw_with_members, suites_count: 1)
         params = mock_params(suite_ids_1: [])
-        result = described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: params)
+        result = described_class.update(draw: draw, current_suites:
+          draw.suites.available.map(&:id), params: params)
         expect(result[:redirect_object]).to be_nil
       end
       it 'sets :update_object to nil' do
         draw = FactoryGirl.create(:draw_with_members, suites_count: 1)
         params = mock_params(suite_ids_1: [])
-        result = described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: params)
+        result = described_class.update(draw: draw, current_suites:
+          draw.suites.available.map(&:id), params: params)
         expect(result[:update_object]).to be_nil
       end
       it 'sets a success message' do
         draw = FactoryGirl.create(:draw_with_members, suites_count: 1)
         params = mock_params(suite_ids_1: [])
-        result = described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: params)
+        result = described_class.update(draw: draw, current_suites:
+          draw.suites.available.map(&:id), params: params)
         expect(result[:msg]).to have_key(:success)
       end
     end
@@ -67,17 +86,20 @@ RSpec.describe DrawSuitesUpdate do
     context 'warning' do
       it 'sets :redirect_object to nil' do
         draw = FactoryGirl.create(:draw)
-        result = described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: mock_params)
+        result = described_class.update(draw: draw, current_suites:
+          draw.suites.available.map(&:id), params: mock_params)
         expect(result[:redirect_object]).to be_nil
       end
       it 'sets :update_object to the update object' do
         draw = FactoryGirl.create(:draw)
-        update_object = described_class.new(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: mock_params)
+        update_object = described_class.new(draw: draw, current_suites:
+          draw.suites.available.map(&:id), params: mock_params)
         expect(update_object.update[:update_object]).to eq(update_object)
       end
       it 'sets an alert message' do
         draw = FactoryGirl.create(:draw)
-        result = described_class.update(draw: draw, current_suite_ids: draw.suites.available.map(&:id), params: mock_params)
+        result = described_class.update(draw: draw, current_suites:
+          draw.suites.available.map(&:id), params: mock_params)
         expect(result[:msg]).to have_key(:alert)
       end
     end
@@ -85,7 +107,7 @@ RSpec.describe DrawSuitesUpdate do
     context 'error' do
       let(:draw) { FactoryGirl.create(:draw_with_members, suites_count: 1) }
       let(:params) { mock_params(suite_ids_1: []) }
-      let(:current_suite_ids) {draw.suites.available.map(&:id)}
+      let(:current_suites) { draw.suites.available.map(&:id) }
 
       before do
         # necessary to prevent spy error due to available not being implemented
@@ -94,15 +116,18 @@ RSpec.describe DrawSuitesUpdate do
       end
 
       it 'sets :redirect_object to nil' do
-        result = described_class.update(draw: draw, current_suite_ids: current_suite_ids, params: params)
+        result = described_class.update(draw: draw, current_suites:
+          current_suites, params: params)
         expect(result[:redirect_object]).to be_nil
       end
       it 'sets :update_object to the update object' do
-        update_object = described_class.new(draw: draw, current_suite_ids: current_suite_ids, params: params)
+        update_object = described_class.new(draw: draw, current_suites:
+          current_suites, params: params)
         expect(update_object.update[:update_object]).to eq(update_object)
       end
       it 'sets an error message' do
-        result = described_class.update(draw: draw, current_suite_ids: current_suite_ids, params: params)
+        result = described_class.update(draw: draw, current_suites:
+          current_suites, params: params)
         expect(result[:msg]).to have_key(:error)
       end
 

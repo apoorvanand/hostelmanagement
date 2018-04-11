@@ -12,14 +12,13 @@ class DrawSuitesUpdate
   # Initialize a new DrawSuitesUpdate
   #
   # @param draw [Draw] the draw to be updated
-  # @param current_suite_ids [Hash] the current suites in the draw
+  # @param suites [Hash] the current suites in the draw
   # @param params [#to_h] the parameters from the form
-  def initialize(draw:, current_suite_ids:, params: nil)
+  def initialize(draw:, current_suites:, params: nil)
     @draw = draw
-    @current_suite_ids = current_suite_ids
+    @current_suites = current_suites
     prepare_current_suite_attrs
     process_params(params) if params
-
   end
 
   # Execute the suites update, remove all suites to be removed and add all
@@ -55,13 +54,9 @@ class DrawSuitesUpdate
 
   def process_params(params)
     @params = consolidate_params(params.to_h.transform_keys(&:to_sym))
-
-
     CONSOLIDATED_ATTRS.each { |attr| update_ids_param(attr) }
     @suites_to_remove = find_suites_to_remove
-
     @suites_to_add = find_suites_to_add
-
   end
 
   def consolidate_params(p)
@@ -82,9 +77,9 @@ class DrawSuitesUpdate
 
   def find_suites_to_remove
     return [] unless params[:suite_ids]
-    current_suite_ids = @current_suite_ids
+    current_suites = @current_suites
     passed_suite_ids = params[:suite_ids].map(&:to_i)
-    Suite.find(current_suite_ids - passed_suite_ids)
+    Suite.find(current_suites - passed_suite_ids)
   end
 
   def find_suites_to_add

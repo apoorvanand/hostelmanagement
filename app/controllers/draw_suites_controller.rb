@@ -17,10 +17,9 @@ class DrawSuitesController < ApplicationController
   end
 
   def update_collection
-    @current_suite_ids = @draw.suites.available.map(&:id)
-    result = DrawSuitesUpdate.update(draw: @draw, current_suite_ids: @current_suite_ids, params: suites_update_params)
+    result = DrawSuitesUpdate.update(draw: @draw, current_suites:
+      @draw.suites.available.map(&:id), params: suites_update_params)
     @suites_update = result[:update_object]
-
     if @suites_update
       prepare_suites_edit_data
       result[:action] = 'edit_collection'
@@ -53,9 +52,10 @@ class DrawSuitesController < ApplicationController
 
   def prepare_suites_edit_data # rubocop: disable MethodLength
     all_suites = ValidSuitesQuery.call
-    @current_suite_ids = @draw.suites.available.map(&:id)
-    @suites_update ||= DrawSuitesUpdate.new(draw: @draw, current_suite_ids: @current_suite_ids)
-
+    @suites_update ||= DrawSuitesUpdate.new(
+      draw: @draw,
+      current_suites: @draw.suites.available.map(&:id)
+    )
     @current_suites = suite_hash_merge(
       ValidSuitesQuery.new(@draw.suites.includes(:draws)).call
     )
@@ -66,8 +66,6 @@ class DrawSuitesController < ApplicationController
       SuitesInOtherDrawsQuery.new(all_suites).call(draw: @draw)
     )
   end
-
-  # rubocop: enable MethodLength
 
   def suite_hash_merge(queried_suites)
     @suite_sizes ||= SuiteSizesQuery.new(ValidSuitesQuery.call).call
