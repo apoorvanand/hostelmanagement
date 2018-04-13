@@ -17,7 +17,8 @@ Rails.application.routes.draw do
 
   devise_for :users
   unauthenticated :user do
-    root to: 'high_voltage/pages#show', id: 'home', as: 'landing_page'
+    root to: 'high_voltage/pages#show', id: 'aboutus', as: 'landing_page'
+
   end
   root to: 'dashboards#show'
 
