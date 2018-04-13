@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## v1.0.9 - 2018-04-13
+### Changed
+* Fix Results#export eager loading ([#794](https://gitlab.com/yale-sdmp/vesta/issues/794)).
+
 ## v1.0.8 - 2018-04-09
 ### Fixed
 * Groups of locked sizes can now finalize ([#788](https://gitlab.com/yale-sdmp/vesta/issues/788)).
