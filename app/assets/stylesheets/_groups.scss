@@ -7,9 +7,22 @@
 /* styles for physically printing the group report */
 @media print {
 
-  td[data-role="group-leader"] { width: 20%; }
-  td[data-role="group-members"] { width: 70%; }
-  td[data-role="group-transfers"] { width: 10%; }
+  td[data-role="group-leader"] {
+    //display: block;
+    border-bottom: 1px solid black;
+    //border-top: 1px solid black;
+    //border-left: 1px solid black;
+    //border-right: 1px solid black;
+    //text-align: left;
+  }
+  td[data-role="group-members"] {
+    display: block;
+    //text-align: center;
+   }
+  td[data-role="group-transfers"] {
+    //display: block;
+    //text-align: right;
+  }
 
   /* remove navbar and footer */
   .top-bar, .top-bar-title, .footer, .footer-links, footer {
@@ -26,29 +39,24 @@
   }
   a[href*="groups"] {
     display: inline !important;
-    font-weight: 510 !important;
     text-decoration: none !important;
   }
 
-  /* add stripes to the table for legibility */
-  table thead {
-    border-bottom: 2px solid #333333 !important;
-    background: #ECECEC !important;
-    display: none;
-  }
-  table, thead, tbody, tfoot {
-    border-collapse: collapse;
-    border: none !important;
-  }
-
+  table thead, h3 { display: none; }
+  h1 { page-break-after: always; }
 
   td[data-role="group-leader"]::before {
-    content: "Group Leader: ";
+    font-weight: bold;
+    content: "\a\aGroup Leader: ";
+    white-space: pre;
   }
   td[data-role="group-members"]::before {
-    content: "Other Memebers: ";
+    font-weight: bold;
+    content: "Other Members: \a";
+    white-space: pre;
   }
   td[data-role="group-transfers"]::before {
+    font-weight: bold;
     content: "Transfers: ";
   }
 
