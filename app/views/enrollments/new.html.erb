@@ -3,7 +3,7 @@
 <h2>Instructions</h2>
 <p>Please enter a list of <%= User.cas_auth? ? 'CAS usernames' : 'email addresses' %>, either separated by commas or one per line (you can copy and paste a list out of Excel, for example). The system will attempt to look them up in the directory service and create user accounts for them if they are found.</p>
 <%= simple_form_for @enrollment do |f| %>
-  <%= f.input :ids, as: :text, label: User.cas_auth? ? "Usernames" : "Emails" %>
+  <%= f.input :ids, as: :text, label: User.cas_auth? ? 'Usernames' : 'Emails' %>
   <%= f.input :role, collection: @roles, selected: 'student', label_method: :humanize %>
   <%= f.submit 'Submit' %>
 <% end %>
