@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+### Fixed
+* Loading users no longer fails when a user is missing a class year; students and reps now require a class year [#767](https://gitlab.com/yale-sdmp/vesta/merge_requests/767)
+
 ### Changed
 * Renamed DrawReport#ungrouped_students to #ungrouped_students_by_intent ([#793](https://gitlab.com/yale-sdmp/vesta/issues/793)).
 
