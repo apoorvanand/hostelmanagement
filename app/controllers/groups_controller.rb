@@ -12,8 +12,11 @@ class GroupsController < ApplicationController
 
   def show
     @same_size_groups_count = @draw.groups.where(size: @group.size).count
-    @compatible_suites = CompatibleSuitesQuery.new(@draw.suites).call(@group)
-    @clip_invites = @group.clip_memberships.where(confirmed: false)
+    @compatible_suites = CompatibleSuitesQuery.new(@draw.available_suites)
+                                              .call(@group)
+    @compatible_suites_count = @compatible_suites.count
+    @clip_invites = @group.clip_memberships.includes(:clip)
+                          .where(confirmed: false)
   end
 
   def index
@@ -65,7 +68,7 @@ class GroupsController < ApplicationController
     batch_params = { user_ids: group_params['invitations'], group: @group,
                      status: 'invited' }
     results = MembershipBatchCreator.run(**batch_params)
-    handle_action(path: draw_group_path(@draw, @group), **results)
+    handle_action(path: request.referer, **results)
   end
 
   def invite

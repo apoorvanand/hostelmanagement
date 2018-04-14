@@ -44,12 +44,6 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     handle_action(action: 'show', **result)
   end
 
-  def intent_report
-    @students_by_intent = @draw.students.order(:intent, :last_name)
-                               .group_by(&:intent)
-    @intent_metrics = @students_by_intent.transform_values(&:count)
-  end
-
   def bulk_on_campus
     result = BulkOnCampusUpdater.update(draw: @draw)
     # note that BulkOnCampusUpdater.update always returns a success hash with
@@ -123,6 +117,15 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     @suites_with_results = SuitesWithRoomsAssignedQuery.new(@draw.suites).call
   end
 
+  def group_export
+    @groups = @draw.groups.includes(:lottery_assignment)
+                   .order('lottery_assignments.number')
+    attributes = %i(name lottery_number suite_number)
+    result = CSVGenerator.generate(data: @groups, attributes: attributes,
+                                   name: 'groups')
+    handle_file_action(**result)
+  end
+
   private
 
   def authorize!
@@ -155,7 +158,9 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
   end
 
   def set_draw
-    @draw = Draw.includes(:groups, :suites).find(params[:id])
+    @draw = Draw.includes(:suites,
+                          groups: [:lottery_assignment, suite: :building])
+                .find(params[:id])
   end
 
   def calculate_metrics

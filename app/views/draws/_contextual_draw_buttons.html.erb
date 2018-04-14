@@ -7,6 +7,9 @@
       <% if policy(DrawSuite.new(draw: @draw.__getobj__)).edit_collection? %>
         <%= link_to 'Add or edit suites', edit_collection_draw_suites_path(@draw), class: 'button secondary' %>
       <% end %>
+      <% if policy(:intent).report? %>
+        <%= link_to 'Upload intents', report_draw_intents_path(@draw), class: 'button secondary' %>
+      <% end %>
       <% if policy(@draw).bulk_on_campus? %>
         <%= link_to 'Make all students on campus', bulk_on_campus_draw_path(@draw),
           method: :patch,
@@ -25,7 +28,10 @@
         </div>
       <% end %>
       <% if policy(@draw).activate? %>
-        <%= link_to 'Begin draw process', activate_draw_path(@draw), method: :patch, class: 'button' %>
+        <%= link_to 'Begin draw process',
+          activate_draw_path(@draw), method: :patch,
+          data: { confirm: 'This will send an e-mail to all students in the draw inviting them to log in and start forming groups. Do you want to continue?' },
+          class: 'button' %>
       <% end %>
     <% elsif @draw.status == 'pre_lottery' %>
       <% if policy(Group).new? && policy(@draw).group_actions? %>
@@ -74,11 +80,17 @@
       <% end %>
     <% elsif @draw.status == 'suite_selection' %>
       <% if policy(SuiteAssignment.new(draw: @draw.__getobj__, groups: [])).new? %>
-        <%= link_to 'Select suites', new_draw_suite_assignment_path(@draw), class: 'button secondary' %>
+        <%= link_to 'Select suites', new_draw_suite_assignment_path(@draw), class: 'button' %>
+      <% end %>
+      <% if policy(@draw).group_export? %>
+        <%= link_to 'Export Lottery Numbers', group_export_draw_path(@draw), class: 'button secondary' %>
       <% end %>
     <% elsif @draw.status == 'results' %>
       <% if policy(@draw).results? %>
-        <%= link_to 'View results', results_draw_path(@draw), class: 'button secondary' %>
+        <%= link_to 'View results', results_draw_path(@draw), class: 'button' %>
+      <% end %>
+      <% if policy(@draw).group_export? %>
+        <%= link_to 'Export Suite Assignments', group_export_draw_path(@draw), class: 'button secondary' %>
       <% end %>
     <% end %>
   <% end %>

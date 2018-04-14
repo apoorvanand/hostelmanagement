@@ -16,6 +16,11 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_many(:memberships) }
     it { is_expected.to have_one(:group).through(:membership) }
     it { is_expected.to belong_to(:room) }
+    it { is_expected.to delegate_method(:draw_name).to(:draw).as(:name) }
+    it { is_expected.to delegate_method(:group_name).to(:group).as(:name) }
+    it { is_expected.to delegate_method(:room_number).to(:room).as(:number) }
+    it { is_expected.to delegate_method(:suite_number).to(:group) }
+    it { is_expected.to delegate_method(:lottery_number).to(:group) }
   end
 
   describe 'other validations' do
@@ -76,6 +81,33 @@ RSpec.describe User, type: :model do
     it 'returns false if the CAS_BASE_URL env variable is not set' do
       allow(User).to receive(:env?).with('CAS_BASE_URL').and_return(false)
       expect(User.cas_auth?).to be_falsey
+    end
+  end
+
+  describe '.login_attr' do
+    it 'returns :username if CAS auth is enabled' do
+      allow(described_class).to receive(:cas_auth?).and_return(true)
+      expect(described_class.login_attr).to eq(:username)
+    end
+    it 'returns :email if CAS auth is not enabled' do
+      allow(described_class).to receive(:cas_auth?).and_return(false)
+      expect(described_class.login_attr).to eq(:email)
+    end
+  end
+
+  describe '.random_password' do
+    it 'returns a 12 character token from Devise by default' do
+      random = 'abcdefghijkl'
+      allow(Devise).to receive(:friendly_token).with(12)
+                                               .and_return(random)
+      expect(described_class.random_password).to eq(random)
+    end
+
+    it 'allows for the length to be specified' do
+      random = 'abcdefghijklmno'
+      allow(Devise).to receive(:friendly_token).with(15)
+                                               .and_return(random)
+      expect(described_class.random_password(15)).to eq(random)
     end
   end
 

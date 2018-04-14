@@ -60,8 +60,6 @@ Rails.application.routes.draw do
   resources :draws do
     member do
       patch 'activate'
-      get 'intent_report'
-      post 'intent_report', to: 'draws#filter_intent_report'
       post 'reminder'
       patch 'bulk_on_campus'
       get 'students', to: 'draws#student_summary', as: 'student_summary'
@@ -75,6 +73,7 @@ Rails.application.routes.draw do
       delete 'prune_oversub/:prune_size', to: 'draws#prune', as: 'prune'
       patch 'start_selection'
       get 'results'
+      get 'group_export'
     end
 
     resources :draw_suites, only: %i(index), as: :suites do
@@ -111,6 +110,12 @@ Rails.application.routes.draw do
     end
 
     resource :clip, only: %i(new create)
+
+    resource :intents, only: [] do
+      get 'report'
+      post 'import'
+      get 'export'
+    end
   end
 
   resources :clips, only: %i(show edit update destroy)

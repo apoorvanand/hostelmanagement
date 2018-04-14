@@ -4,14 +4,12 @@ require 'open-uri'
 
 # Service object to query the Yale IDR web service (or one similar to it) for
 # profile data. Expects an XML response, meant to be as general as possible.
-class IDRProfileQuerier
-  include Callable
-
-  # Initialize a ProfileRequester
+class IDRProfileQuerier < ProfileQuerier
+  # Initialize an IDRProfileQuerier
   #
   # @param id [String] the id attribute to query the web service with
   def initialize(id:)
-    @id = id
+    super
     @attr_hash = {}
   end
 
@@ -28,16 +26,13 @@ class IDRProfileQuerier
     attr_hash
   end
 
-  make_callable :query
-
   private
 
   attr_accessor :attr_hash
-  attr_reader :id, :response, :uri, :http_request
+  attr_reader :response, :uri, :http_request
 
   CONFIG_PARAM_HEADER = 'PROFILE_REQUEST_'
-  PROFILE_FIELDS =
-    %i(first_name last_name email class_year).freeze
+  # PROFILE_FIELDS is defined in the base class
   REQUIRED_CONFIG_PARAMS =
     (%w(URL QUERY_PARAM) + PROFILE_FIELDS.map { |f| f.to_s.upcase }).freeze
 
@@ -56,6 +51,7 @@ class IDRProfileQuerier
   end
 
   def url_str
+    # `id` comes from the base class
     env(config_var('URL')) + '?' + env(config_var('QUERY_PARAM')) + "=#{id}"
   end
 
@@ -88,7 +84,7 @@ class IDRProfileQuerier
 
   def parse_results
     xml = Nokogiri::XML(response.body)
-    PROFILE_FIELDS.each do |field|
+    profile_fields.each do |field|
       attr_hash.store(field, extract_data(xml, field))
     end
   end
@@ -96,5 +92,10 @@ class IDRProfileQuerier
   def extract_data(xml, field_key)
     tag = env(config_var(field_key.to_s.upcase))
     xml.at_xpath("//#{tag}")&.content
+  end
+
+  def profile_fields
+    return PROFILE_FIELDS if User.cas_auth?
+    PROFILE_FIELDS - [User.login_attr]
   end
 end
