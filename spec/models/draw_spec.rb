@@ -35,6 +35,12 @@ RSpec.describe Draw, type: :model do
       draw.destroy
       expect(student.reload.old_draw_id).to be_nil
     end
+    it 'clears groups on destruction' do
+      group = FactoryGirl.create(:group)
+      draw = FactoryGirl.create(:draw, group_ids: group.id)
+      draw.destroy
+      expect { group.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
   end
 
   describe '#suite_sizes' do
@@ -299,6 +305,14 @@ RSpec.describe Draw, type: :model do
       draw = FactoryGirl.create(:draw_with_members, status: 'pre_lottery')
       FactoryGirl.create(:locked_group, leader: draw.students.first)
       expect(draw).not_to be_oversubscribed
+    end
+
+    it 'only counts avaiable suites' do
+      draw = FactoryGirl.create(:draw_with_members, status: 'pre_lottery')
+      FactoryGirl.create(:locked_group, leader: draw.students.first)
+      # this assigns a suite in this draw to a group in another draw
+      FactoryGirl.create(:group_with_suite, suite: draw.suites.last)
+      expect(draw).to be_oversubscribed
     end
   end
 
