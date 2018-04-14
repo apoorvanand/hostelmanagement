@@ -24,11 +24,10 @@ RSpec.describe User, type: :model do
   end
 
   describe 'class_year' do
-
     let(:user) { FactoryGirl.build(:user) }
 
     it 'is required for students' do
-      user.role = 'students'
+      user.role = 'student'
       expect(user).to validate_presence_of(:class_year)
     end
 
@@ -39,12 +38,12 @@ RSpec.describe User, type: :model do
 
     it 'is not required for admins' do
       user.role = 'admin'
-      expect(user).to_not validate_presence_of(:class_year)
+      expect(user).not_to validate_presence_of(:class_year)
     end
 
     it 'is not required for superusers' do
-      user.role = 'rep'
-      expect(user).to_not validate_presence_of(:class_year)
+      user.role = 'superuser'
+      expect(user).not_to validate_presence_of(:class_year)
     end
   end
 
@@ -295,5 +294,4 @@ RSpec.describe User, type: :model do
       expect(user.login_attr).to eq(user.email)
     end
   end
-
 end
