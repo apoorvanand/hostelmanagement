@@ -147,7 +147,7 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
   end
 
   def student_assignment_params
-    params.fetch(:draw_student_assignment_form, {}).permit(%i(username adding))
+    params.fetch(:draw_student_assignment_form, {}).permit(%i(username email adding))
   end
 
   def prune_params
