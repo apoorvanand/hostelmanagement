@@ -14,26 +14,21 @@ RSpec.describe DrawSuitesUpdate do
       let(:current_suites) { draw.suites.available.map(&:id) }
       let(:draw1) { FactoryGirl.create(:draw_with_members, suites_count: 1) }
       let(:current_suites1) { draw1.suites.available.map(&:id) }
+      let(:params1) { mock_params(suite_ids_1: []) }
 
       it 'removes current suites of all sizes' do
         draw1.suites << FactoryGirl.create(:suite_with_rooms, rooms_count: 2)
-        params = mock_params(suite_ids_1: [])
         expect do
-          described_class.update(draw: draw1,
-                                 current_suites: current_suites1,
-                                 params: params)
-        end.to \
-          change { draw1.suites.count }.by(-2)
+          described_class.update(draw: draw1, current_suites: current_suites1,
+                                 params: params1)
+        end.to change { draw1.suites.count }.by(-2)
       end
       it 'does not remove suites with groups' do
         FactoryGirl.create(:group_with_suite, :defined_by_draw, draw: draw)
-        params = mock_params(suite_ids_1: [])
         expect do
-          described_class.update(draw: draw,
-                                 current_suites: current_suites,
-                                 params: params)
-        end.to \
-          change { draw.suites.count }.by(0)
+          described_class.update(draw: draw, current_suites: current_suites,
+                                 params: params1)
+        end.to change { draw.suites.count }.by(0)
       end
       # rubocop:disable RSpec/ExampleLength
       it 'adds suites from both drawn_ids and drawless_ids' do
