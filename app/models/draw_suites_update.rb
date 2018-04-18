@@ -8,11 +8,12 @@ class DrawSuitesUpdate
   CONSOLIDATED_ATTRS = %i(suite_ids drawn_ids drawless_ids).freeze
 
   attr_reader(*CONSOLIDATED_ATTRS)
+  attr_reader :current_suites
 
   # Initialize a new DrawSuitesUpdate
   #
   # @param draw [Draw] the draw to be updated
-  # @param suites [Hash] the current suites in the draw
+  # @param current_suites [Array<Integer>] current suite numbers in this draw
   # @param params [#to_h] the parameters from the form
   def initialize(draw:, current_suites:, params: nil)
     @draw = draw
@@ -77,7 +78,6 @@ class DrawSuitesUpdate
 
   def find_suites_to_remove
     return [] unless params[:suite_ids]
-    current_suites = @current_suites
     passed_suite_ids = params[:suite_ids].map(&:to_i)
     Suite.find(current_suites - passed_suite_ids)
   end

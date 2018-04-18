@@ -39,8 +39,7 @@ RSpec.describe DrawSuitesUpdate do
         expect do
           described_class.update(draw: draw, current_suites:
           current_suites, params: params)
-        end.to \
-          change { draw.suites.count }.by(2)
+        end.to change { draw.suites.count }.by(2)
       end
       it 'handles multiple suite sizes' do
         drawless1 = FactoryGirl.create(:suite)
@@ -51,8 +50,7 @@ RSpec.describe DrawSuitesUpdate do
           described_class.update(draw: draw,
                                  current_suites: current_suites,
                                  params: params)
-        end.to \
-          change { draw.suites.count }.by(2)
+        end.to change { draw.suites.count }.by(2)
       end
       # rubocop:enable RSpec/ExampleLength
       it 'sets :redirect_object to nil' do

@@ -4,8 +4,6 @@
 class DrawSuitesController < ApplicationController
   prepend_before_action :set_draw
   before_action :set_form_data, only: %i(new edit)
-  # before_action :prepare_suites_update_data, only: %i(new edit)
-  # before_action :prepare_suites_edit_data, only: [%i(new edit)]
 
   def index
     suites = ValidSuitesQuery.new(@draw.suites.includes(:rooms)).call
@@ -34,10 +32,9 @@ class DrawSuitesController < ApplicationController
   private
 
   def suite_edit_param_hash
-    suite_edit_param_hash = suite_edit_sizes.flat_map do |s|
+    suite_edit_sizes.flat_map do |s|
       DrawSuitesUpdate::CONSOLIDATED_ATTRS.map { |p| ["#{p}_#{s}".to_sym, []] }
     end.to_h
-    suite_edit_param_hash
   end
 
   def suite_edit_sizes
