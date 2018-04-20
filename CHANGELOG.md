@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 * Add dependent: :destroy for group in draw model ([#687](https://gitlab.com/yale-sdmp/vesta/issues/687)).
+* Automatically lock full groups after the group locking deadline ([#58](https://gitlab.com/yale-sdmp/vesta/issues/58)).
 
 ### Fixed
 * Intent and locking deadline cannot be in the past ([#600](https://gitlab.com/yale-sdmp/vesta/issues/600))
