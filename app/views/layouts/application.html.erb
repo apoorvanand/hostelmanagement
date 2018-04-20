@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= full_title(yield(:title)) %></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title><%= content_for?(:title) ? yield(:title) : "Vesta" %></title>
+
+    <%= stylesheet_link_tag :application, media: "all" %>
+    <%= csrf_meta_tags %>
+  </head>
+  <body class="<%= body_class %>">
+    <header>
+      <%= render "nav" %>
+    </header>
+    <%= render "flashes" -%>
+    <main class="row" id="main-content" role="main">
+      <div class="small-12 columns">
+        <%= yield %>
+      </div>
+    </main>
+    <%= render "footer" %>
+    <%= render "javascript" %>
+    <%= render "css_overrides" %>
+  </body>
+</html>

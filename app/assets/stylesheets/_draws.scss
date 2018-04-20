@@ -1,0 +1,82 @@
+@import "draws_suite_summary";
+@import "draws_student_summary";
+@import "draws_lottery";
+
+.oversub-report {
+  .positive { background-color: lighten(#5F712D, 50%); }
+  .negative { background-color: lighten($alert-color, 53%); }
+  .zero { background-color: lighten($success-color, 72%); }
+}
+
+.lock-intent-form { display: inline-block; }
+
+.export-leader-btns ul {
+  list-style: none;
+
+  li {
+    display: inline-block;
+  }
+}
+
+.group-report-1 {
+  td[data-role="group-leader"] {
+    width: 35%;
+  }
+  td[data-role="group-status"] {
+    width: 20%;
+  }
+  td[data-role="group-transfers"] {
+    width: 10%;
+  }
+  td[data-role="group-actions"] {
+    width: 35%;
+  }
+}
+
+.group-report {
+  .group-size-header {
+    &.zero {
+      font-weight: bold;
+      color: $success-color;
+    }
+    &.negative {
+      font-weight: bold;
+      color: $alert-color;
+    }
+  }
+  .ungrouped-report {
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    ul { padding-bottom: 1em; }
+  }
+}
+
+.draw-menu-container {
+  @include breakpoint(medium) {
+    @include grid-column(3);
+    @include grid-col-pos(9);
+  }
+
+  .draw-menu {
+    font-weight: bold;
+    width: 100%;
+    li {
+      margin: 0.2em 0;
+      form {
+        width: 100%;
+        input, .input {
+          margin: 0;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.draw-body {
+  @include breakpoint(medium) {
+    @include grid-column(9);
+    @include grid-col-pos(-3);
+  }
+}

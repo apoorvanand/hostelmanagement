@@ -1,0 +1,97 @@
+<% provide(:title, @group.name) %>
+<%= render 'group_details', group: @group %>
+<% if policy(@group).view_pending_members? %>
+  <% unless @group.requests.empty? %>
+    <h2 class="group-requests h4">Requests</h2>
+    <ul>
+      <% @group.requests.each do |r| %>
+        <li class="group-request">
+          <%= link_to r.full_name, user_path(r) %>
+          <% if policy(@group).accept_request? %>
+            (<%= link_to 'accept',
+                         accept_request_draw_group_path(@draw, @group, params: { 'user_id' => r.id }),
+                         method: :put %><%= policy(@group).reject_pending? ? ' / ' : ')' %>
+          <% end %>
+          <% if policy(@group).reject_pending? %>
+            <%= '(' unless policy(@group).accept_request? %><%= link_to 'reject', reject_pending_draw_group_path(@draw, @group, params: { 'user_id' => r.id }), method: :put %>)
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+  <% unless @group.invitations.empty? %>
+    <h2 class="group-invitations h4">Invitations</h2>
+    <ul>
+      <% @group.invitations.each do |i| %>
+        <li class="group-invitation">
+          <%= link_to i.full_name, user_path(i) %>
+          <% if policy(@group).reject_pending? %>
+            (<%= link_to 'rescind', reject_pending_draw_group_path(@draw, @group, params: { 'user_id' => i.id }), method: :put %>)
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+<hr style="border-color: #DDDDDD;" />
+<% if @group.clip.present? %>
+  <h2 class="clip-information h4">Your Clip</h2>
+  <%= render 'clips/clip_details', clip: @group.clip %>
+  <hr style="border-color: #DDDDDD;" />
+<% elsif @clip_invites.length.positive? %>
+  <h2 class="clip-invites h4">Clip Invitations</h2>
+  <ul>
+    <% @clip_invites.each do |m| %>
+      <li class="clip-invitation" id="clip-membership-<%= m.id %>">
+        <%= link_to m.clip.name, clip_path(m.clip) %>
+        <% if policy(m).accept? %>
+          (<%= link_to 'Accept Invitation', clip_membership_path(m), method: :patch %><%= policy(m).reject? ? ' / ' : ')' %>
+        <% end %>
+        <% if policy(m).reject? %>
+          <%= '(' unless policy(m).accept? %><%= link_to 'Reject Invitation', clip_membership_path(m), method: :delete %>)
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+  <hr style="border-color: #DDDDDD;" />
+<% end %>
+<div>
+  <%= link_to 'Edit', edit_draw_group_path(@draw, @group), class: 'button secondary' if policy(@group).edit? %>
+  <%= link_to 'Request To Join', request_draw_group_path(@draw, @group), method: :post, class: 'button secondary' if policy(@group).request_to_join? %>
+  <% if policy(@group).leave? %>
+    <%= link_to 'Leave group', leave_draw_group_path(@draw, @group), method: :delete, class: 'button alert' %>
+  <% end %>
+  <%= link_to 'Invite Members', invite_draw_group_path(@draw, @group), class: 'button secondary' if policy(@group).invite? %>
+  <%= link_to 'Accept Invitation', accept_invitation_draw_group_path(@draw, @group), method: :put, class: 'button' if policy(@group).accept_invitation? %>
+  <%= link_to 'Begin Locking Process for Group', finalize_draw_group_path(@draw, @group), method: :put, data: { confirm: 'This will begin the process of confirming this housing group and cannot be undone. Are you sure you want to proceed?' }, class: 'button' if policy(@group).finalize? %>
+  <%= link_to 'Lock Membership', finalize_membership_draw_group_path(@draw, @group), method: :put, class: 'button' if policy(@group).finalize_membership? %>
+  <%= link_to 'Lock Group', lock_draw_group_path(@draw, @group), method: :put, class: 'button alert' if policy(@group).lock? %>
+  <%= link_to 'Unlock All Members', unlock_draw_group_path(@draw, @group), method: :put, class: 'button alert' if policy(@group).unlock? %>
+  <% if @group.suite.present? && policy(SuiteAssignment.new(groups: [@group], draw: @group.draw)).new? %>
+    <%= simple_form_for @group, url: group_suite_assignment_path(@group), method: :delete, html: { class: 'hidden-form' } do |f| %>
+      <%= f.input :suite, as: :hidden, input_html: { value: '' } %>
+      <%= f.submit 'Remove suite' %>
+    <% end %>
+  <% end %>
+  <% if policy(@group).assign_rooms? %>
+    <%= link_to 'Assign rooms', new_group_room_assignment_path(@group), class: 'button' %>
+  <% end %>
+  <% if policy(@group).edit_room_assignment? %>
+    <%= link_to 'Edit room assignments', edit_group_room_assignment_path(@group), class: 'button' %>
+  <% end %>
+  <% if policy(@group).make_drawless? %>
+    <%= link_to 'Make special group', make_drawless_draw_group_path(@draw, @group), method: :patch, data: { confirm: 'Are you sure you want to remove this group and its members from the draw?' },
+                **with_tooltip(text: 'Remove this group and its members from the draw and convert it to a special group.', class_override: 'button alert') %>
+  <% end %>
+  <%= link_to('Disband', draw_group_path(@draw, @group), method: :delete, data: { confirm: 'Are you sure you want to disband this group?' }, class: 'button alert') if policy(@group).destroy? %>
+</div>
+<%= link_to 'Return to draw', draw_path(@draw) %>
+
+<% content_for :sidebar do %>
+  <h1 class="h3">Compatible Suites</h1>
+  <h2 class="h4"><%= @same_size_groups_count %> <%= 'group'.pluralize(@same_size_groups_count) %> of size <%= @group.size %></h2>
+  <h2 class="h4"><%= @compatible_suites_count %> available <%= size_str(@group.size).capitalize.pluralize(@compatible_suites_count) %></h2>
+  <% unless @compatible_suites_count.zero? %>
+    <%= render 'groups/suites_table', suites: @compatible_suites.group_by(&:building) %>
+  <% end %>
+<% end %>

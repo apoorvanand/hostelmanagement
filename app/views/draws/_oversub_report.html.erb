@@ -1,0 +1,27 @@
+<table>
+  <thead>
+    <tr>
+      <td>Suite Size</td>
+      <td>Suites</td>
+      <td>Groups</td>
+      <td>Locked Groups</td>
+      <td>Leftover Suites</td>
+      <% if policy(draw).lock_all_sizes? %>
+        <td></td>
+      <% end %>
+  </thead>
+  <tbody>
+    <% @draw.sizes.each do |size| %>
+      <tr class="<%= diff_class(@draw.oversubscription[size])%>">
+        <td data-role="suite-size"><%= size_str(size).capitalize.pluralize %></td>
+        <td data-role="suite-count"><%= @draw.suite_counts[size] %></td>
+        <td data-role="group-count"><%= @draw.group_counts[size] %></td>
+        <td data-role="locked-count"><%= @draw.locked_counts[size] %></td>
+        <td data-role="oversubscription"><%= @draw.oversubscription[size] %></td>
+        <% if policy(@draw).lock_all_sizes? %>
+          <td class="actions"><%= toggle_size_lock_btn(draw: @draw, size: size, path: path) %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

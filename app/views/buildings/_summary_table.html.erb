@@ -1,0 +1,30 @@
+<h2><%= building.name %></h2>
+<table class="building-summary">
+  <thead>
+    <tr>
+      <td>Suite Size</td>
+      <td># Suites</td>
+      <td># Suites Assigned</td>
+      <% if policy(Suite).view_draw? %>
+        <td># Suites in Draws</td>
+        <td># Suites not in a Draw</td>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @suites_by_size[building.id].each do |size, suites| %>
+      <tr>
+        <td data-role="suite-size"><%= headerize_size(size) %></td>
+        <td data-role="suite-count"><%= suites.count %></td>
+        <td data-role="assigned-count"><%= suites.select { |s| s.group_id.present? }.count %></td>
+        <% if policy(Suite).view_draw? %>
+          <td data-role="draws-count"><%= suites.select { |s| s.draws.present? }.count %></td>
+          <td data-role="not-draw-count"><%= suites.select { |s| s.draws.empty? }.count %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link_to 'View', building_path(building), class: 'button secondary' %>
+<%= link_to 'Edit', edit_building_path(building), class: 'button secondary' if policy(building).edit? %>
+<%= link_to 'Delete', building_path(building), method: :delete, data: { confirm: 'Are you sure you want to delete this building?' }, class: 'button alert' if policy(building).destroy? %>

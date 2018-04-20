@@ -1,0 +1,25 @@
+<% provide(:title, @user.full_name) %>
+<h1 class="user-name"><%= @user.full_name %></h1>
+<dl>
+<% if policy(@user).draw_info? %>
+    <dt>Draw</dt>
+    <dd><%= @user.draw.name %></dd>
+    <dt>Housing Intent</dt>
+    <dd class="user-intent"><%= @user.intent.humanize %></dd>
+<% end %>
+  <dt>Role</dt>
+  <dd class="user-role"><%= @user.role.humanize %></dd>
+  <dt>Email</dt>
+  <dd class="user-email"><%= @user.email %></dd>
+</dl>
+<% if policy(@user).edit? %>
+  <div>
+    <%= link_to 'Edit', edit_user_path(@user), class: 'button secondary' %>
+    <% if policy(@user).destroy? %>
+      <%= link_to 'Delete', user_path(@user), method: :delete, data: { confirm: 'Are you sure you want to delete this user?' }, class: 'button alert' %>
+    <% end %>
+  </div>
+<% end %>
+<% if policy(User).index? %>
+  <%= link_to 'View all users', users_path %>
+<% end %>

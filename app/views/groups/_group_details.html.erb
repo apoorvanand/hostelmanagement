@@ -1,0 +1,21 @@
+<h1 class="group-name"><%= group.name %></h1>
+<dl>
+  <dt>Size</dt>
+  <dd class="group-size"><%= group.size %></dd>
+  <dt>Status</dt>
+  <dd class="group-status"><%= display_group_status(group)%></dd>
+  <dt>Members</dt>
+  <dd>
+    <ul>
+      <% group.members.includes(:membership).each do |m| %>
+        <li class="group-member"><%= member_str(m, group) %></li>
+      <% end %>
+    </ul>
+    <% unless group.transfers.zero? %>
+      <dl>
+        <dt>Transfers</dt>
+        <dd class="transfers"><%= group.transfers %></dd>
+      </dl>
+    <% end %>
+  </dd>
+</dl>
