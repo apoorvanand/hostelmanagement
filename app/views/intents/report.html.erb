@@ -1,0 +1,60 @@
+<% provide(:title, "#{@draw.name} - Intent Report" ) %>
+<h1 class="draw-name"><%= @draw.name %> - Intent Report</h1>
+<% if policy(:intent).import? %>
+  <h2>Import Intents</h2>
+  <p>If you would like to import the intents for students in this draw
+  please upload a CSV file containing the relevant data below. The CSV
+  must have the columns "<%= User.login_attr %>,intent" where the
+  intent is either "on_campus" or "off_campus"</p>
+  <p>
+  <%= simple_form_for @intents_importer, url: import_draw_intents_path(@draw) do |f| %>
+    <%= f.input :file, label: 'Upload a CSV', as: :file %>
+    <%= f.submit 'Import' %>
+  <% end %>
+<% end %>
+<div class="intent-report">
+  <p>You can view and update the intents of students <strong>who are not in a group</strong> below. Note that selecting a different option in the dropdown menu will <em>immediately</em> change that student's intent.</p>
+  <hr />
+  <% if @students_by_intent.empty? %>
+    <p>There are no students in this draw yet!</p>
+  <% else %>
+    <ul class="tabs" data-tabs id="student-intent-tabs">
+      <% @intent_metrics.each do |intent, count| %>
+        <li class="tabs-title<%= @intent_metrics.keys.first == intent ? ' is-active' : '' %>">
+        <a href="#students-<%= intent %>"<%= @intent_metrics.keys.first == intent ? ' aria-selected=true' : '' %>><%= "#{intent.humanize} (#{count})" %></a>
+        </li>
+      <% end %>
+    </ul>
+    <div class="tabs-content" data-tabs-content="student-intent-tabs">
+      <% @intent_metrics.each do |intent, count| %>
+        <div class="tabs-panel<%= @intent_metrics.keys.first == intent ? ' is-active' : '' %>" id="students-<%= intent %>">
+          <h2><%= intent.humanize %> (<%= pluralize(count, 'student') %>)</h2>
+          <table>
+            <thead>
+              <tr>
+                <td>Last Name</td>
+                <td>First Name</td>
+                <td>Intent</td>
+              </tr>
+            </thead>
+            <tbody>
+              <% @students_by_intent[intent].each do |student| %>
+                <tr class="<%= student.intent %>">
+                  <td data-role="student-last_name"><%= student.last_name %></td>
+                  <td data-role="student-first_name"><%= student.first_name %></td>
+                  <% if policy(student).update_intent? %>
+                    <td class="intent-form" id="intent-form-<%= student.id %>" data-role="student-intent"><%= render 'intent_form', user: student %></td>
+                  <% else %>
+                    <td data-role="student-intent"><%= student.intent.humanize %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
+<div style="padding-top: 1em;"><%= link_to 'Export to CSV', export_draw_intents_path(@draw), class: 'button secondary' %></div>
+<%= link_to 'Return to draw', draw_path(@draw) %>

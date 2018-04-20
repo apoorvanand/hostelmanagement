@@ -1,0 +1,59 @@
+<% provide(:title, "Suite #{@suite.number}") %>
+<h1 class="suite-number">Suite <%= @suite.number %></h1>
+<% if policy(@suite).medical? %>
+  <span class="label secondary suite-medical" style="margin-bottom: 1em;"><%= medical_str(@suite.medical).capitalize %></span>
+<% end %>
+<ul>
+  <li>Status:
+    <% if @suite.available? %>
+      Available
+    <% else %>
+      Unavailable
+      <% if !@suite.medical || policy(@suite).medical? %>
+        (Assigned to <%= link_to @group.name, group_path(@group) %>)
+      <% end %>
+    <% end %>
+  </li>
+  <li>Size: <%= size_str(@suite.size).capitalize %></li>
+  <li>Building: <%= link_to @building.name, building_path(@building) %></li>
+  <li>Draws:
+    <% if @draws.empty? %>
+      None
+    <% else %>
+      <%= render partial: 'draw_link', collection: @draws, spacer_template: 'shared/comma' %>
+    <% end %>
+  </li>
+</ul>
+<h2 class="h3">Rooms</h2>
+<%= render 'rooms/summary', rooms: @rooms %>
+<p><%= link_to 'Add room', new_suite_room_path(@suite), class: 'button secondary' if policy(Room).new? %></p>
+<hr />
+<% if policy(@suite).merge? %>
+  <div class="suite-merging">
+    <h2>Merge suites</h2>
+    <p>Please enter a suite to merge with this one; <b>it must be in the same building</b>. The two suites will be removed from Vesta and will be replaced with a single suite containing all of their rooms. You will able to set the name/number of the new suite on the following page.</p>
+    <%= simple_form_for @merger_form, url: merge_suite_path(@suite), method: :get do |f| %>
+      <%= f.input :other_suite_number, label: 'Other suite' %>
+      <%= f.submit 'Merge' %>
+    <% end %>
+  </div>
+<% end %>
+<hr />
+<% if policy(@suite).unmerge? %>
+  <p><%= link_to 'Unmerge suite', unmerge_suite_path(@suite), class: 'button', method: :post %></p>
+<% end %>
+<% if policy(@suite).split? %>
+  <p><%= link_to 'Split suite', split_suite_path(@suite), class: 'button' %></p>
+<% end %>
+<div>
+  <% if policy(@suite).edit? %>
+    <%= link_to 'Edit', edit_suite_path(@suite), class: 'button secondary' %>
+  <% end %>
+  <% if policy(@suite).medical? %>
+    <%= render 'medical_form', suite: @suite %>
+  <% end %>
+  <% if policy(@suite).destroy? %>
+    <%= link_to 'Delete', suite_path(@suite), method: :delete, data: { confirm: 'Are you sure you want to delete this suite?' }, class: 'button alert' %>
+  <% end %>
+</div>
+<%= link_to 'Return to building', building_path(@building) %>

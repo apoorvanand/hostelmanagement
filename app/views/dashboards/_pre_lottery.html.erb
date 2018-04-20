@@ -1,0 +1,31 @@
+<h2 class="h5">Intent</h2>
+<ul class="no-bullet">
+<li><%= draw.intent_metrics['on_campus'] %> on campus students</li>
+<li><%= draw.intent_metrics['undeclared'] %> undeclared students</li>
+<li><%= draw.intent_metrics['off_campus'] %> off campus students</li>
+</ul>
+
+<h2 class="h5">Group Formation</h2>
+<div class="oversub-report">
+<table>
+  <thead>
+    <tr>
+      <td>Suite Size</td>
+      <td>Suites</td>
+      <td>Groups</td>
+      <td>Locked Groups</td>
+      <td>Leftover Suites</td>
+  </thead>
+  <tbody>
+    <% draw.sizes.each do |size| %>
+      <tr class="<%= diff_class(draw.oversubscription[size])%>"]>
+        <td data-role="suite-size"><%= size_str(size).capitalize.pluralize %></td>
+        <td data-role="suite-count"><%= draw.suite_counts[size] %></td]>
+        <td data-role="group-count"><%= draw.group_counts[size] %></td]>
+        <td data-role="locked-count"><%= draw.locked_counts[size] %></td]>
+        <td data-role="oversubscription"><%= draw.oversubscription[size] %></td]>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>

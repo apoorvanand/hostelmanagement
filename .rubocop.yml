@@ -1,0 +1,34 @@
+require: rubocop-rspec
+AllCops:
+  TargetRubyVersion: 2.3
+  Include:
+    - '**/Rakefile'
+    - '**/config.ru'
+    - 'lib/**/*'
+  Exclude:
+    # exclude all files in db/ except for db/seeds.rb
+    - 'db/schema.rb'
+    - 'db/migrate/*'
+    - 'lib/**/*.erb'
+    - 'vendor/**/*'
+    - 'bin/*'
+Rails:
+  Enabled: true
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+Rails/Blank:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - '**/*.rake'
+    - 'spec/**/*.rb'
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: ()
+    '%i': '()'
+    '%w': '()'

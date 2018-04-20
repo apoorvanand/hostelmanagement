@@ -1,0 +1,41 @@
+<ul class="dropdown menu" data-dropdown-menu>
+  <% if current_user.draw && policy(current_user.draw).show? %>
+    <li>
+      <a href="#">Draws</a>
+      <ul class="menu vertical">
+        <li><%= link_to 'My Draw', draw_path(current_user.draw) %></li>
+        <li><%= link_to 'All Draws', draws_path %></li>
+      </ul>
+    </li>
+  <% else %>
+    <li><%= link_to 'All Draws', draws_path %></li>
+  <% end %>
+  <% if policy(current_user).edit_intent? %>
+    <li><%= link_to 'Update Housing Intent', edit_intent_user_path(current_user) %></li>
+  <% end %>
+  <% if current_user.group %>
+    <% if current_user.draw %>
+      <li><%= link_to 'My Group', draw_group_path(current_user.draw, current_user.group) %></li>
+      <% if policy(Clip.new(draw: current_user.draw)).new? %>
+        <li><%= link_to 'Create a clip', new_draw_clip_path(current_user.draw) %></li>
+      <% end %>
+      <% if policy(current_user.group).assign_rooms? %>
+        <li><%= link_to 'Assign Rooms', new_group_room_assignment_path(current_user.group) %></li>
+      <% end %>
+      <% if policy(current_user.group).select_suite? %>
+        <li><%= link_to 'Select Suite', new_group_suite_assignment_path(current_user.group) %></li>
+      <% end %>
+    <% else %>
+      <li><%= link_to 'My Group', group_path(current_user.group) %></li>
+      <% if policy(current_user.group).assign_rooms? %>
+        <li><%= link_to 'Assign Rooms', new_group_room_assignment_path(current_user.group) %></li>
+      <% end %>
+    <% end %>
+  <% elsif policy(Group).new? %>
+    <li><%= link_to 'Create Housing Group', new_draw_group_path(current_user.draw) %></li>
+  <% else %>
+    <% if current_user.group %>
+      <li><%= link_to 'My Group', group_path(current_user.group) %></li>
+    <% end %>
+  <% end %>
+</ul>

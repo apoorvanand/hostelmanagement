@@ -1,0 +1,6 @@
+<%= simple_form_for [@draw, lottery], remote: true do |f| %>
+  <%= f.input :group_ids, as: :hidden %>
+  <%= f.input :clip_id, as: :hidden %>
+  <%= f.input :draw_id, as: :hidden %>
+  <%= f.input :number, input_html: { class: 'lottery_field autosubmitme' } %>
+<% end %>

@@ -1,0 +1,33 @@
+<div class="top-bar">
+  <div class="row">
+    <%= link_to 'Skip to main content', '#main-content', class: 'show-on-focus' %>
+    <div class="top-bar-title">
+      <span data-responsive-toggle="responsive-menu" data-hide-for="medium">
+        <button class="menu-icon dark" type="button" data-toggle aria-label="Toggle menu"></button>
+      </span>
+      <strong><%= link_to 'Home', root_path %></strong>
+    </div>
+    <div id="responsive-menu">
+      <div class="top-bar-left">
+        <% if current_user %>
+          <% if current_user.admin? %>
+            <%= render 'nav_admin' %>
+          <% elsif current_user.rep? %>
+            <%= render 'nav_rep' %>
+          <% else %>
+            <%= render 'nav_student' %>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="top-bar-right">
+        <ul class="menu">
+          <% if current_user %>
+            <li><%= link_to 'Logout', destroy_user_session_path, method: :delete %></li>
+          <% else %>
+            <li><%= link_to 'Login', new_user_session_path %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+<% if @color_class == 'success' %>
+  $("#<%= lottery_form_id(@lottery) %>").parent().addClass('<%= @color_class %>', 750, 'swing', function() {
+    $("#<%= lottery_form_id(@lottery) %>").parent().removeClass('<%= @color_class %>', 750, 'swing');
+  });
+    $("#<%= lottery_form_id(@lottery) %>").html('<%= escape_javascript(render partial: 'lottery_assignments/edit_form', locals: { lottery: @lottery }) %>');
+<% else %>
+    <% if @color_class %>
+      $("#<%= lottery_form_id(@lottery) %>").parent().addClass('<%= @color_class %>', 750, 'swing', function() {
+        $("#<%= lottery_form_id(@lottery) %>").parent().removeClass('<%= @color_class %>', 750, 'swing');
+      });
+    <% end %>
+    $("#<%= lottery_form_id(@lottery) %>").html('<%= escape_javascript(render partial: 'lottery_assignments/new_form', locals: { lottery: @lottery }) %>');
+<% end %>

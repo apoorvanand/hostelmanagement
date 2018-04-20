@@ -1,0 +1,12 @@
+.input {
+  margin-bottom: 1rem;
+
+  input, select, textarea { margin-bottom: 0.1rem; }
+  .error { color: $alert-color; }
+}
+
+.email-export-btn {
+  display: inline-block;
+}
+
+form.hidden-form { display: inline-block; }
