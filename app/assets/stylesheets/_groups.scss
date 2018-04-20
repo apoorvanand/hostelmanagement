@@ -7,47 +7,54 @@
 /* styles for physically printing the group report */
 @media print {
 
+  body {
+    font-family: "yale", serif;
+  }
+
+  // reformat the table
   td[data-role="group-leader"] {
-    //display: block;
     border-bottom: 1px solid black;
-    //border-top: 1px solid black;
-    //border-left: 1px solid black;
-    //border-right: 1px solid black;
-    //text-align: left;
   }
   td[data-role="group-members"] {
     display: block;
-    //text-align: center;
+    width: 100%;
    }
-  td[data-role="group-transfers"] {
-    //display: block;
-    //text-align: right;
-  }
 
-  /* remove navbar and footer */
-  .top-bar, .top-bar-title, .footer, .footer-links, footer {
+   td {
+     font-size: 22px;
+   }
+
+   // put the title of the draw on every page
+   // white background to mask the previous header
+   h3 {
+     position: fixed;
+     width: 500px;
+     background-color: white !important;
+     border: 10px solid white;
+
+   }
+   h3::before { content:"\a"; white-space: pre; }
+
+  /* remove links, navbar and footer */
+  .top-bar, .top-bar-title, .footer, .footer-links, footer, a[href], table thead {
     display: none;
   }
 
+  // overrides print style to put URLs after hrefs
   a[href]:after {
     content: none !important;
   }
 
   /* only display links which are students' names */
-  a[href] {
-    display: none;
-  }
   a[href*="groups"] {
     display: inline !important;
     text-decoration: none !important;
   }
 
-  table thead, h3 { display: none; }
-  h1 { page-break-after: always; }
-
+  // replace thead with these titles
   td[data-role="group-leader"]::before {
     font-weight: bold;
-    content: "\a\aGroup Leader: ";
+    content: "\a\a\a\aGroup Leader: "; //newlines get out of the way of the header
     white-space: pre;
   }
   td[data-role="group-members"]::before {
@@ -60,12 +67,14 @@
     content: "Transfers: ";
   }
 
+  // page break after any content with class page-break
+  // page breaks only work after block content
   .page-break{
     display: block;
     page-break-before: always !important;
   }
 
-  table {
+  table, h1 {
     page-break-after: always !important;
   }
 }
