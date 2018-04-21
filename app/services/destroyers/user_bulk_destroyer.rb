@@ -40,15 +40,14 @@ class UserBulkDestroyer
 
   def build_results
     @failures, @successes = @results.partition { |r| r[:msg].key? :error }
-    # ??
     { redirect_object: nil, msg: build_msg }
   end
 
   def build_msg
     if @failures.empty?
       { notice: success_msg }
-    elsif @success.empty?
-      { notice: failure_msg }
+    elsif @successes.empty?
+      { notice: error_msg }
     else
       { notice: "Some errors have occured.\n" + success_msg + "\n" + error_msg }
     end
