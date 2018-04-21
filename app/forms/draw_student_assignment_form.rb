@@ -56,11 +56,13 @@ class DrawStudentAssignmentForm
 
   def process_params(params)
     @params = params.to_h.transform_keys(&:to_sym)
+
     if User.cas_auth?
       @username = @params[:username].downcase
     else
       @email = @params[:email].downcase
     end
+
     @adding = @params[:adding] == 'true'
     @student = find_student
   end
@@ -77,8 +79,7 @@ class DrawStudentAssignmentForm
 
   def student_found
     return if student
-    errors.add(User.cas_auth ? :username : :email,
-              'must belong to a student not in a group')
+    errors.add(User.login_attr, 'must belong to a student not in a group')
   end
 
   def student_valid
@@ -89,14 +90,12 @@ class DrawStudentAssignmentForm
 
   def validate_addition
     return unless student.draw_id == draw.id
-    errors.add(User.cas_auth? ? :username : :email,
-              'must belong to a student outside the draw when adding')
+    errors.add(User.login_attr, 'must belong to a student outside the draw when adding')
   end
 
   def validate_removal
     return unless student.draw_id != draw.id
-    errors.add(User.cas_auth? ? :username : :email,
-              'must belong to a student in the draw when removing')
+    errors.add(User.login_attr, 'must belong to a student in the draw when removing')
   end
 
   def success

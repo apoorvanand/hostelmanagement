@@ -15,13 +15,9 @@
       <% end %>
     </div>
     <div class="single">
-      <h3>Add/Remove by <%= User.cas_auth? ? 'Username' : 'Email' %></h3>
+      <h3>Add/Remove by <%= User.login_attr.to_s.capitalize %></h3>
       <%= simple_form_for @student_assignment_form, url: students_update_draw_path(@draw), method: :patch do |f| %>
-        <% if User.cas_auth? %>
-          <%= f.input :username, label: 'Username' %>
-        <% else %>
-          <%= f.input :email, label: 'Email' %>
-        <% end %>
+        <%= f.input User.login_attr, label: User.login_attr.to_s.capitalize %>
         <%= f.input :adding, label: 'Action', as: :select, collection: [['Add', true], ['Remove', false]], required: true %>
         <%= f.submit 'Process' %>
       <% end %>
