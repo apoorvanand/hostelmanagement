@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Model to represent the suite-building-room structure that
+# remains unchanged and can be used to import floorplan dat
+# from year to year
 class Blueprint < ApplicationRecord
   validates :building, presence: true
   validates :name, presence: true
@@ -8,6 +11,4 @@ class Blueprint < ApplicationRecord
   validates :rooms, presence: true
 
   serialize :rooms
-
-
 end
