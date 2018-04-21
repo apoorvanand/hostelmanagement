@@ -55,7 +55,7 @@ class DrawStudentsUpdate
   end
 
   def find_students_to_add
-    students_to_add_by_class_year + students_to_add_by_username
+    students_to_add_by_class_year + students_to_add_by_username_or_email
   end
 
   def students_to_add_by_class_year
@@ -63,9 +63,9 @@ class DrawStudentsUpdate
     UngroupedStudentsQuery.call.where(draw_id: nil, class_year: class_year)
   end
 
-  def students_to_add_by_username
+  def students_to_add_by_username_or_email
     return [] unless to_add
-    user = UngroupedStudentsQuery.call.find_by(username: to_add)
+    user = UngroupedStudentsQuery.call.find_by(User.login_attr => to_add)
     return [] unless user
     return [] unless (user.student? || user.rep?) && user.membership.nil?
     [user.remove_draw]
