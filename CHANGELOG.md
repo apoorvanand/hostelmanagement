@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+### Changed
+* Renamed DrawReport#ungrouped_students to #ungrouped_students_by_intent ([#793](https://gitlab.com/yale-sdmp/vesta/issues/793)).
+
+### Added
+* Add dependent: :destroy for group in draw model ([#687](https://gitlab.com/yale-sdmp/vesta/issues/687)).
+
+## v1.0.8 - 2018-04-09
+### Fixed
+* Groups of locked sizes can now finalize ([#788](https://gitlab.com/yale-sdmp/vesta/issues/788)).
+
+### Added
+* Add more attributes to the results export ([#789](https://gitlab.com/yale-sdmp/vesta/issues/789)).
+* Fix room assignment nullification when groups disband ([#784](https://gitlab.com/yale-sdmp/vesta/issues/784)).
+
 ## v1.0.7 - 2018-04-05
 ### Changed
 * Add restrictions to make sure lottery assignments don't exist without groups ([#780](https://gitlab.com/yale-sdmp/vesta/issues/780)).
