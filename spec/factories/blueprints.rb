@@ -4,7 +4,7 @@ FactoryGirl.define do
   factory :blueprint do
     building 'mybuilding'
     name 'myname'
-    size 1
+    size 3
     rooms '[a1, a2, a3]'
   end
 end

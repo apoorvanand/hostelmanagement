@@ -11,4 +11,9 @@ class Blueprint < ApplicationRecord
   validates :rooms, presence: true
 
   serialize :rooms
+
+  def blueprint_name
+    "Suite Blueprint [#{:name}]"
+  end
+  
 end

@@ -144,4 +144,10 @@ Rails.application.routes.draw do
       get 'export'
     end
   end
+
+  resources :blueprints do
+    member do
+      
+    end
+  end
 end
