@@ -1,0 +1,7 @@
+<h> Blueprint Show View </h>
+<p> <%= @blueprint.blueprint_name %> </p>
+<p> <%= @blueprint.size %> </p>
+<p> <%= @blueprint.building %> </p>
+<p> <%= @blueprint.rooms %> </p>
+
+<%= link_to 'Delete', blueprint_path(@blueprint.id), method: :delete, class: 'button_secondary' %>

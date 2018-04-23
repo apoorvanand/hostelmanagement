@@ -26,27 +26,25 @@ class BlueprintsController < ApplicationController
     # handle_action()
   end
 
+  # Probably turn this into a service object
   def import
-    @suite = Suite.find(params[:suite_id])
-    params = import_suite @suite
-    result = Creator.create!(params: params, klass: Blueprint,
-                             name_method: blueprint_name)
-    # handle_action
-  end
-
-  def import_all
     Suite.all.each do |suite|
       params = import_suite suite
       result = Creator.create!(params: params, klass: Blueprint,
                                name_method: blueprint_name)
     end
+
+    # handle_action()
   end
 
   private
 
   def authorize!
-    ## NEEDS WORK
-    true
+    if @blueprint
+      authorize @blueprint
+    else
+      authorize Blueprint
+    end
   end
 
   def import_suite(suite)

@@ -146,8 +146,8 @@ Rails.application.routes.draw do
   end
 
   resources :blueprints do
-    member do
-      
+    collection do
+      get 'import'
     end
   end
 end

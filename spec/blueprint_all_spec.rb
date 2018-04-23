@@ -18,4 +18,13 @@ RSpec.feature 'Blueprint' do
   	expect(page).to have_content(blueprint.blueprint_name)
   end
 
+  it 'destroys' do
+  	params = { building: "New Building", name: "New Name",
+  	           size: "10", rooms: [1, 2, 4, 3] }
+
+  	blueprint = Blueprint.create(params)
+  	
+  end
+
+
 end
