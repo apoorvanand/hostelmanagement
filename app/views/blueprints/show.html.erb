@@ -4,4 +4,5 @@
 <p> <%= @blueprint.building %> </p>
 <p> <%= @blueprint.rooms %> </p>
 
-<%= link_to 'Delete', blueprint_path(@blueprint.id), method: :delete, class: 'button_secondary' %>
+<%= link_to 'Delete', blueprint_path(@blueprint.id), method: :delete, class: 'button secondary' %>
+<%= link_to 'Index', blueprints_path, class: 'button secondary' %>

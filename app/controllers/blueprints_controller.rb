@@ -2,7 +2,7 @@
 
 class BlueprintsController < ApplicationController
   prepend_before_action :set_blueprint, except: %i(new create 
-                                                   index destroy import)
+                                                   index import)
 
   def new
     @blueprint = Blueprint.new
@@ -16,13 +16,14 @@ class BlueprintsController < ApplicationController
 
   def create
     result = Creator.create!(params: blueprint_params, klass: Blueprint,
-                                 name_method: name)
+                                 name_method: :blueprint_name)
     @blueprint = result[:record]
     handle_action(action: 'new', **result)
   end
 
   def destroy
-    result = Destroyer.new(object: @blueprint, name_method: name).destroy
+    result = Destroyer.new(object: @blueprint, 
+                           name_method: :blueprint_name).destroy
     # handle_action()
   end
 
@@ -31,9 +32,8 @@ class BlueprintsController < ApplicationController
     Suite.all.each do |suite|
       params = import_suite suite
       result = Creator.create!(params: params, klass: Blueprint,
-                               name_method: blueprint_name)
+                               name_method: :blueprint_name)
     end
-
     # handle_action()
   end
 
@@ -49,10 +49,12 @@ class BlueprintsController < ApplicationController
 
   def import_suite(suite)
     {
-      building: suite.building,
+      building: suite.building.name,
       name: suite.name,
       size: suite.size,
-      rooms: suite.rooms
+      rooms: suite.rooms.map { |room| 
+        room.number
+      }
     }
   end
 

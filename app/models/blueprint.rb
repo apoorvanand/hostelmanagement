@@ -13,7 +13,7 @@ class Blueprint < ApplicationRecord
   serialize :rooms
 
   def blueprint_name
-    "Suite Blueprint [#{:name}]"
+    "Suite Blueprint [#{name}]"
   end
-  
+
 end

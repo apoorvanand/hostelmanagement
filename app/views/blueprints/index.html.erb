@@ -1,1 +1,14 @@
-<%= link_to 'Import', import_blueprints_path, class: 'button_secondary' %>
+<h> Blueprint Index View </h>
+
+<% @blueprints.each do |blueprint| %>
+  <p> This Blueprint: </p>
+  <p> <%= blueprint.blueprint_name %> </p>
+  <p> <%= blueprint.size %> </p>
+  <p> <%= blueprint.building %> </p>
+  <p> <%= blueprint.rooms %> </p>
+  <p> <%= link_to 'Goto', blueprint_path(blueprint.id), class: 'button secondary' %>
+<% end %>
+
+
+<%= link_to 'Import', import_blueprints_path, class: 'button secondary' %>
+<%= link_to 'New', new_blueprint_path, class: 'button secondary' %>

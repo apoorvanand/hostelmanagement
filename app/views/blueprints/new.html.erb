@@ -1,0 +1,9 @@
+<h> Blueprints New View </h>
+<%= simple_form_for @blueprint do |f| %>
+  <%= f.input :name %>
+  <%= f.input :building %>
+  <%= f.input :size %>
+  <%= f.input :rooms %> 
+
+  <%= f.button :submit %>
+<% end %>

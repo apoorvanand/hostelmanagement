@@ -10,6 +10,10 @@ class BlueprintPolicy < ApplicationPolicy
 		true
 	end
 
+	def import?
+		user.admin?
+	end
+
 	class Scope < Scope # rubocop:disable Style/Documentation
 	  def resolve
 	    scope
