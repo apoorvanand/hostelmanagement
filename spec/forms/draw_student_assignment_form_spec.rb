@@ -8,7 +8,7 @@ RSpec.describe DrawStudentAssignmentForm, type: :model do
   describe 'validations' do
     subject(:form_object) { described_class.new(draw: draw) }
 
-    it { is_expected.to validate_presence_of(:username) }
+    it { is_expected.to validate_presence_of(:login_attr) }
     # commenting this out due to a shoulda_matchers warning
     # it do
     #   is_expected.to validate_inclusion_of(:adding).in_array([true, false])

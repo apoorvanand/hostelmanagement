@@ -8,7 +8,7 @@ class DrawStudentAssignmentForm
   include ActiveModel::Model
   include Callable
 
-  attr_accessor :username, :email, :adding
+  attr_accessor :login_attr, :adding
 
   validates :username, presence: true, if: User.cas_auth?
   validates :email, presence: true, unless: User.cas_auth?
@@ -33,6 +33,7 @@ class DrawStudentAssignmentForm
   #   containing nil for the :redirect_object, the DrawStudentAssignmentForm
   #   set to :update_object if there were any failures, and a flash message
   def submit
+    binding.pry
     return error(self) unless valid?
     update_students
     success
@@ -56,25 +57,14 @@ class DrawStudentAssignmentForm
 
   def process_params(params)
     @params = params.to_h.transform_keys(&:to_sym)
-
-    if User.cas_auth?
-      @username = @params[:username].downcase
-    else
-      @email = @params[:email].downcase
-    end
-
+    @login_attr = @params[:login_attr].downcase
     @adding = @params[:adding] == 'true'
     @student = find_student
   end
 
   def find_student
-    if User.cas_auth?
-      return nil unless username
-      UngroupedStudentsQuery.call.find_by(username: username)
-    else
-      return nil unless email
-      UngroupedStudentsQuery.call.find_by(email: email)
-    end
+    return nil unless login_attr
+    UngroupedStudentsQuery.call.find_by(User.login_attr => login_attr)
   end
 
   def student_found
