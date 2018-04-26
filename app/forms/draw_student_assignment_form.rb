@@ -10,8 +10,7 @@ class DrawStudentAssignmentForm
 
   attr_accessor :login_attr, :adding
 
-  validates :username, presence: true, if: User.cas_auth?
-  validates :email, presence: true, unless: User.cas_auth?
+  validates :login_attr, presence: true
   validates :adding, inclusion: { in: [true, false] }
   validate :student_found
   validate :student_valid
