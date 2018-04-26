@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 ### Changed
+* Bulk user add instructions are now auth-dependent and no longer Yale specific ([#157](https://gitlab.com/yale-sdmp/vesta/issues/157)).
 * Renamed DrawReport#ungrouped_students to #ungrouped_students_by_intent ([#793](https://gitlab.com/yale-sdmp/vesta/issues/793)).
 
 ### Added
@@ -10,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 * Intent and locking deadline cannot be in the past ([#600](https://gitlab.com/yale-sdmp/vesta/issues/600))
-* Loading users no longer fails because of missing class year ([#767](https://gitlab.com/yale-sdmp/vesta/merge_requests/767)).
+* Loading users no longer fails because of missing class year ([#601](https://gitlab.com/yale-sdmp/vesta/issues/601)).
 
 ## v1.0.8 - 2018-04-09
 ### Fixed
@@ -111,6 +112,7 @@ All notable changes to this project will be documented in this file.
 * Prevent changes to suites and students in a draw after the pre-lottery phase ([#704](https://gitlab.com/yale-sdmp/vesta/issues/704)).
 * Force HTTPS in production environments.
 * Automatically drop database schemas when destroying a college ([#730](https://gitlab.com/yale-sdmp/vesta/issues/730)).
+* Remove duplication of email text and html files ([#420](https:/gitlab.com/yale-sdmp/vesta/issues/420)).
 
 ### Fixed
 * Prevent non-admins from seeing the suite import form ([#576](https://gitlab.com/yale-sdmp/vesta/issues/576)).
