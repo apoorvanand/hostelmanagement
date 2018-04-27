@@ -14,21 +14,24 @@ RSpec.describe BulkDestroyer do
     it 'catches destroyer success' do
       stub_destroyer_returns [success]
       users = FactoryGirl.build_stubbed_list(:user, 2)
-      result = described_class.new(objects: users, name_method: :full_name).bulk_destroy
+      result = described_class.new(objects: users, name_method: :full_name)
+                              .bulk_destroy
       expect(result[:msg][:notice]).to include 'Successfully removed 2 records'
     end
 
     it 'catches destroyer error' do
       stub_destroyer_returns [error]
       users = FactoryGirl.build_stubbed_list(:user, 2)
-      result = described_class.new(objects: users, name_method: :full_name).bulk_destroy
+      result = described_class.new(objects: users, name_method: :full_name)
+                              .bulk_destroy
       expect(result[:msg][:notice]).to include 'Unable to remove 2 records'
     end
 
     it 'catches destroyer mixed success and error' do
       stub_destroyer_returns [success, error]
       users = FactoryGirl.build_stubbed_list(:user, 2)
-      result = described_class.new(objects: users, name_method: :full_name).bulk_destroy
+      result = described_class.new(objects: users, name_method: :full_name)
+                              .bulk_destroy
       expect(result[:msg][:notice]).to include 'Some errors have occured.'
     end
   end
