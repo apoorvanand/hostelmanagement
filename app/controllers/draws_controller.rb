@@ -84,9 +84,17 @@ class DrawsController < ApplicationController # rubocop:disable ClassLength
     handle_action(path: params[:redirect_path], **result)
   end
 
-  def lock_all_sizes
+  def lock_all_suite_sizes #changed name
     result = Updater.update(object: @draw, name_method: :name,
                             params: { locked_sizes: @draw.suite_sizes })
+
+    handle_action(**result.merge!(redirect_object: nil,
+                                  path: params[:redirect_path]))
+  end
+
+  def lock_all_group_sizes #added
+    result = Updater.update(object: @draw, name_method: :name,
+                            params: {locked_sizes: @draw.group_sizes})
 
     handle_action(**result.merge!(redirect_object: nil,
                                   path: params[:redirect_path]))
