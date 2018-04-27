@@ -7,6 +7,7 @@
 /* styles for physically printing the group report */
 @media print {
 
+  // serif fonts for printed pages
   body {
     font-family: "yale", serif;
   }
@@ -18,11 +19,10 @@
   td[data-role="group-members"] {
     display: block;
     width: 100%;
-   }
-
-   td {
-     font-size: 22px;
-   }
+  }
+  td {
+    font-size: 22px;
+  }
 
    // put the title of the draw on every page
    // white background to mask the previous header
@@ -45,7 +45,7 @@
     content: none !important;
   }
 
-  /* only display links which are students' names */
+  // override display:none if the link is to a student or group page
   a[href*="groups"] {
     display: inline !important;
     text-decoration: none !important;
@@ -55,7 +55,7 @@
   td[data-role="group-leader"]::before {
     font-weight: bold;
     content: "\a\a\a\aGroup Leader: "; //newlines get out of the way of the header
-    white-space: pre;
+    white-space: pre; //because there are newlines in the content
   }
   td[data-role="group-members"]::before {
     font-weight: bold;
