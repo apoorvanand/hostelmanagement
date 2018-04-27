@@ -8,7 +8,7 @@ RSpec.feature 'Old user removal' do
 
   it 'removes user in room' do
     user = FactoryGirl.create(:user, room_id: room.id)
-    msg = "Successfully Deleted: User #{user.full_name} deleted."
+    msg = 'Successfully removed 1 records'
     visit users_path
     click_on "remove-students-#{user.class_year}"
     expect(page).to have_content(msg)

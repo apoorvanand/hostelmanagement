@@ -32,8 +32,8 @@
         <h3>Class of <%= year %> (<%= @users['student'][year].size %> total)</h3>
         <%= render 'table', users: @users['student'][year], hide_actions: false %>
 
-        <% if policy(:user).bulk_destroy? %>
-          <%= link_to "Remove Old Users", bulk_destroy_users_path(year), method: :delete, data: { confirm: "This action cannot be undone. Are you sure you want to delete ALL old users from #{year}. Old users are defined as users who have already received a room assignment." }, class: 'button alert', id: "remove-students-#{year}" %>
+        <% if policy(:user).bulk_destroy_by_year? %>
+          <%= link_to "Remove Old Users", bulk_destroy_by_year_users_path(year), method: :delete, data: { confirm: "This action cannot be undone. Are you sure you want to delete ALL old users from #{year}. Old users are defined as users who have already received a room assignment." }, class: 'button alert', id: "remove-students-#{year}" %>
         <% end %>
 
       </div>

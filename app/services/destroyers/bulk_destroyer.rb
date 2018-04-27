@@ -3,25 +3,27 @@
 # User destroy class that destroys all old users in a given year
 #   Definition of 'old user': Any user that has already been assigned
 #   a room accross any housing draw
-class UserBulkDestroyer
+class BulkDestroyer
   include Callable
 
-  # Create a UserBulkDestroyer
+  # Create a BulkDestroyer
   #
-  # @param [Array] users The users to be deleted
-  def initialize(users:)
-    @users = users
+  # @param [Array] objects The users to be deleted
+  # @param [Symbol] name_method The model method that gives an identifying
+  #   name of the object
+  def initialize(objects:, name_method:)
+    @objects = objects
+    @name_method = name_method
   end
 
-  # Use UserBulkDestroyer to attempt to destroy multiple users at one time
+  # Use BulkDestroyer to attempt to destroy multiple users at one time
   #
   # @return [Hash{Symbol=>ApplicationRecord,Hash}]
   #   A results hash with a message to set in the flash and `nil`
   #   object
   def bulk_destroy
-    @results = @users.map do |user|
-      remove_group user
-      Destroyer.new(object: user, name_method: :full_name).destroy
+    @results = @objects.map do |obj|
+      Destroyer.new(object: obj, name_method: @name_method).destroy
     end
 
     build_results
@@ -31,12 +33,7 @@ class UserBulkDestroyer
 
   private
 
-  attr_reader :users, :results, :successes, :failures
-
-  def remove_group(user)
-    return unless !user.group.nil? && user.led_group.nil?
-    user.group.remove_members!(ids: [user.id])
-  end
+  attr_reader :objects, :name_method, :results, :successes, :failures
 
   def build_results
     @failures, @successes = @results.partition { |r| r[:msg].key? :error }
@@ -55,15 +52,15 @@ class UserBulkDestroyer
 
   def success_msg
     if @successes.empty?
-      'No users deleted'
+      'No deletions'
     else
-      "Successfully Deleted: #{@successes
-                                 .map { |s| s[:msg][:notice] }.join(' ')}"
+      "Successfully removed #{@successes.size} records"
     end
   end
 
   def error_msg
     return if @failures.empty?
-    "Unexpected Failure: #{@failures.map { |f| f[:msg][:error] }.join(' ')}"
+    "Unable to remove #{@failures.size} records:\n
+      #{@failures.map { |f| f[:msg][:error] }.join('\n')}"
   end
 end

@@ -2,40 +2,33 @@
 
 require 'rails_helper'
 
-RSpec.describe UserBulkDestroyer do
+RSpec.describe BulkDestroyer do
   describe '#bulk_destroy' do
     it 'successfully destroys a collection of Users' do
       stub_destroyer_returns [success]
       users = FactoryGirl.build_stubbed_list(:user, 4)
-      described_class.new(users: users).bulk_destroy
+      described_class.new(objects: users, name_method: :full_name).bulk_destroy
       expect(Destroyer).to have_received(:destroy).exactly(4).times
-    end
-
-    it 'removes users from their groups' do
-      user = user_in_group
-      group_id = user.group.id
-      described_class.new(users: [user]).bulk_destroy
-      expect(Group.find(group_id).memberships.count).to eq(1)
     end
 
     it 'catches destroyer success' do
       stub_destroyer_returns [success]
       users = FactoryGirl.build_stubbed_list(:user, 2)
-      result = described_class.new(users: users).bulk_destroy
-      expect(result[:msg][:notice]).to include 'Successfully Deleted:'
+      result = described_class.new(objects: users, name_method: :full_name).bulk_destroy
+      expect(result[:msg][:notice]).to include 'Successfully removed 2 records'
     end
 
     it 'catches destroyer error' do
       stub_destroyer_returns [error]
       users = FactoryGirl.build_stubbed_list(:user, 2)
-      result = described_class.new(users: users).bulk_destroy
-      expect(result[:msg][:notice]).to include 'Unexpected Failure:'
+      result = described_class.new(objects: users, name_method: :full_name).bulk_destroy
+      expect(result[:msg][:notice]).to include 'Unable to remove 2 records'
     end
 
     it 'catches destroyer mixed success and error' do
       stub_destroyer_returns [success, error]
       users = FactoryGirl.build_stubbed_list(:user, 2)
-      result = described_class.new(users: users).bulk_destroy
+      result = described_class.new(objects: users, name_method: :full_name).bulk_destroy
       expect(result[:msg][:notice]).to include 'Some errors have occured.'
     end
   end

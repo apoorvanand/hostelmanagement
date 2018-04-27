@@ -10,7 +10,7 @@ class UserPolicy < ApplicationPolicy
     update_intent?
   end
 
-  def bulk_destroy?
+  def bulk_destroy_by_year?
     destroy?
   end
 

@@ -3,8 +3,7 @@
 # Users Controller class
 class UsersController < ApplicationController
   prepend_before_action :set_user,
-                        except: %i(index new build create bulk_destroy)
-  prepend_before_action :set_bulk_params, only: %i(bulk_destroy)
+                        except: %i(index new build create bulk_destroy_by_year)
 
   def index
     @users = User.includes(:draw).all.order(:class_year, :last_name)
@@ -54,8 +53,10 @@ class UsersController < ApplicationController
     handle_action(path: users_path, **result)
   end
 
-  def bulk_destroy
-    result = UserBulkDestroyer.bulk_destroy(users: @users_to_destroy)
+  def bulk_destroy_by_year
+    set_bulk_params
+    result = BulkDestroyer.bulk_destroy(objects: @users_to_destroy,
+                                        name_method: :full_name)
     handle_action(path: users_path, **result)
   end
 
