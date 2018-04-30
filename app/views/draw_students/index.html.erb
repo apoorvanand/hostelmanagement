@@ -1,9 +1,0 @@
-<% provide(:title, "#{@draw.name} - Students") %>
-<h1 class="draw-name"><%= @draw.name %> - Students</h1>
-<h3>Students in draw (<%= @students.count %> total)</h3>
-<%= render 'users/table', users: @students, hide_actions: true %>
-<hr />
-<% if policy(DrawStudentsUpdate.new(draw: @draw)).edit? %>
-  <p><%= link_to 'Edit students', edit_draw_students_path(@draw), class: 'button' %></p>
-<% end %>
-<%= link_to 'Return to draw', draw_path(@draw) %>

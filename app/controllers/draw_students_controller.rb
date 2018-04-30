@@ -4,10 +4,6 @@
 class DrawStudentsController < ApplicationController
   prepend_before_action :set_draw
 
-  def show
-    @students = @draw.students.order(:last_name)
-  end
-
   def edit
     prepare_students_edit_data
   end
@@ -16,32 +12,22 @@ class DrawStudentsController < ApplicationController
     result = DrawStudentAssignmentForm.submit(draw: @draw,
                                               params: student_assignment_params)
     @student_assignment_form = result[:update_object]
-    if @student_assignment_form
-      prepare_students_edit_data
-      result[:action] = 'edit'
-    else
-      result[:path] = edit_draw_students_path(@draw)
-    end
-    handle_action(**result)
+    prepare_students_edit_data
+    handle_action(action: 'edit', **result)
   end
 
   def bulk_assign
     result = DrawStudentsUpdate.update(draw: @draw,
                                        params: students_update_params)
     @students_update = result[:update_object]
-    if @students_update
-      prepare_students_edit_data
-      result[:action] = 'edit'
-    else
-      result[:path] = edit_draw_students_path(@draw)
-    end
-    handle_action(**result)
+    prepare_students_edit_data
+    handle_action(action: 'edit', **result)
   end
 
   private
 
   def authorize!
-    authorize DrawStudentsUpdate.new(draw: @draw)
+    authorize :draw_student
   end
 
   def prepare_students_edit_data

@@ -87,8 +87,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resource :students, only: %i(index edit update), controller:
-             :draw_students do
+    resource :students, only: %i(edit update), controller: :draw_students do
       collection do
         patch 'bulk_assign'
       end

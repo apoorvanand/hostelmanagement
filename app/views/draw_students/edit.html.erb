@@ -1,6 +1,6 @@
 <% provide(:title, "#{@draw.name} - Students") %>
 <h1 class="draw-name"><%= @draw.name %> Students</h1>
-<% if policy(DrawStudentsUpdate.new(draw: @draw)).edit? %>
+<% if policy(:draw_student).edit? %>
   <div class="student-assignment">
     <h2>Student actions</h2>
     <div class="bulk">
