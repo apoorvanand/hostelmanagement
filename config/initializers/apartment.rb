@@ -21,9 +21,6 @@ Apartment.configure do |config|
   #
   config.excluded_models = %w(Delayed::Job)
 
-  # Apartment.connection.schema_search_path = "shared, \"$user\", public"
-
-
   # In order to migrate all of your Tenants you need to provide a list of Tenant
   # names to Apartment. You can make this dynamic by providing a Proc object to
   # be called on migrations.
@@ -59,7 +56,7 @@ Apartment.configure do |config|
   #   end
   # end
   #
-  config.tenant_names = -> { College.pluck(:subdomain) }
+  config.tenant_names = -> { College.pluck :subdomain }
 
   # PostgreSQL:
   #   Specifies whether to use PostgreSQL schemas or create a new database per
@@ -88,7 +85,7 @@ Apartment.configure do |config|
   # search_path, e.g when using a PostgreSQL extension like hstore. Any schemas
   # added here will be available along with your selected Tenant.
   #
-  # config.persistent_schemas = %w{ shared }
+  # config.persistent_schemas = %w{ hstore }
 
   # <== PostgreSQL only options
   #
