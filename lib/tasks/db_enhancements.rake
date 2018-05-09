@@ -2,7 +2,7 @@
 
 namespace :db do
   desc 'dump the correct schema.rb'
-  task :create_shared_schema do
+  task :create_shared_schema => :environment do
     ActiveRecord::Base.configurations.each_value do |configuration|
       if configuration.key?("database")
         ActiveRecord::Base.establish_connection(configuration)
