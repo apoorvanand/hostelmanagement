@@ -67,4 +67,4 @@ RSpec.configure do |config|
   end
 end
 
-#ActiveRecord::Migration.maintain_test_schema!
+ActiveRecord::Migration.maintain_test_schema!

@@ -16,3 +16,4 @@ namespace :db do
 end
 
 Rake::Task['db:schema:load'].enhance [:create_shared_schema]
+Rake::Task['db:test:load_schema'].enhance [:create_shared_schema]
