@@ -26,13 +26,16 @@ end
 # Actually seed stuff
 if Apartment::Tenant.current == 'public'
   puts 'Generating seed data....'
+  binding.pry
+  Apartment::Tenant.switch!('shared')
+  generate_superuser
+
   puts 'Creating colleges'
 
   generate_colleges
 else
   puts 'Seeding college'
   # This runs for each college
-  generate_superuser
   CollegeSeeder.seed(subdomain: Apartment::Tenant.current)
   generate_draws
 end

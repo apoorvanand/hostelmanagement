@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180405141051) do
+ActiveRecord::Schema.define(version: 20180501151629) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -184,7 +184,7 @@ ActiveRecord::Schema.define(version: 20180405141051) do
   add_foreign_key "groups", "lottery_assignments"
   add_foreign_key "lottery_assignments", "clips"
   add_foreign_key "lottery_assignments", "draws"
-  add_foreign_key "users", "rooms"
+  add_foreign_key "memberships", "shared.users", column: "user_id"
 
   create_view "lottery_base_views",  sql_definition: <<-SQL
       SELECT clips.draw_id,

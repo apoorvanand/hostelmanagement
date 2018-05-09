@@ -70,6 +70,8 @@ class User < ApplicationRecord
 
   before_save :downcase_username, if: :cas_auth?
 
+  self.table_name = 'shared.users'
+
   # Return a symbol representing the attribute that represents a user's login
   # credential
   #
