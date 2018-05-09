@@ -46,9 +46,7 @@ RSpec.configure do |config|
     # see: https://github.com/influitive/apartment/wiki/Testing-Your-Application
     DatabaseCleaner.clean_with :truncation
     DatabaseCleaner.strategy = :transaction
-    # rubocop:disable RescueModifier
-    Apartment::Tenant.drop('college') rescue nil
-    # rubocop:enable RescueModifier
+    College.destroy_all
     FactoryGirl.create(:college, subdomain: 'college')
   end
 
