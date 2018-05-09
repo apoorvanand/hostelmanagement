@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :db do
   desc 'dump the correct schema.rb'
   task :create_shared_schema do
@@ -13,6 +15,4 @@ namespace :db do
   end
 end
 
-Rake::Task["db:create"].enhance do
-  Rake::Task["db:create_shared_schema"].invoke
-end
+Rake::Task['db:schema:load'].enhance [:create_shared_schema]
