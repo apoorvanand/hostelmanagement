@@ -27,7 +27,7 @@ class CollegeProvisioner
       provision_and_optionally_seed_college(row)
     end
     # Clone the first superuser, slightly redundant lookup
-    UserCloner.clone(username: superuser_username, io: io)
+    #UserCloner.clone(username: superuser_username, io: io)
     io.puts 'College provisioning finished!'
   end
 
