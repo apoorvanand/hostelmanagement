@@ -56,7 +56,7 @@ Apartment.configure do |config|
   #   end
   # end
   #
-  config.tenant_names = -> { College.pluck :subdomain }
+  config.tenant_names = -> { ['shared'] + College.pluck(:subdomain)}
 
   # PostgreSQL:
   #   Specifies whether to use PostgreSQL schemas or create a new database per

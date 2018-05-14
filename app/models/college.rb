@@ -22,6 +22,8 @@ class College < ApplicationRecord
   after_create :create_schema!
   after_destroy :drop_schema!
 
+  has_many :users
+
   self.table_name = 'shared.colleges'
 
   # Returns the current Apartment tenant. Raises an ActiveRecord::RecordNotFound

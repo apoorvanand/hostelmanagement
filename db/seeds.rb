@@ -29,6 +29,7 @@ if Apartment::Tenant.current == 'public'
   generate_superuser
   puts 'Creating colleges'
   generate_colleges
+elsif Apartment::Tenant.current == 'shared'
 else
   puts 'Seeding college'
   # This runs for each college

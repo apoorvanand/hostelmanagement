@@ -35,6 +35,7 @@ class User < ApplicationRecord
            :validatable
   end
 
+  belongs_to :college
   belongs_to :draw
   has_one :led_group, inverse_of: :leader, dependent: :destroy,
                       class_name: 'Group', foreign_key: :leader_id

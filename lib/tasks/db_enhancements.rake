@@ -15,5 +15,7 @@ namespace :db do
   end
 end
 
-Rake::Task['db:schema:load'].enhance [:create_shared_schema]
-Rake::Task['db:test:load_schema'].enhance [:create_shared_schema]
+Rake::Task['db:create'].enhance do
+   Rake::Task['db:create_shared_schema'].invoke
+end
+#Rake::Task['db:test:load_schema'].enhance [:create_shared_schema]
